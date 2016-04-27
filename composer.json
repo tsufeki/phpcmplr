@@ -1,0 +1,23 @@
+{
+    "name": "tsufeki/phpcmplr",
+    "description": "PHP auto-complete engine",
+    "license": "GPL-3.0+",
+    "type": "project",
+    "authors": [
+        {
+            "name": "tsufeki",
+            "email": "tsufeki@ymail.com"
+        }
+    ],
+    "require": {
+        "nikic/php-parser": "^2.1"
+    },
+    "autoload": {
+        "psr-4": {
+            "PhpCmplr\\": "src/PhpCmplr/"
+        }
+    },
+    "config": {
+        "bin-dir": "bin"
+    }
+}

@@ -17,6 +17,11 @@
             "PhpCmplr\\": "src/PhpCmplr/"
         }
     },
+    "autoload-dev": {
+        "psr-4": {
+            "Tests\\PhpCmplr\\": "tests/PhpCmplr/"
+        }
+    },
     "config": {
         "bin-dir": "bin"
     }

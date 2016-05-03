@@ -76,9 +76,59 @@ class SourceFile
     }
 
     /**
+     * Get offset (0-based) inside file of the character at given line and column (1-based).
+     *
+     * @param int $line
+     * @param int $column
+     * @return int
+     */
+    public function getOffset($line, $column)
+    {
+        $maxOffset = max(0, strlen($this->contents) - 1);
+        $offset = 0;
+        for ($i = 0; $i < $line - 1; $i++) {
+            $offset = strpos($this->contents, "\n", $offset);
+            if ($offset === false) {
+                return $maxOffset;
+            }
+            $offset++; // newline character
+        }
+        $offset += $column - 1;
+        if ($offset > $maxOffset) {
+            return $maxOffset;
+        }
+        return $offset;
+    }
+
+    /**
+     * Get line and and column (1-based) for the given offset (0-based).
+     *
+     * @param int $offset
+     * @return int[] [line, column]
+     */
+    public function getLineAndColumn($offset)
+    {
+        $offset = max(0, min($offset, strlen($this->contents) - 1));
+        $line = 0;
+        $currentOffset = 0;
+        $lastOffset = 0;
+        while ($currentOffset <= $offset) {
+            $lastOffset = $currentOffset;
+            $currentOffset = strpos($this->contents, "\n", $currentOffset);
+            $line++;
+            if ($currentOffset === false) {
+                break;
+            }
+            $currentOffset++; // newline character
+        }
+        return [$line, 1 + max(0, $offset - $lastOffset)];
+    }
+
+    /**
      * Load and parse file contents.
      *
      * @param string $contents
+     * @return $this
      */
     public function load($contents)
     {
@@ -94,6 +144,8 @@ class SourceFile
         } catch (ParserError $error) {
             $this->diagnostics[] = $this->makeDiagnostic($error);
         }
+
+        return $this;
     }
 
     /**
@@ -103,14 +155,9 @@ class SourceFile
      */
     protected function makeDiagnostic(ParserError $error)
     {
-        $start = new Location(
-            $error->getStartLine() >= 1 ? $error->getStartLine() : 1,
-            $error->hasColumnInfo() ? $error->getStartColumn($this->contents) : 1
-        );
-        $end = new Location(
-            $error->getEndLine() >= 1 ? $error->getEndLine() : 1,
-            $error->hasColumnInfo() ? $error->getEndColumn($this->contents) : 1
-        );
+        $attributes = $error->getAttributes();
+        $start = array_key_exists('startFilePos', $attributes) ? $attributes['startFilePos'] : 0;
+        $end = array_key_exists('endFilePos', $attributes) ? $attributes['endFilePos'] : $start;
         return new Diagnostic($this, $start, $end, $error->getRawMessage());
     }
 

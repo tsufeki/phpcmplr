@@ -28,12 +28,16 @@ class Diagnostic
     private $file;
 
     /**
-     * @var Location
+     * File offset.
+     *
+     * @var int
      */
     private $start;
 
     /**
-     * @var Location
+     * File offset.
+     *
+     * @var int
      */
     private $end;
 
@@ -44,11 +48,11 @@ class Diagnostic
 
     /**
      * @param SourceFile $file
-     * @param Location   $start
-     * @param Location   $end
+     * @param int        $start
+     * @param int        $end
      * @param string     $description
      */
-    public function __construct(SourceFile $file, Location $start, Location $end, $description)
+    public function __construct(SourceFile $file, $start, $end, $description)
     {
         $this->file = $file;
         $this->start = $start;
@@ -65,7 +69,7 @@ class Diagnostic
     }
 
     /**
-     * @return Location
+     * @return int
      */
     public function getStart()
     {
@@ -73,7 +77,7 @@ class Diagnostic
     }
 
     /**
-     * @return Location
+     * @return int
      */
     public function getEnd()
     {

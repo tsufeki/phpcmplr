@@ -34,6 +34,8 @@ class SourceFile
     protected $parser;
 
     /**
+     * This must always be a full, absolute path.
+     *
      * @var string
      */
     protected $path;

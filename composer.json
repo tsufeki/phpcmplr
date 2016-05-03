@@ -22,8 +22,5 @@
         "psr-4": {
             "Tests\\PhpCmplr\\": "tests/PhpCmplr/"
         }
-    },
-    "config": {
-        "bin-dir": "bin"
     }
 }

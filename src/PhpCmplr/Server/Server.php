@@ -123,23 +123,7 @@ class Server
                 throw new HttpException(400);
             }
 
-            $responseData = new \stdClass();
-
-            switch ($request->getPath()) {
-                case '/ping':
-                    break;
-                case '/load':
-                    $responseData = $this->load($data);
-                    break;
-                case '/diagnostics':
-                    $responseData = $this->diagnostics($data);
-                    break;
-                case '/quit':
-                    $responseData = $this->quit($data);
-                    break;
-                default:
-                    throw new HttpException(404);
-            }
+            $responseData = $this->route($request->getPath(), $data);
 
             $responseJson = json_encode($responseData);
             if ($responseJson === false) {
@@ -165,6 +149,35 @@ class Server
             'Content-Length' => strlen($responseJson),
         ]);
         $response->end($responseJson);
+    }
+
+    /**
+     * Find and execute requested action.
+     *
+     * @param string $path
+     * @param object $data
+     * @return object
+     */
+    protected function route($path, $data)
+    {
+        $response = new \stdClass();
+        switch ($path) {
+            case '/ping':
+                break;
+            case '/load':
+                $response = $this->load($data);
+                break;
+            case '/diagnostics':
+                $response = $this->diagnostics($data);
+                break;
+            case '/quit':
+                $response = $this->quit($data);
+                break;
+            default:
+                throw new HttpException(404);
+        }
+
+        return $response;
     }
 
     /**

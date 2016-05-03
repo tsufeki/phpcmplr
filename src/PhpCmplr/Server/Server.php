@@ -134,6 +134,9 @@ class Server
                 case '/diagnostics':
                     $responseData = $this->diagnostics($data);
                     break;
+                case '/quit':
+                    $responseData = $this->quit($data);
+                    break;
                 default:
                     throw new HttpException(404);
             }
@@ -230,7 +233,7 @@ class Server
      *  ]
      * }
      *
-     * Return {} on success.
+     * Return: {} on success.
      */
     public function load($data)
     {
@@ -291,5 +294,16 @@ class Server
         $result = new \stdClass();
         $result->diagnostics = $diagsData;
         return $result;
+    }
+
+    /**
+     * /quit Quit the server.
+     *
+     * Return: {}
+     */
+    public function quit($data = null)
+    {
+        $this->socket->shutdown();
+        return new \stdClass();
     }
 }

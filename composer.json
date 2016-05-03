@@ -10,7 +10,8 @@
         }
     ],
     "require": {
-        "nikic/php-parser": "^2.1"
+        "nikic/php-parser": "^2.1",
+        "react/http": "@dev"
     },
     "autoload": {
         "psr-4": {

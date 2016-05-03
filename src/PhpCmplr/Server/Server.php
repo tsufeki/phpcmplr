@@ -34,11 +34,13 @@ use PhpCmplr\Completer\SourceFile;
 /**
  * HTTP server.
  *
- * All requests are POST.
- * Request Content-Type must be 'application/json'.
- * Requests and responses' bodies are JSON.
- * Offsets into a file are 0-based.
- * (start, end) ranges are inclusive.
+ * - All requests are POST.
+ * - Request Content-Type must be 'application/json'.
+ * - Requests and responses' bodies are JSON.
+ * - Locations in a file look like that: {"line": 11, "col": 22} and are 1-based.
+ * - All string offsets (including "col" above) are counted in bytes, not UTF-8
+ *   characters.
+ * - (start, end) ranges are inclusive.
  *
  * /ping command returns {}.
  */
@@ -108,7 +110,7 @@ class Server
      * @param Request  $request
      * @param Response $response
      */
-    protected function handle(Request $request, Response $response)
+    private function handle(Request $request, Response $response)
     {
         $status = 200;
         $responseJson = '{}';
@@ -190,7 +192,7 @@ class Server
      * @return mixed
      * @throw HttpException 400
      */
-    private static function getPropertyOr400($data, $property, $type = null)
+    protected static function getPropertyOr400($data, $property, $type = null)
     {
         if (!isset($data->$property)) {
             throw new HttpException(400);

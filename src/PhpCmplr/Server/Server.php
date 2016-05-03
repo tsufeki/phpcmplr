@@ -185,9 +185,11 @@ class Server
     /**
      * Return property value if it exists and check the type.
      *
+     * Type 'location' transforms value to int array: [line, column].
+     *
      * @param mixed       $data
      * @param string      $property
-     * @param string|null $type     'object'|'array'|'string'|'int'|'bool'|null
+     * @param string|null $type     'location'|'object'|'array'|'string'|'int'|'bool'|null
      *
      * @return mixed
      * @throw HttpException 400
@@ -224,6 +226,15 @@ class Server
                 if (!is_bool($value)) {
                     throw new HttpException(400);
                 }
+                break;
+            case 'location':
+                if (!is_object($value)) {
+                    throw new HttpException(400);
+                }
+                $value = [
+                    self::getPropertyOr400($value, 'line', 'int'),
+                    self::getPropertyOr400($value, 'col', 'int'),
+                ];
                 break;
         }
 
@@ -300,8 +311,12 @@ class Server
         $diagsData = [];
         foreach ($file->getDiagnostics() as $diag) {
             $diagData = new \stdClass();
-            $diagData->start = $diag->getStart();
-            $diagData->end = $diag->getEnd();
+            $diagData->start = new \stdClass();
+            list($diagData->start->line, $diagData->start->col) =
+                $diag->getFile()->getLineAndColumn($diag->getStart());
+            $diagData->end = new \stdClass();
+            list($diagData->end->line, $diagData->end->col) =
+                $diag->getFile()->getLineAndColumn($diag->getEnd());
             $diagData->description = $diag->getDescription();
             $diagsData[] = $diagData;
         }

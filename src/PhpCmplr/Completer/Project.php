@@ -37,6 +37,7 @@ class Project
 
     /**
      * @param SourceFile $file
+     *
      * @return $this
      */
     public function addFile(SourceFile $file)
@@ -47,6 +48,7 @@ class Project
 
     /**
      * @param SourceFile $file
+     *
      * @return $this
      */
     public function removeFile(SourceFile $file)
@@ -57,6 +59,7 @@ class Project
 
     /**
      * @param string $path
+     *
      * @return SourceFile
      */
     public function getFile($path)

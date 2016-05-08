@@ -82,6 +82,7 @@ class SourceFile
      *
      * @param int $line
      * @param int $column
+     *
      * @return int
      */
     public function getOffset($line, $column)
@@ -106,6 +107,7 @@ class SourceFile
      * Get line and and column (1-based) for the given offset (0-based).
      *
      * @param int $offset
+     *
      * @return int[] [line, column]
      */
     public function getLineAndColumn($offset)
@@ -130,6 +132,7 @@ class SourceFile
      * Load and parse file contents.
      *
      * @param string $contents
+     *
      * @return $this
      */
     public function load($contents)

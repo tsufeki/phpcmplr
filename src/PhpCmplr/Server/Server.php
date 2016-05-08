@@ -158,6 +158,7 @@ class Server
      *
      * @param string $path
      * @param object $data
+     *
      * @return object
      */
     protected function route($path, $data)

@@ -191,14 +191,20 @@ class Server
      * @param mixed       $data
      * @param string      $property
      * @param string|null $type     'location'|'object'|'array'|'string'|'int'|'bool'|null
+     * @param mixed       $default  If not null and property doesn't exist,
+     *                              return this instead of throwing.
      *
      * @return mixed
      * @throw HttpException 400
      */
-    protected static function getPropertyOr400($data, $property, $type = null)
+    protected static function getPropertyOr400($data, $property, $type = null, $default = null)
     {
         if (!isset($data->$property)) {
-            throw new HttpException(400);
+            if ($default === null) {
+                throw new HttpException(400);
+            } else {
+                return $default;
+            }
         }
 
         $value = $data->$property;
@@ -251,7 +257,7 @@ class Server
      *
      * $data structure:
      * {
-     *   "files": [
+     *   "files": [ // (optional)
      *     {
      *       "path": full and absolute path,
      *       "contents": file contents as a string,
@@ -264,7 +270,7 @@ class Server
      */
     public function load($data)
     {
-        foreach (self::getPropertyOr400($data, 'files', 'array') as $fileData) {
+        foreach (self::getPropertyOr400($data, 'files', 'array', []) as $fileData) {
             $path = self::getPropertyOr400($fileData, 'path', 'string');
             $contents = self::getPropertyOr400($fileData, 'contents', 'string');
 
@@ -285,7 +291,8 @@ class Server
      *
      * $data structure:
      * {
-     *   "path": path of source file to get diagnostics for
+     *   "path": path of source file to get diagnostics for,
+     *   "files": as for /load (optional)
      * }
      *
      * Return:
@@ -302,6 +309,8 @@ class Server
      */
     public function diagnostics($data)
     {
+        $this->load($data);
+
         $path = self::getPropertyOr400($data, 'path', 'string');
         $file = $this->project->getFile($path);
 

@@ -24,9 +24,9 @@ use PhpCmplr\Server\Server;
 
 class ServerUnprotected extends Server
 {
-    public static function getPropertyOr400($data, $property, $type = null)
+    public static function getPropertyOr400($data, $property, $type = null, $default = null)
     {
-        return parent::getPropertyOr400($data, $property, $type);
+        return parent::getPropertyOr400($data, $property, $type, $default);
     }
 }
 

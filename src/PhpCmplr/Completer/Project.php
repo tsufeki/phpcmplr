@@ -1,80 +1,59 @@
 <?php
 
-/*
- * phpcmplr
- * Copyright (C) 2016  tsufeki
- *
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>.
- */
-
 namespace PhpCmplr\Completer;
 
 /**
- * Collection of SourceFiles, indexed by path.
+ * Collection of containers, one per file.
  */
 class Project
 {
     /**
-     * @var SourceFile[]
+     * @var Container[]
      */
-    private $files;
+    private $containers;
 
     public function __construct()
     {
-        $this->files = [];
+        $this->containers = [];
     }
 
-    /**
-     * @param SourceFile $file
-     *
-     * @return $this
-     */
-    public function addFile(SourceFile $file)
+    public function addFile($path, $contents)
     {
-        $this->files[$file->getPath()] = $file;
+        $this->containers[$path] = $this->createContainer($path, $contents);
+
         return $this;
     }
 
-    /**
-     * @param SourceFile $file
-     *
-     * @return $this
-     */
-    public function removeFile(SourceFile $file)
+    public function removeFile($path)
     {
-        unset($this->files[$file->getPath()]);
+        if (array_key_exists($path, $this->containers)) {
+            unset($this->containers[$path]);
+        }
+
         return $this;
     }
 
-    /**
-     * @param string $path
-     *
-     * @return SourceFile
-     */
     public function getFile($path)
     {
-        if (array_key_exists($path, $this->files)) {
-            return $this->files[$path];
+        if (array_key_exists($path, $this->containers)) {
+            return $this->containers[$path];
         }
+
         return null;
     }
 
-    /**
-     * @return SourceFile[]
-     */
     public function getFiles()
     {
-        return $this->files;
+        return $this->containers;
+    }
+
+    protected function createContainer($path, $contents)
+    {
+        $container = new Container();
+        $container->set('file', new SourceFile($container, $path, $contents));
+        $container->set('parser', new Parser\ParserComponent($container));
+        $container->set('diagnostics', new Diagnostics\DiagnosticsComponent($container));
+
+        return $container;
     }
 }

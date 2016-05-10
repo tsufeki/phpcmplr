@@ -1,23 +1,5 @@
 <?php
 
-/*
- * phpcmplr
- * Copyright (C) 2016  tsufeki
- *
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>.
- */
-
 namespace PhpCmplr\Server;
 
 use React\EventLoop\LoopInterface;
@@ -29,7 +11,6 @@ use React\Http\Response;
 use React\Http\ResponseCodes;
 
 use PhpCmplr\Completer\Project;
-use PhpCmplr\Completer\SourceFile;
 
 /**
  * HTTP server.
@@ -274,13 +255,7 @@ class Server
             $path = self::getPropertyOr400($fileData, 'path', 'string');
             $contents = self::getPropertyOr400($fileData, 'contents', 'string');
 
-            $file = $this->project->getFile($path);
-            if ($file === null) {
-                $file = new SourceFile($path);
-                $this->project->addFile($file);
-            }
-
-            $file->load($contents);
+            $this->project->addFile($path, $contents);
         }
 
         return new \stdClass();
@@ -312,21 +287,22 @@ class Server
         $this->load($data);
 
         $path = self::getPropertyOr400($data, 'path', 'string');
-        $file = $this->project->getFile($path);
+        $container = $this->project->getFile($path);
 
-        if ($file === null) {
+        if ($container === null) {
             return new \stdClass();
         }
 
         $diagsData = [];
-        foreach ($file->getDiagnostics() as $diag) {
+        $file = $container->get('file');
+        foreach ($container->get('diagnostics')->getDiagnostics() as $diag) {
             $diagData = new \stdClass();
             $diagData->start = new \stdClass();
             list($diagData->start->line, $diagData->start->col) =
-                $diag->getFile()->getLineAndColumn($diag->getStart());
+                $file->getLineAndColumn($diag->getStart());
             $diagData->end = new \stdClass();
             list($diagData->end->line, $diagData->end->col) =
-                $diag->getFile()->getLineAndColumn($diag->getEnd());
+                $file->getLineAndColumn($diag->getEnd());
             $diagData->description = $diag->getDescription();
             $diagsData[] = $diagData;
         }

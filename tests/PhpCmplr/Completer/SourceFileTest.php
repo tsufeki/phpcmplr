@@ -1,33 +1,15 @@
 <?php
 
-/*
- * phpcmplr
- * Copyright (C) 2016  tsufeki
- *
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>.
- */
-
 namespace Tests\PhpCmplr\Completer;
 
+use PhpCmplr\Completer\Container;
 use PhpCmplr\Completer\SourceFile;
 
 class SourceFileTest extends \PHPUnit_Framework_TestCase
 {
     protected function loadFile($contents, $path = 'qaz.php')
     {
-        $file = new SourceFile($path);
-        return $file->load($contents);
+        return new SourceFile(new Container(), $path, $contents);
     }
 
     public function test_getOffset()
@@ -69,19 +51,5 @@ class SourceFileTest extends \PHPUnit_Framework_TestCase
         $this->assertSame([2, 2], $this->loadFile("\nqaz\n\nwsx\n")->getLineAndColumn(2));
         $this->assertSame([4, 3], $this->loadFile("\nqaz\n\nwsx\n")->getLineAndColumn(8));
         $this->assertSame([4, 4], $this->loadFile("\nqaz\n\nwsx\n")->getLineAndColumn(9));
-    }
-
-    public function test_getDiagnostics()
-    {
-        $file = $this->loadFile('<?php '."\n\n".'$a = 7 + *f("wsx");', 'qaz.php');
-        $diags = $file->getDiagnostics();
-        $this->assertSame(1, count($diags));
-        $this->assertSame('qaz.php', $diags[0]->getFile()->getPath());
-        $this->assertSame($file, $diags[0]->getFile());
-        $this->assertSame(17, $diags[0]->getStart());
-        $this->assertSame(17, $diags[0]->getEnd());
-        $this->assertSame([3, 10], $file->getLineAndColumn($diags[0]->getStart()));
-        $this->assertSame([3, 10], $file->getLineAndColumn($diags[0]->getEnd()));
-        $this->assertSame("Syntax error, unexpected '*'", $diags[0]->getDescription());
     }
 }

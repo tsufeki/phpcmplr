@@ -5,7 +5,7 @@ namespace PhpCmplr\Completer;
 /**
  * Abstract component.
  */
-abstract class Component
+abstract class Component implements ComponentInterface
 {
     /**
      * @var Container

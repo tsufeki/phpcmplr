@@ -6,9 +6,11 @@ use PhpCmplr\Completer\Container;
 use PhpCmplr\Completer\SourceFile;
 use PhpCmplr\Completer\Parser\ParserComponent;
 use PhpCmplr\Completer\Parser\DocCommentComponent;
+use PhpCmplr\Completer\Parser\DocTag\DocTag;
 use PhpCmplr\Completer\Parser\DocTag\VarTag;
 use PhpCmplr\Completer\Parser\DocTag\ParamTag;
 use PhpCmplr\Completer\Parser\DocTag\ReturnTag;
+use PhpCmplr\Completer\Parser\DocTag\ThrowsTag;
 use PhpCmplr\Completer\Parser\DocTag\Type;
 use PhpCmplr\Completer\Parser\DocTag\ArrayType;
 use PhpCmplr\Completer\Parser\DocTag\ObjectType;
@@ -109,5 +111,54 @@ END;
         $this->assertSame('mixed', $annot['var'][0]->getType()->getName());
         $this->assertNull($annot['var'][0]->getIdentifier());
         $this->assertNull($annot['var'][0]->getDescription());
+    }
+
+    public function test_run_throws()
+    {
+        list($parser, $doc) = $this->loadFile('<?php /** @throws \Exception */ function f() {}');
+        $doc->run();
+        $nodes = $parser->getNodes();
+        $annot = $nodes[0]->getAttribute('annotations');
+        $this->assertCount(1, $annot);
+        $this->assertCount(1, $annot['throws']);
+        $this->assertInstanceOf(ThrowsTag::class, $annot['throws'][0]);
+        $this->assertSame('throws', $annot['throws'][0]->getName());
+        $this->assertSame('\\Exception', $annot['throws'][0]->getText());
+        $this->assertInstanceOf(ObjectType::class, $annot['throws'][0]->getType());
+        $this->assertSame('\\Exception', $annot['throws'][0]->getType()->getClass());
+        $this->assertNull($annot['throws'][0]->getDescription());
+    }
+
+    public function test_run_unknownTag()
+    {
+        list($parser, $doc) = $this->loadFile('<?php /** @version 17 */ function f() {}');
+        $doc->run();
+        $nodes = $parser->getNodes();
+        $annot = $nodes[0]->getAttribute('annotations');
+        $this->assertCount(1, $annot);
+        $this->assertCount(1, $annot['version']);
+        $this->assertInstanceOf(DocTag::class, $annot['version'][0]);
+        $this->assertSame('version', $annot['version'][0]->getName());
+        $this->assertSame('17', $annot['version'][0]->getText());
+    }
+
+    public function test_run_description()
+    {
+        $source = <<<'END'
+<?php
+/**
+ * @param resource|callable|self|$this|array|object|mixed|parent|self
+ * @return float|null Qaz
+ * @throws \Exception Wsx
+ */
+function f() {}
+END;
+        list($parser, $doc) = $this->loadFile($source);
+        $doc->run();
+        $nodes = $parser->getNodes();
+        $annot = $nodes[0]->getAttribute('annotations');
+        $this->assertCount(3, $annot);
+        $this->assertSame('Qaz', $annot['return'][0]->getDescription());
+        $this->assertSame('Wsx', $annot['throws'][0]->getDescription());
     }
 }

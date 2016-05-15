@@ -67,9 +67,9 @@ use T\U as UU;
 class C {
     /**
      * @param S $a
-     * @param UU $a
-     * @param X $a
-     * @param \Z $a
+     * @param UU $b
+     * @param X $c
+     * @param \Z $d
      * @return \Q
      */
     public function f($a, $b, $c, $d) {}
@@ -86,5 +86,41 @@ END;
         $this->assertSame('\\A\\B\\X', $annotations['param'][2]->getType()->getClass());
         $this->assertSame('\\Z', $annotations['param'][3]->getType()->getClass());
         $this->assertSame('\\Q', $annotations['return'][0]->getType()->getClass());
+    }
+
+    public function test_run_docCommentComplexTypes()
+    {
+        $source = <<<'END'
+<?php
+use P\Q;
+use R\S;
+use T\U as UU;
+
+class C {
+    /**
+     * @param Q[] $a
+     * @param S|UU $b
+     */
+    public function f($a, $b) {}
+}
+END;
+        list($parser, $resolver) = $this->loadFile($source);
+        $resolver->run();
+        $nodes = $parser->getNodes();
+
+        $class = $nodes[3];
+        $this->assertInstanceOf(FullyQualified::class, $class->getAttribute('namespacedName'));
+        $this->assertSame('C', $class->getAttribute('namespacedName')->toString());
+        $annotations = $class->stmts[0]->getAttribute('annotations');
+
+        $this->assertSame('array', $annotations['param'][0]->getType()->getName());
+        $this->assertSame('\\P\\Q', $annotations['param'][0]->getType()->getValueType()->getClass());
+        $this->assertSame('mixed', $annotations['param'][0]->getType()->getKeyType()->getName());
+
+        $this->assertSame('alternatives', $annotations['param'][1]->getType()->getName());
+        $alts = $annotations['param'][1]->getType()->getAlternatives();
+        $this->assertCount(2, $alts);
+        $this->assertSame('\\R\\S', $alts[0]->getClass());
+        $this->assertSame('\\T\\U', $alts[1]->getClass());
     }
 }

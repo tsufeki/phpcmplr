@@ -165,7 +165,7 @@ class Type
             case 'null':
             case 'void':
                 return static::null_();
-            case 'resource_':
+            case 'resource':
                 return static::resource_();
             case 'callable':
                 return static::callable_();

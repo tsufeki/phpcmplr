@@ -45,8 +45,11 @@ class NameResolverNodeVisitor extends NameResolver
                 } else {
                     $name = new Name($nameStr);
                 }
-                $name = $this->resolveClassName($name);
-                $nameStr = $name->getAttribute('resolved')->toString();
+                $name = $this->resolveClassName($name)->getAttribute('resolved');
+                $nameStr = $name->toString();
+                if ($name instanceof FullyQualified) {
+                    $nameStr = '\\' . $nameStr;
+                }
                 $type->setClass($nameStr);
             }
         } elseif ($type instanceof DocTag\ArrayType) {

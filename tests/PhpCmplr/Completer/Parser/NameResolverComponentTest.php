@@ -17,11 +17,11 @@ class NameResolverComponentTest extends \PHPUnit_Framework_TestCase
         $container = new Container();
         $container->set('file', new SourceFile($container, $path, $contents));
         $container->set('parser', $parser = new ParserComponent($container));
-        $container->set('doc_component', new DocCommentComponent($container));
+        $container->set('doc_comment', new DocCommentComponent($container));
         return [$parser, new NameResolverComponent($container)];
     }
 
-    public function test_NameResolverNodeVisitor()
+    public function test_run()
     {
         $source = <<<'END'
 <?php
@@ -32,7 +32,6 @@ use R\S;
 use T\U as UU;
 
 class C {
-    /** @return Q */
     public function f(S $a, UU $b, X $c, \Z $d) {}
 }
 END;
@@ -53,5 +52,39 @@ END;
         $this->assertSame('T\\U', $params[1]->type->getAttribute('resolved')->toString());
         $this->assertSame('A\\B\\X', $params[2]->type->getAttribute('resolved')->toString());
         $this->assertSame('Z', $params[3]->type->getAttribute('resolved')->toString());
+    }
+
+    public function test_run_docComment()
+    {
+        $source = <<<'END'
+<?php
+namespace A\B;
+
+use P\Q;
+use R\S;
+use T\U as UU;
+
+class C {
+    /**
+     * @param S $a
+     * @param UU $a
+     * @param X $a
+     * @param \Z $a
+     * @return \Q
+     */
+    public function f($a, $b, $c, $d) {}
+}
+END;
+        list($parser, $resolver) = $this->loadFile($source);
+        $resolver->run();
+        $nodes = $parser->getNodes();
+
+        $annotations = $nodes[0]->stmts[3]->stmts[0]->getAttribute('annotations');
+
+        $this->assertSame('\\R\\S', $annotations['param'][0]->getType()->getClass());
+        $this->assertSame('\\T\\U', $annotations['param'][1]->getType()->getClass());
+        $this->assertSame('\\A\\B\\X', $annotations['param'][2]->getType()->getClass());
+        $this->assertSame('\\Z', $annotations['param'][3]->getType()->getClass());
+        $this->assertSame('\\Q', $annotations['return'][0]->getType()->getClass());
     }
 }

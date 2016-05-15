@@ -23,7 +23,7 @@ class DocCommentComponentTest extends \PHPUnit_Framework_TestCase
         return [$parser, new DocCommentComponent($container)];
     }
 
-    public function test_parse()
+    public function test_run()
     {
         list($parser, $doc) = $this->loadFile('<?php /** @var string */ $x;');
         $doc->run();
@@ -40,7 +40,7 @@ class DocCommentComponentTest extends \PHPUnit_Framework_TestCase
         $this->assertNull($annot['var'][0]->getDescription());
     }
 
-    public function test_parse_multi()
+    public function test_run_multi()
     {
         $source = <<<'END'
 <?php
@@ -96,7 +96,7 @@ END;
         $this->assertNull($annot['return'][0]->getDescription());
     }
 
-    public function test_parse_invalidType()
+    public function test_run_invalidType()
     {
         list($parser, $doc) = $this->loadFile('<?php /** @var wrong%type */ $x;');
         $doc->run();

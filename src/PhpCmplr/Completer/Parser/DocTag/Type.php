@@ -130,6 +130,11 @@ class Type
     public static function fromString($type)
     {
         $type = trim($type);
+
+        if (empty($type)) {
+            return static::mixed_();
+        }
+
         $alternatives = explode('|', $type);
         if (count($alternatives) > 1) {
             $typeAlternatives = [];

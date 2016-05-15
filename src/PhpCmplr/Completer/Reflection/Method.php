@@ -1,0 +1,33 @@
+<?php
+
+namespace PhpCmplr\Completer\Reflection;
+
+class Method extends Function_
+{
+    use MemberTrait;
+
+    /**
+     * @var bool
+     */
+    private $abstract = false;
+
+    /**
+     * @return bool
+     */
+    public function isAbstract()
+    {
+        return $this->abstract;
+    }
+
+    /**
+     * @param bool $abstract
+     *
+     * @return $this
+     */
+    public function setAbstract($abstract)
+    {
+        $this->abstract = $abstract;
+
+        return $this;
+    }
+}

@@ -23,4 +23,13 @@ interface ReflectionComponentInterface extends ComponentInterface
      * @return Function_[]
      */
     public function findFunction($fullyQualifiedName);
+
+    /**
+     * Find semantic information about a non-class const.
+     *
+     * @param string $fullyQualifiedName
+     *
+     * @return Const_[]
+     */
+    public function findConst($fullyQualifiedName);
 }

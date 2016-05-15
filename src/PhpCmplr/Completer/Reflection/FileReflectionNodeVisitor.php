@@ -26,6 +26,11 @@ class FileReflectionNodeVisitor extends NodeVisitorAbstract
     protected $functions = [];
 
     /**
+     * @var Consts_[]
+     */
+    protected $consts = [];
+
+    /**
      * @var string
      */
     protected $path;
@@ -134,18 +139,154 @@ class FileReflectionNodeVisitor extends NodeVisitorAbstract
 
             $function->addParam($param);
         }
+    }
 
-        return $function;
+    /**
+     * @param Method|Property                $member
+     * @param Stmt\ClassMethod|Stmt\Property $node
+     *
+     * @return 
+     */
+    protected function processMember($member, Node $node)
+    {
+        $member->setAccessibility(
+            $node->isPrivate() ? ClassLike::M_PRIVATE : (
+            $node->isProtected() ? ClassLike::M_PROTECTED :
+            ClassLike::M_PUBLIC));
+
+        $member->setStatic($node->isStatic());
+    }
+
+    /**
+     * @param ClassLike      $class
+     * @param Stmt\ClassLike $node
+     */
+    protected function processClassLike(ClassLike $class, Stmt\ClassLike $node)
+    {
+        $this->init($class, $node);
+
+        foreach ($node->stmts as $child) {
+            if ($child instanceof Stmt\ClassConst) {
+                foreach ($child->consts as $constNode) {
+                    $const = new Const_();
+                    $this->init($const, $constNode);
+                    $class->addConst($const);
+                }
+            } elseif ($child instanceof Stmt\Property) {
+                $annotations = [];
+                if ($child->hasAttribute('annotations')) {
+                    $annotations = $child->getAttribute('annotations');
+                }
+
+                $docTypes = [];
+                if (!empty($annotations['var'])) {
+                    foreach ($annotations['var'] as $varTag) {
+                        $docTypes[$varTag->getIdentifier()] = $varTag->getType();
+                    }
+                }
+
+                foreach ($child->props as $propertyNode) {
+                    $property = new Property();
+                    $this->init($property, $propertyNode);
+                    $property->setName('$' . $property->getName());
+                    $this->processMember($property, $child);
+                    $type = Type::mixed_();
+                    if (!empty($docTypes[$property->getName()])) {
+                        $type = $docTypes[$property->getName()];
+                    } elseif (count($child->props) === 1 && !empty($docTypes[null])) {
+                        $type = $docTypes[null];
+                    }
+                    $property->setType($type);
+                    $class->addProperty($property);
+                }
+            } elseif ($child instanceof Stmt\ClassMethod) {
+                $method = new Method();
+                $this->processFunction($method, $child);
+                $this->processMember($method, $child);
+                $method->setAbstract($child->isAbstract());
+                $method->setFinal($child->isFinal());
+                $class->addMethod($method);
+            }
+        }
+    }
+
+    /**
+     * @param Class_|Trait_           $class
+     * @param Stmt\Class_|Stmt\Trait_ $node
+     */
+    protected function processUsedTraits(ClassLike $class, Stmt\ClassLike $node)
+    {
+        // TODO
+    }
+
+    /**
+     * @param Class_      $class
+     * @param Stmt\Class_ $node
+     */
+    protected function processClass(Class_ $class, Stmt\Class_ $node)
+    {
+        $this->processClassLike($class, $node);
+        $class->setAbstract($node->isAbstract());
+        $class->setFinal($node->isFinal());
+        $class->setExtends($this->nameToString($node->extends));
+        foreach ($node->implements as $implements) {
+            $class->addImplements($this->nameToString($implements));
+        }
+        $this->processUsedTraits($class, $node);
+    }
+
+    /**
+     * @param Interface_      $interface
+     * @param Stmt\Interface_ $node
+     */
+    protected function processInterface(Interface_ $interface, Stmt\Interface_ $node)
+    {
+        $this->processClassLike($interface, $node);
+        foreach ($node->extends as $extends) {
+            $interface->addExtends($this->nameToString($extends));
+        }
+    }
+
+    /**
+     * @param Trait_      $trait
+     * @param Stmt\Trait_ $node
+     */
+    protected function processTrait(Trait_ $trait, Stmt\Trait_ $node)
+    {
+        $this->processClassLike($trait, $node);
+        $this->processUsedTraits($trait, $node);
     }
 
     public function enterNode(Node $node) {
         if ($node instanceof Stmt\Function_) {
             $function = new Function_();
             $this->processFunction($function, $node);
-            $this->functions[] = $function;
+            $this->functions[$function->getName()] = $function;
+            return NodeTraverser::DONT_TRAVERSE_CHILDREN;
+        } elseif ($node instanceof Stmt\Class_) {
+            $class = new Class_();
+            $this->processClass($class, $node);
+            $this->classes[$class->getName()] = $class;
+            return NodeTraverser::DONT_TRAVERSE_CHILDREN;
+        } elseif ($node instanceof Stmt\Interface_) {
+            $interface = new Interface_();
+            $this->processInterface($interface, $node);
+            $this->classes[$interface->getName()] = $interface;
+            return NodeTraverser::DONT_TRAVERSE_CHILDREN;
+        } elseif ($node instanceof Stmt\Trait_) {
+            $trait = new Trait_();
+            $this->processTrait($trait, $node);
+            $this->classes[$trait->getName()] = $trait;
+            return NodeTraverser::DONT_TRAVERSE_CHILDREN;
+        } elseif ($node instanceof Stmt\Const_) {
+            foreach ($node->consts as $constNode) {
+                $const = new Const_();
+                $this->init($const, $constNode);
+                $this->consts[$const->getName()] = $const;
+            }
             return NodeTraverser::DONT_TRAVERSE_CHILDREN;
         }
-        // TODO: class-likes
+        // TODO: variables
     }
 
     /**
@@ -162,5 +303,13 @@ class FileReflectionNodeVisitor extends NodeVisitorAbstract
     public function getFunctions()
     {
         return $this->functions;
+    }
+
+    /**
+     * @return Consts_[]
+     */
+    public function getConsts()
+    {
+        return $this->consts;
     }
 }

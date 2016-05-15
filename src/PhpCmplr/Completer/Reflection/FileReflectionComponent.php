@@ -5,7 +5,7 @@ namespace PhpCmplr\Completer\Reflection;
 use PhpCmplr\Completer\Container;
 use PhpCmplr\Completer\NodeTraverserComponent;
 
-class FileReflectionComponent extends NodeTraverserComponent
+class FileReflectionComponent extends NodeTraverserComponent implements ReflectionComponentInterface
 {
     /**
      * @var FileReflectionNodeVisitor
@@ -21,6 +21,11 @@ class FileReflectionComponent extends NodeTraverserComponent
      * @var Function_[]
      */
     private $functions;
+
+    /**
+     * @var Const_[]
+     */
+    private $consts;
 
     public function __construct(Container $container)
     {
@@ -41,6 +46,12 @@ class FileReflectionComponent extends NodeTraverserComponent
         return empty($this->functions[$fullyQualifiedName]) ? [] : [$this->functions[$fullyQualifiedName]];
     }
 
+    public function findConst($fullyQualifiedName)
+    {
+        $this->run();
+        return empty($this->consts[$fullyQualifiedName]) ? [] : [$this->consts[$fullyQualifiedName]];
+    }
+
     /**
      * Get all classes, interfaces and traits from this file.
      *
@@ -48,7 +59,8 @@ class FileReflectionComponent extends NodeTraverserComponent
      */
     public function getClasses()
     {
-        return $this->classes;
+        $this->run();
+        return array_values($this->classes);
     }
 
     /**
@@ -58,7 +70,19 @@ class FileReflectionComponent extends NodeTraverserComponent
      */
     public function getFunctions()
     {
-        return $this->functions;
+        $this->run();
+        return array_values($this->functions);
+    }
+
+    /**
+     * Get all non-class consts from this file.
+     *
+     * @return Const_[]
+     */
+    public function getConsts()
+    {
+        $this->run();
+        return array_values($this->consts);
     }
 
     protected function doRun()
@@ -67,5 +91,6 @@ class FileReflectionComponent extends NodeTraverserComponent
         parent::doRun();
         $this->classes = $this->visitor->getClasses();
         $this->functions = $this->visitor->getFunctions();
+        $this->consts = $this->visitor->getConsts();
     }
 }

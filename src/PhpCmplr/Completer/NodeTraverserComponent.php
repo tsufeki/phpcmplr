@@ -43,7 +43,7 @@ class NodeTraverserComponent extends Component
     /**
      * @return NodeVisitor[]
      */
-    protected function getVisitors()
+    public function getVisitors()
     {
         return $this->visitors;
     }

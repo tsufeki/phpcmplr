@@ -44,43 +44,13 @@ class FileReflectionComponent extends NodeVisitorComponent implements Reflection
     }
 
     /**
-     * @param Name|string $name
-     *
-     * @return string
-     */
-    private function nameToString($name)
-    {
-        if (empty($name)) {
-            return null;
-        }
-
-        if (is_string($name)) {
-            return $name;
-        }
-
-        if ($name instanceof FullyQualified) {
-            return '\\' . $name->toString();
-        }
-
-        if ($name instanceof Name && $name->hasAttribute('resolved')) {
-            return $this->nameToString($name->getAttribute('resolved'));
-        }
-
-        if ($name instanceof Relative) {
-            return 'namespace\\' . $name->toString();
-        }
-
-        return $name->toString();
-    }
-
-    /**
      * @param Name|string $type
      *
      * @return Type
      */
-    protected function getType($type)
+    private function getType($type)
     {
-        return Type::fromString($this->nameToString($type));
+        return Type::fromString(Type::nameToString($type));
     }
 
     /**
@@ -90,7 +60,7 @@ class FileReflectionComponent extends NodeVisitorComponent implements Reflection
     protected function init(Element $element, Node $node)
     {
         $element->setName($node->hasAttribute('namespacedName')
-            ? $this->nameToString($node->getAttribute('namespacedName'))
+            ? Type::nameToString($node->getAttribute('namespacedName'))
             : $node->name);
         if ($node->hasAttribute('startFilePos')) {
             $element->setLocation(new OffsetLocation($this->path, $node->getAttribute('startFilePos')));
@@ -228,9 +198,9 @@ class FileReflectionComponent extends NodeVisitorComponent implements Reflection
         $this->processClassLike($class, $node);
         $class->setAbstract($node->isAbstract());
         $class->setFinal($node->isFinal());
-        $class->setExtends($this->nameToString($node->extends));
+        $class->setExtends(Type::nameToString($node->extends));
         foreach ($node->implements as $implements) {
-            $class->addImplements($this->nameToString($implements));
+            $class->addImplements(Type::nameToString($implements));
         }
         $this->processUsedTraits($class, $node);
     }
@@ -243,7 +213,7 @@ class FileReflectionComponent extends NodeVisitorComponent implements Reflection
     {
         $this->processClassLike($interface, $node);
         foreach ($node->extends as $extends) {
-            $interface->addExtends($this->nameToString($extends));
+            $interface->addExtends(Type::nameToString($extends));
         }
     }
 

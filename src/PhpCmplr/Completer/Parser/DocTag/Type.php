@@ -2,6 +2,10 @@
 
 namespace PhpCmplr\Completer\Parser\DocTag;
 
+use PhpParser\Node\Name;
+use PhpParser\Node\Name\FullyQualified;
+use PhpParser\Node\Name\Relative;
+
 class Type
 {
     /**
@@ -188,5 +192,37 @@ class Type
                 }
                 return static::object_($type);
         }
+    }
+
+    /**
+     * Convert PhpParser's Name to string.
+     *
+     * @param Name|string $name
+     *
+     * @return string
+     */
+    public static function nameToString($name)
+    {
+        if (empty($name)) {
+            return null;
+        }
+
+        if (is_string($name)) {
+            return $name;
+        }
+
+        if ($name instanceof FullyQualified) {
+            return '\\' . $name->toString();
+        }
+
+        if ($name instanceof Name && $name->hasAttribute('resolved')) {
+            return static::nameToString($name->getAttribute('resolved'));
+        }
+
+        if ($name instanceof Relative) {
+            return 'namespace\\' . $name->toString();
+        }
+
+        return $name->toString();
     }
 }

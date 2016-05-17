@@ -50,9 +50,17 @@ class DiagnosticsComponent extends NodeTraverserComponent implements Diagnostics
         foreach ($this->container->get('parser')->getErrors() as $error) {
             $this->diagnostics[] = $this->makeDiagnosticFromError($error);
         }
+        $visitors = $this->container->getByTag('diagnostics.visitor');
+        foreach ($visitors as $visitor) {
+            $this->addVisitor($visitor);
+        }
         parent::doRun();
-        foreach ($this->getVisitors() as $visitor) {
+        foreach ($visitors as $visitor) {
             $this->diagnostics = array_merge($this->diagnostics, $visitor->getDiagnostics());
+        }
+        $components = $this->container->getByTag('diagnostics.component');
+        foreach ($components as $component) {
+            $this->diagnostics = array_merge($this->diagnostics, $component->getDiagnostics());
         }
     }
 }

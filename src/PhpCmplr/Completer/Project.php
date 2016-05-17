@@ -12,16 +12,20 @@ class Project
      */
     private $containers;
 
-    public function __construct()
+    /**
+     * @var ContainerFactoryInterface
+     */
+    private $factory;
+
+    public function __construct(ContainerFactoryInterface $containerFactory)
     {
         $this->containers = [];
+        $this->factory = $containerFactory;
     }
 
-    public function addFile($path, $contents)
+    public function addFile($path, $contents, array $options = [])
     {
-        $this->containers[$path] = $this->createContainer($path, $contents);
-
-        return $this;
+        return $this->containers[$path] = $this->factory->create($path, $contents, $options);
     }
 
     public function removeFile($path)
@@ -29,8 +33,6 @@ class Project
         if (array_key_exists($path, $this->containers)) {
             unset($this->containers[$path]);
         }
-
-        return $this;
     }
 
     public function getFile($path)
@@ -45,15 +47,5 @@ class Project
     public function getFiles()
     {
         return $this->containers;
-    }
-
-    protected function createContainer($path, $contents)
-    {
-        $container = new Container();
-        $container->set('file', new SourceFile($container, $path, $contents));
-        $container->set('parser', new Parser\ParserComponent($container));
-        $container->set('diagnostics', new Diagnostics\DiagnosticsComponent($container));
-
-        return $container;
     }
 }

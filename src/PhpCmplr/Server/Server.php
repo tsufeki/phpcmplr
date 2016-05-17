@@ -11,6 +11,7 @@ use React\Http\Response;
 use React\Http\ResponseCodes;
 
 use PhpCmplr\Completer\Project;
+use PhpCmplr\Completer\ContainerFactory;
 
 /**
  * HTTP server.
@@ -65,7 +66,7 @@ class Server
     {
         $this->host = $host;
         $this->port = $port;
-        $this->project = new Project();
+        $this->project = new Project(new ContainerFactory());
     }
 
     /**

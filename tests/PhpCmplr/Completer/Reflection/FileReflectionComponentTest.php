@@ -279,6 +279,49 @@ END;
         $this->assertSame('\\A\\B\\T', $classes[2]->getName());
     }
 
+    public function test_getClasses_usedTraits()
+    {
+        $source = <<<'END'
+<?php
+namespace A\B;
+
+class C {
+    use \T;
+    use \U, V {
+        \U::f insteadof V;
+        V::g as gg;
+        \U::h as private h;
+    }
+}
+END;
+        $refl = $this->loadFile($source);
+        $refl->run();
+        $this->assertCount(1, $refl->getClasses());
+        $cls = $refl->getClasses()[0];
+
+        $this->assertInstanceOf(Class_::class, $cls);
+        $this->assertSame('\\A\\B\\C', $cls->getName());
+        $this->assertSame(['\\T', '\\U', '\\A\\B\\V'], $cls->getTraits());
+
+        $insteadOfs = $cls->getTraitInsteadOfs();
+        $this->assertCount(1, $insteadOfs);
+        $this->assertSame('\\U', $insteadOfs[0]->getTrait());
+        $this->assertSame('f', $insteadOfs[0]->getMethod());
+        $this->assertSame(['\\A\\B\\V'], $insteadOfs[0]->getInsteadOfs());
+
+        $aliases = $cls->getTraitAliases();
+        $this->assertCount(2, $aliases);
+        $this->assertSame('\\A\\B\\V', $aliases[0]->getTrait());
+        $this->assertSame('g', $aliases[0]->getMethod());
+        $this->assertSame('gg', $aliases[0]->getNewName());
+        $this->assertSame(null, $aliases[0]->getNewAccessibility());
+
+        $this->assertSame('\\U', $aliases[1]->getTrait());
+        $this->assertSame('h', $aliases[1]->getMethod());
+        $this->assertSame('h', $aliases[1]->getNewName());
+        $this->assertSame(ClassLike::M_PRIVATE, $aliases[1]->getNewAccessibility());
+    }
+
     public function test_getConsts()
     {
         $source = <<<'END'

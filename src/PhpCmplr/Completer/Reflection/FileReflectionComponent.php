@@ -186,7 +186,36 @@ class FileReflectionComponent extends NodeVisitorComponent implements Reflection
      */
     protected function processUsedTraits(ClassLike $class, Stmt\ClassLike $node)
     {
-        // TODO
+        foreach ($node->stmts as $child) {
+            if ($child instanceof Stmt\TraitUse) {
+                foreach ($child->traits as $trait) {
+                    $class->addTrait(Type::nameToString($trait));
+                }
+
+                foreach ($child->adaptations as $adaptation) {
+                    if ($adaptation instanceof Stmt\TraitUseAdaptation\Precedence) {
+                        $insteadOf = new TraitInsteadOf();
+                        $insteadOf->setTrait(Type::nameToString($adaptation->trait));
+                        $insteadOf->setMethod($adaptation->method);
+                        foreach ($adaptation->insteadof as $insteadOfNode) {
+                            $insteadOf->addInsteadOf(Type::nameToString($insteadOfNode));
+                        }
+                        $class->addTraitInsteadOf($insteadOf);
+                    } elseif ($adaptation instanceof Stmt\TraitUseAdaptation\Alias) {
+                        $alias = new TraitAlias();
+                        $alias->setTrait(Type::nameToString($adaptation->trait));
+                        $alias->setMethod($adaptation->method);
+                        $alias->setNewName($adaptation->newName);
+                        $alias->setNewAccessibility(
+                            $adaptation->newModifier === Stmt\Class_::MODIFIER_PRIVATE ? ClassLike::M_PRIVATE : (
+                            $adaptation->newModifier === Stmt\Class_::MODIFIER_PROTECTED ? ClassLike::M_PROTECTED : (
+                            $adaptation->newModifier === Stmt\Class_::MODIFIER_PUBLIC ? ClassLike::M_PUBLIC :
+                            null)));
+                        $class->addTraitAlias($alias);
+                    }
+                }
+            }
+        }
     }
 
     /**

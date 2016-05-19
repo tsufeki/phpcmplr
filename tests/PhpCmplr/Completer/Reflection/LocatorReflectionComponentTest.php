@@ -47,6 +47,7 @@ class LocatorReflectionComponentTest extends \PHPUnit_Framework_TestCase
         $locator = $this->getMockForAbstractClass(Locator::class);
         $locator->expects($this->once())
             ->method('getPathsForClass')
+            ->with($this->equalTo('\\CC'))
             ->willReturn(['/qaz.php']);
         $cont2->set('locator', $locator, ['reflection.locator']);
 
@@ -62,5 +63,8 @@ class LocatorReflectionComponentTest extends \PHPUnit_Framework_TestCase
         $this->assertCount(1, $classes);
         $this->assertSame('\\CC', $classes[0]->getName());
         $this->assertSame('f', $classes[0]->getMethods()[0]->getName());
+
+        $classesCaseInsensitive = $refl->findClass('\\cC');
+        $this->assertSame($classes, $classesCaseInsensitive);
     }
 }

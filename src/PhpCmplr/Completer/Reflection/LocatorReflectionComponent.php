@@ -46,8 +46,8 @@ class LocatorReflectionComponent extends Component implements ReflectionComponen
     {
         $this->run();
 
-        if (array_key_exists($fullyQualifiedName, $this->classCache)) {
-            return $this->classCache[$fullyQualifiedName];
+        if (array_key_exists(strtolower($fullyQualifiedName), $this->classCache)) {
+            return $this->classCache[strtolower($fullyQualifiedName)];
         }
 
         $classes = [];
@@ -68,7 +68,7 @@ class LocatorReflectionComponent extends Component implements ReflectionComponen
             }
         }
 
-        return $this->classCache[$fullyQualifiedName] = $classes;
+        return $this->classCache[strtolower($fullyQualifiedName)] = $classes;
     }
 
     public function findFunction($fullyQualifiedName)

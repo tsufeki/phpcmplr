@@ -260,25 +260,25 @@ class FileReflectionComponent extends NodeVisitorComponent implements Reflection
         if ($node instanceof Stmt\Function_) {
             $function = new Function_();
             $this->processFunction($function, $node);
-            $this->functions[$function->getName()] = $function;
+            $this->functions[strtolower($function->getName())] = $function;
             return NodeTraverser::DONT_TRAVERSE_CHILDREN;
 
         } elseif ($node instanceof Stmt\Class_) {
             $class = new Class_();
             $this->processClass($class, $node);
-            $this->classes[$class->getName()] = $class;
+            $this->classes[strtolower($class->getName())] = $class;
             return NodeTraverser::DONT_TRAVERSE_CHILDREN;
 
         } elseif ($node instanceof Stmt\Interface_) {
             $interface = new Interface_();
             $this->processInterface($interface, $node);
-            $this->classes[$interface->getName()] = $interface;
+            $this->classes[strtolower($interface->getName())] = $interface;
             return NodeTraverser::DONT_TRAVERSE_CHILDREN;
 
         } elseif ($node instanceof Stmt\Trait_) {
             $trait = new Trait_();
             $this->processTrait($trait, $node);
-            $this->classes[$trait->getName()] = $trait;
+            $this->classes[strtolower($trait->getName())] = $trait;
             return NodeTraverser::DONT_TRAVERSE_CHILDREN;
 
         } elseif ($node instanceof Stmt\Const_) {
@@ -295,12 +295,14 @@ class FileReflectionComponent extends NodeVisitorComponent implements Reflection
     public function findClass($fullyQualifiedName)
     {
         $this->run();
+        $fullyQualifiedName = strtolower($fullyQualifiedName);
         return empty($this->classes[$fullyQualifiedName]) ? [] : [$this->classes[$fullyQualifiedName]];
     }
 
     public function findFunction($fullyQualifiedName)
     {
         $this->run();
+        $fullyQualifiedName = strtolower($fullyQualifiedName);
         return empty($this->functions[$fullyQualifiedName]) ? [] : [$this->functions[$fullyQualifiedName]];
     }
 

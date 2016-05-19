@@ -25,4 +25,27 @@ class AlternativesType extends Type
     {
         return $this->alternatives;
     }
+
+    public function compare(Type $other)
+    {
+        $cmp = parent::compare($other);
+        if ($cmp !== 0) {
+            return $cmp;
+        }
+        for ($i = 0;; $i++) {
+            if (count($this->alternatives) <= $i && count($other->alternatives) <= $i) {
+                return 0;
+            }
+            if (count($this->alternatives) <= $i) {
+                return -1;
+            }
+            if (count($other->alternatives) <= $i) {
+                return 1;
+            }
+            $cmp = $this->alternatives[$i]->compare($other->alternatives[$i]);
+            if ($cmp !== 0) {
+                return $cmp;
+            }
+        }
+    }
 }

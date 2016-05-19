@@ -50,27 +50,29 @@ class NameResolverNodeVisitor extends NameResolver
                 if ($name instanceof FullyQualified) {
                     $nameStr = '\\' . $nameStr;
                 }
-                $type->setClass($nameStr);
+                return DocTag\Type::object_($nameStr);
             }
         } elseif ($type instanceof DocTag\ArrayType) {
-            $this->resolveDocTagType($type->getValueType());
-            $this->resolveDocTagType($type->getKeyType());
+            $value = $this->resolveDocTagType($type->getValueType());
+            $key = $this->resolveDocTagType($type->getKeyType());
+            return DocTag\Type::array_($value, $key);
         } elseif ($type instanceof DocTag\AlternativesType) {
+            $alternatives = [];
             foreach ($type->getAlternatives() as $alternative) {
-                $this->resolveDocTagType($alternative);
+                $alternatives[] = $this->resolveDocTagType($alternative);
             }
+            return DocTag\Type::alternatives($alternatives);
         }
+
+        return $type;
     }
 
     public function enterNode(Node $node) {
         if ($node->hasAttribute('annotations')) {
             foreach ($node->getAttribute('annotations') as $annotations) {
                 foreach ($annotations as $docTag) {
-                    if ($docTag instanceof DocTag\VarTag ||
-                            $docTag instanceof DocTag\ParamTag ||
-                            $docTag instanceof DocTag\ReturnTag ||
-                            $docTag instanceof DocTag\ThrowsTag) {
-                        $this->resolveDocTagType($docTag->getType());
+                    if ($docTag instanceof DocTag\TypedTag) {
+                        $docTag->setType($this->resolveDocTagType($docTag->getType()));
                     }
                 }
             }

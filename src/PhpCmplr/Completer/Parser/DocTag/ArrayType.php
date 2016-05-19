@@ -40,4 +40,17 @@ class ArrayType extends Type
     {
         return $this->keyType;
     }
+
+    public function compare(Type $other)
+    {
+        $cmp = parent::compare($other);
+        if ($cmp !== 0) {
+            return $cmp;
+        }
+        $cmp = $this->getValueType()->compare($other->getValueType());
+        if ($cmp !== 0) {
+            return $cmp;
+        }
+        return $this->getKeyType()->compare($other->getKeyType());
+    }
 }

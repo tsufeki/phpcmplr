@@ -26,15 +26,9 @@ class ObjectType extends Type
         return $this->class;
     }
 
-    /**
-     * @param string $class
-     *
-     * @return $this
-     */
-    public function setClass($class)
+    public function compare(Type $other)
     {
-        $this->class = $class;
-
-        return $this;
+        $cmp = parent::compare($other);
+        return $cmp !== 0 ? $cmp : strcasecmp($this->getClass(), $other->getClass());
     }
 }

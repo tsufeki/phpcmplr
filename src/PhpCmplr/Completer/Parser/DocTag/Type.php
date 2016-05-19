@@ -30,6 +30,26 @@ class Type
     }
 
     /**
+     * @param Type $other
+     *
+     * @return bool
+     */
+    public function equals(Type $other)
+    {
+        return $this->compare($other) === 0;
+    }
+
+    /**
+     * @param Type $other
+     *
+     * @return int
+     */
+    public function compare(Type $other)
+    {
+        return strcmp($this->getName(), $other->getName());
+    }
+
+    /**
      * @return Type 
      */
     public static function int_()
@@ -105,7 +125,7 @@ class Type
     }
 
     /**
-     * @param string|null $class Fully qualified class name.
+     * @param string|null $class
      *
      * @return ObjectType
      */
@@ -121,7 +141,28 @@ class Type
      */
     public static function alternatives(array $alternatives)
     {
-        return new AlternativesType($alternatives);
+        $normalized = [];
+        // Flatten the structure.
+        foreach ($alternatives as $alternative) {
+            if ($alternative instanceof AlternativesType) {
+                $normalized = array_merge($normalized, $alternative->getAlternatives());
+            } else {
+                $normalized[] = $alternative;
+            }
+        }
+        // Check for trivial cases.
+        if (count($normalized) === 0) {
+            return self::null_();
+        }
+        if (count($normalized) === 1) {
+            return $normalized[0];
+        }
+        // Sort.
+        usort($normalized, function (Type $x, Type $y) {
+            return $x->compare($y);
+        });
+
+        return new AlternativesType($normalized);
     }
 
     /**

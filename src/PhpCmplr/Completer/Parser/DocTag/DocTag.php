@@ -7,12 +7,12 @@ class DocTag
     /**
      * @var string
      */
-    public $name;
+    private $name;
 
     /**
      * @var string
      */
-    public $text;
+    private $text;
 
     /**
      * @param string $name
@@ -56,7 +56,7 @@ class DocTag
                 return new ReturnTag($name, $text);
             case 'throws':
             case 'throw':
-                return new ThrowsTag($name, $text);
+                return new ThrowsTag('throws', $text);
             default:
                 return new DocTag($name, $text);
         }

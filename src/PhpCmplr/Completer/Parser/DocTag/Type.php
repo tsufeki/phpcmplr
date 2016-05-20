@@ -146,8 +146,18 @@ class Type
         foreach ($alternatives as $alternative) {
             if ($alternative instanceof AlternativesType) {
                 $normalized = array_merge($normalized, $alternative->getAlternatives());
-            } else {
+            } elseif ($alternative !== null) {
                 $normalized[] = $alternative;
+            }
+        }
+        // Sort.
+        usort($normalized, function (Type $x, Type $y) {
+            return $x->compare($y);
+        });
+        // Uniq.
+        for ($i = count($normalized) - 1; $i >= 1; $i--) {
+            if ($normalized[$i]->equals($normalized[$i - 1])) {
+                array_splice($normalized, $i, 1);
             }
         }
         // Check for trivial cases.
@@ -157,10 +167,6 @@ class Type
         if (count($normalized) === 1) {
             return $normalized[0];
         }
-        // Sort.
-        usort($normalized, function (Type $x, Type $y) {
-            return $x->compare($y);
-        });
 
         return new AlternativesType($normalized);
     }

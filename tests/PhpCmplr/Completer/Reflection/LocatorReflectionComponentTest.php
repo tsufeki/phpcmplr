@@ -67,4 +67,70 @@ class LocatorReflectionComponentTest extends \PHPUnit_Framework_TestCase
         $classesCaseInsensitive = $refl->findClass('\\cC');
         $this->assertSame($classes, $classesCaseInsensitive);
     }
+
+    public function test_findFunction()
+    {
+        $cont1 = $this->loadFile('<?php function fff() {}', '/qaz.php');
+        $cont2 = $this->loadFile('<?php ;', '/wsx.php');
+
+        $factory = $this->getMockForAbstractClass(ContainerFactoryInterface::class);
+        $factory->expects($this->exactly(2))
+            ->method('create')
+            ->will($this->onConsecutiveCalls($cont1, $cont2));
+
+        $locator = $this->getMockForAbstractClass(Locator::class);
+        $locator->expects($this->once())
+            ->method('getPathsForFunction')
+            ->with($this->equalTo('\\fff'))
+            ->willReturn(['/qaz.php']);
+        $cont2->set('locator', $locator, ['reflection.locator']);
+
+        $io = $this->getMockForAbstractClass(FileIOInterface::class);
+
+        $project = new Project($factory);
+        $project->addFile('/qaz.php', '');
+        $project->addFile('/wsx.php', '');
+
+        $refl = new LocatorReflectionComponent($cont2, $project, $io);
+
+        $functions = $refl->findFunction('\\fff');
+        $this->assertCount(1, $functions);
+        $this->assertSame('\\fff', $functions[0]->getName());
+
+        $functionsCaseInsensitive = $refl->findFunction('\\fFf');
+        $this->assertSame($functions, $functionsCaseInsensitive);
+    }
+
+    public function test_findConst()
+    {
+        $cont1 = $this->loadFile('<?php const ZZ = 7;', '/qaz.php');
+        $cont2 = $this->loadFile('<?php ;', '/wsx.php');
+
+        $factory = $this->getMockForAbstractClass(ContainerFactoryInterface::class);
+        $factory->expects($this->exactly(2))
+            ->method('create')
+            ->will($this->onConsecutiveCalls($cont1, $cont2));
+
+        $locator = $this->getMockForAbstractClass(Locator::class);
+        $locator->expects($this->exactly(2))
+            ->method('getPathsForConst')
+            ->withConsecutive([$this->equalTo('\\ZZ')], [$this->equalTo('\\zZ')])
+            ->will($this->onConsecutiveCalls(['/qaz.php'], []));
+        $cont2->set('locator', $locator, ['reflection.locator']);
+
+        $io = $this->getMockForAbstractClass(FileIOInterface::class);
+
+        $project = new Project($factory);
+        $project->addFile('/qaz.php', '');
+        $project->addFile('/wsx.php', '');
+
+        $refl = new LocatorReflectionComponent($cont2, $project, $io);
+
+        $consts = $refl->findConst('\\ZZ');
+        $this->assertCount(1, $consts);
+        $this->assertSame('\\ZZ', $consts[0]->getName());
+
+        $constsCaseSensitive = $refl->findConst('\\zZ');
+        $this->assertCount(0, $constsCaseSensitive);
+    }
 }

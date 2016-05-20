@@ -31,6 +31,16 @@ class LocatorReflectionComponent extends Component implements ReflectionComponen
     private $classCache = [];
 
     /**
+     * @var Function_[][]
+     */
+    private $functionCache = [];
+
+    /**
+     * @var Const_[][]
+     */
+    private $constCache = [];
+
+    /**
      * @param Container       $container
      * @param Project         $project
      * @param FileIOInterface $io
@@ -73,16 +83,60 @@ class LocatorReflectionComponent extends Component implements ReflectionComponen
 
     public function findFunction($fullyQualifiedName)
     {
-        // TODO
         $this->run();
-        return [];
+
+        if (array_key_exists(strtolower($fullyQualifiedName), $this->functionCache)) {
+            return $this->functionCache[strtolower($fullyQualifiedName)];
+        }
+
+        $functions = [];
+        foreach ($this->locators as $locator) {
+            foreach ($locator->getPathsForFunction($fullyQualifiedName) as $path) {
+                try {
+                    /** @var Container $cont */
+                    $cont = $this->project->getFile($path);
+                    if ($cont === null) {
+                        $cont = $this->project->addFile($path, $this->io->read($path));
+                    }
+                    $file = $cont->get('reflection.file');
+                    if ($file !== null) {
+                        $functions = array_merge($functions, $file->findFunction($fullyQualifiedName));
+                    }
+                } catch (IOException $e) {
+                }
+            }
+        }
+
+        return $this->functionCache[strtolower($fullyQualifiedName)] = $functions;
     }
 
     public function findConst($fullyQualifiedName)
     {
-        // TODO
         $this->run();
-        return [];
+
+        if (array_key_exists($fullyQualifiedName, $this->constCache)) {
+            return $this->constCache[$fullyQualifiedName];
+        }
+
+        $consts = [];
+        foreach ($this->locators as $locator) {
+            foreach ($locator->getPathsForConst($fullyQualifiedName) as $path) {
+                try {
+                    /** @var Container $cont */
+                    $cont = $this->project->getFile($path);
+                    if ($cont === null) {
+                        $cont = $this->project->addFile($path, $this->io->read($path));
+                    }
+                    $file = $cont->get('reflection.file');
+                    if ($file !== null) {
+                        $consts = array_merge($consts, $file->findConst($fullyQualifiedName));
+                    }
+                } catch (IOException $e) {
+                }
+            }
+        }
+
+        return $this->constsCache[$fullyQualifiedName] = $consts;
     }
 
     protected function doRun()

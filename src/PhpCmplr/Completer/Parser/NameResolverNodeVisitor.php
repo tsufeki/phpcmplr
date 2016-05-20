@@ -37,34 +37,26 @@ class NameResolverNodeVisitor extends NameResolver
 
     protected function resolveDocTagType(DocTag\Type $type)
     {
-        if ($type instanceof DocTag\ObjectType) {
-            $nameStr = $type->getClass();
-            if ($nameStr !== null && $nameStr !== '') {
-                if ($nameStr[0] === '\\') {
-                    $name = new FullyQualified(substr($nameStr, 1));
-                } else {
-                    $name = new Name($nameStr);
+        return $type->walk(function (DocTag\Type $type) {
+            if ($type instanceof DocTag\ObjectType) {
+                $nameStr = $type->getClass();
+                if ($nameStr !== null && $nameStr !== '') {
+                    if ($nameStr[0] === '\\') {
+                        $name = new FullyQualified(substr($nameStr, 1));
+                    } else {
+                        $name = new Name($nameStr);
+                    }
+                    $name = $this->resolveClassName($name)->getAttribute('resolved');
+                    $nameStr = $name->toString();
+                    if ($name instanceof FullyQualified) {
+                        $nameStr = '\\' . $nameStr;
+                    }
+                    return DocTag\Type::object_($nameStr);
                 }
-                $name = $this->resolveClassName($name)->getAttribute('resolved');
-                $nameStr = $name->toString();
-                if ($name instanceof FullyQualified) {
-                    $nameStr = '\\' . $nameStr;
-                }
-                return DocTag\Type::object_($nameStr);
             }
-        } elseif ($type instanceof DocTag\ArrayType) {
-            $value = $this->resolveDocTagType($type->getValueType());
-            $key = $this->resolveDocTagType($type->getKeyType());
-            return DocTag\Type::array_($value, $key);
-        } elseif ($type instanceof DocTag\AlternativesType) {
-            $alternatives = [];
-            foreach ($type->getAlternatives() as $alternative) {
-                $alternatives[] = $this->resolveDocTagType($alternative);
-            }
-            return DocTag\Type::alternatives($alternatives);
-        }
 
-        return $type;
+            return $type;
+        });
     }
 
     public function enterNode(Node $node) {

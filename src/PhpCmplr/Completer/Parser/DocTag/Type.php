@@ -266,4 +266,36 @@ class Type
 
         return $name->toString();
     }
+
+    /**
+     * Walk type tree and call transformer for each node.
+     *
+     * @param callable $transformer Type -> Type
+     *
+     * @return Type
+     */
+    public function walk(callable $transformer)
+    {
+        $type = $transformer($this);
+
+        if ($type instanceof ArrayType) {
+            $value = $type->getValueType();
+            $key = $type->getKeyType();
+            $newValue = $value->walk($transformer);
+            $newKey = $key->walk($transformer);
+            $type = ($value === $newValue && $key === $newKey) ? $type : Type::array_($newValue, $newKey);
+
+        } elseif ($type instanceof AlternativesType) {
+            $alternatives = [];
+            $changed = false;
+            foreach ($type->getAlternatives() as $alternative) {
+                $newAlternative = $alternative->walk($transformer);
+                $changed = $changed || $alternative !== $newAlternative;
+                $alternatives[] = $newAlternative;
+            }
+            $type = $changed ? Type::alternatives($alternatives) : $type;
+        }
+
+        return $type;
+    }
 }

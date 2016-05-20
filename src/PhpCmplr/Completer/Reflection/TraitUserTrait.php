@@ -12,7 +12,7 @@ trait TraitUserTrait
     /**
      * @var TraitInsteadOf[]
      */
-    private $traitInsteadofs = [];
+    private $traitInsteadOfs = [];
 
     /**
      * @var TraitAlias[]

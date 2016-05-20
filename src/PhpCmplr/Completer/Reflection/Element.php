@@ -4,7 +4,7 @@ namespace PhpCmplr\Completer\Reflection;
 
 use PhpCmplr\Completer\Location;
 
-class Element
+abstract class Element
 {
     /**
      * @var string Fully qualified name.
@@ -15,6 +15,16 @@ class Element
      * @var Location
      */
     private $location = null;
+
+    /**
+     * Clone.
+     */
+    public function __clone()
+    {
+        if ($this->location) {
+            $this->location = clone $this->location;
+        }
+    }
 
     /**
      * @return string

@@ -4,8 +4,10 @@ namespace PhpCmplr\Completer\Reflection;
 
 /**
  * Class, interface or trait base.
+ *
+ * Not clonable.
  */
-class ClassLike extends Element
+abstract class ClassLike extends Element
 {
     const M_PRIVATE = 1;
     const M_PROTECTED = 2;

@@ -26,6 +26,16 @@ class Function_ extends Element
      */
     private $returnByRef = false;
 
+    public function __clone()
+    {
+        parent::__clone();
+        $oldParams = $this->params;
+        $this->params = [];
+        foreach ($oldParams as $param) {
+            $this->params[] = clone $param;
+        }
+    }
+
     /**
      * @return Param[]
      */

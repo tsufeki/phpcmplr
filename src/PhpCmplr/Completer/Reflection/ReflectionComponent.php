@@ -48,6 +48,7 @@ class ReflectionComponent extends Component implements ReflectionComponentInterf
             $functions = array_merge($functions, $component->findClass($fullyQualifiedName));
         }
 
+        // TODO: merge returnType and docReturnType
         return $functions;
     }
 
@@ -301,6 +302,22 @@ class ReflectionComponent extends Component implements ReflectionComponentInterf
     }
 
     /**
+     * @param string $className
+     * @param string $methodName
+     *
+     * @return Method
+     */
+    public function findMethod($className, $methodName)
+    {
+        $methods = $this->findAllMethods($className);
+        if (array_key_exists(strtolower($methodName), $methods)) {
+            return $methods[strtolower($methodName)];
+        }
+
+        return null;
+    }
+
+    /**
      * @param Property[] $properties
      * @param Property   $property
      */
@@ -404,6 +421,22 @@ class ReflectionComponent extends Component implements ReflectionComponentInterf
     }
 
     /**
+     * @param string $className
+     * @param string $propertyName
+     *
+     * @return Property
+     */
+    public function findProperty($className, $propertyName)
+    {
+        $properties = $this->findAllProperties($className);
+        if (array_key_exists(strtolower($propertyName), $properties)) {
+            return $properties[strtolower($propertyName)];
+        }
+
+        return null;
+    }
+
+    /**
      * @param Const_[] $consts
      * @param Const_   $const
      */
@@ -500,6 +533,22 @@ class ReflectionComponent extends Component implements ReflectionComponentInterf
         $this->addOwnConsts($consts, $class);
 
         return $this->classConstsCache[strtolower($className)] = $consts;
+    }
+
+    /**
+     * @param string $className
+     * @param string $constName
+     *
+     * @return Const_
+     */
+    public function findClassConst($className, $constName)
+    {
+        $consts = $this->findAllClassConsts($className);
+        if (array_key_exists(strtolower($constName), $consts)) {
+            return $consts[strtolower($constName)];
+        }
+
+        return null;
     }
 
     protected function doRun()

@@ -5,12 +5,12 @@ namespace PhpCmplr\Completer\Parser\DocTag;
 class ObjectType extends Type
 {
     /**
-     * @var string
+     * @var string|null
      */
     private $class;
 
     /**
-     * @param string $class
+     * @param string|nulll $class
      */
     public function __construct($class)
     {

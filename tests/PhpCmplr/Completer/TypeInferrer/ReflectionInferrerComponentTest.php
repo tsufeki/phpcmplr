@@ -67,7 +67,7 @@ class ReflectionInferrerComponentTest extends \PHPUnit_Framework_TestCase
     public function test_Variable()
     {
         $refl = $this->getMockBuilder(ReflectionComponent::class)->disableOriginalConstructor()->getMock();
-        $var1 = new Expr\Variable('a', ['annotations' => ['var' => [DocTag::get('var', 'int')]]]);
+        $var1 = new Expr\Variable('a', ['annotations' => ['var' => [DocTag::get('var', 'int $a')]]]);
         $var2 = new Expr\Variable('a');
         $this->infer([$var1, $var2], $refl);
         $this->assertTrue($var2->getAttribute('type')->equals(Type::int_()));
@@ -82,6 +82,17 @@ class ReflectionInferrerComponentTest extends \PHPUnit_Framework_TestCase
         ]], ['namespacedName' => new Name\FullyQualified('C')]);
         $this->infer([$class], $refl);
         $this->assertTrue($var1->getAttribute('type')->equals(Type::object_('\\C')));
+    }
+
+    public function test_Variable_for()
+    {
+        $refl = $this->getMockBuilder(ReflectionComponent::class)->disableOriginalConstructor()->getMock();
+        $for = new Stmt\For_([
+            'init' => new Expr\Assign(new Expr\Variable('a'), new Expr\Variable('b')),
+        ], ['annotations' => ['var' => [DocTag::get('var', 'int')]]]);
+        $var1 = new Expr\Variable('a');
+        $this->infer([$for, $var1], $refl);
+        $this->assertTrue($var1->getAttribute('type')->equals(Type::int_()));
     }
 
     public function test_StaticPropertyFetch_self()

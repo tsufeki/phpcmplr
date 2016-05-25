@@ -162,8 +162,22 @@ class ReflectionInferrerComponent extends NodeVisitorComponent
             if (!empty($annotations['var'])) {
                 foreach ($annotations['var'] as $varTag) {
                     $name = $varTag->getIdentifier();
-                    if (empty($name) && $node instanceof Expr\Variable && is_string($node->name)) {
-                        $name = '$' . $node->name;
+                    if (empty($name)) {
+                        $var = $node;
+                        if ($var instanceof Stmt\Foreach_) {
+                            $var = $var->valueVar;
+                        } elseif ($var instanceof Stmt\For_) {
+                            $var = $var->init;
+                        } elseif ($var instanceof Stmt\Global_ && count($var->vars) === 1) {
+                            $var = $var->vars[0];
+                        }
+                        if ($var instanceof Expr\Assign || $var instanceof Expr\AssignRef ||
+                                $var instanceof Expr\AssignOp) {
+                            $var = $var->var;
+                        }
+                        if ($var instanceof Expr\Variable && is_string($var->name)) {
+                            $name = '$' . $var->name;
+                        }
                     }
                     if (!empty($name)) {
                         $this->getCurrentFunctionScope()[$name] = $varTag->getType();

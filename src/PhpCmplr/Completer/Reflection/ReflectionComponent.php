@@ -48,7 +48,7 @@ class ReflectionComponent extends Component implements ReflectionComponentInterf
             $functions = array_merge($functions, $component->findClass($fullyQualifiedName));
         }
 
-        // TODO: merge returnType and docReturnType
+        // TODO: merge returnType and docReturnType, and param types
         return $functions;
     }
 

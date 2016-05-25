@@ -96,7 +96,7 @@ class FileReflectionComponent extends NodeVisitorComponent implements Reflection
         }
 
         foreach ($node->params as $paramNode) {
-            $param = new namespace\Param();
+            $param = new Param();
             $param->setName('$' . $paramNode->name);
             $param->setByRef($paramNode->byRef);
             $param->setOptional($paramNode->default !== null);

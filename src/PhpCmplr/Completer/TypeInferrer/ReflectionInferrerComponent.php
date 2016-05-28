@@ -14,6 +14,11 @@ use PhpCmplr\Completer\Parser\DocTag\ObjectType;
 use PhpCmplr\Completer\Parser\DocTag\AlternativesType;
 use PhpCmplr\Completer\Reflection\ReflectionComponent;
 use PhpCmplr\Completer\Reflection\Class_;
+use PhpCmplr\Completer\Reflection\Function_;
+use PhpCmplr\Completer\Reflection\Method;
+use PhpCmplr\Completer\Reflection\Variable;
+use PhpCmplr\Completer\Reflection\Property;
+use PhpCmplr\Completer\Reflection\Const_;
 
 class ReflectionInferrerComponent extends NodeVisitorComponent
 {
@@ -86,29 +91,44 @@ class ReflectionInferrerComponent extends NodeVisitorComponent
      * @param string $methodName
      * @param bool   $staticContext
      *
-     * @return Type
+     * @return Method[]
      */
-    protected function methodReturnType(Type $objectType, $methodName, $staticContext = false)
+    protected function findMethods(Type $objectType, $methodName, $staticContext = false)
     {
+        $methods = [];
+
         if ($objectType instanceof AlternativesType) {
-            $types = [];
             foreach ($objectType->getAlternatives() as $altType) {
-                $returnType = $this->methodReturnType($altType, $methodName);
-                if (!$returnType->equals(Type::mixed_())) {
-                    $types[] = $returnType;
-                }
+                $methods = array_merge($methods, $this->findMethods($altType, $methodName, $staticContext));
             }
-            return $types !== [] ? Type::alternatives($types) : Type::mixed_();
 
         } elseif ($objectType instanceof ObjectType) {
             $objectType = $this->resolveSelfParent($objectType);
             $method = $this->reflection->findMethod($objectType->getClass(), $methodName);
             if ($method !== null && (!$staticContext || $method->isStatic())) {
-                return $method->getDocReturnType();
+                $methods[] = $method;
             }
         }
 
-        return Type::mixed_();
+        return $methods;
+    }
+
+    /**
+     * @param Function_[]|Method[] $functions
+     *
+     * @return Type
+     */
+    protected function functionsReturnType(array $functions)
+    {
+        $types = [];
+        foreach ($functions as $function) {
+            $type = $function->getDocReturnType();
+            if (!$type->equals(Type::mixed_())) {
+                $types[] = $type;
+            }
+        }
+
+        return $types !== [] ? Type::alternatives($types) : Type::mixed_();
     }
 
     /**
@@ -116,38 +136,63 @@ class ReflectionInferrerComponent extends NodeVisitorComponent
      * @param string $propertyName
      * @param bool   $staticContext
      *
-     * @return Type
+     * @return Property[]
      */
-    protected function propertyType(Type $objectType, $propertyName, $staticContext = false)
+    protected function findProperties(Type $objectType, $propertyName, $staticContext = false)
     {
+        $properties = [];
+
         if ($objectType instanceof AlternativesType) {
-            $types = [];
             foreach ($objectType->getAlternatives() as $altType) {
-                $type = $this->propertyType($altType, $propertyName);
-                if (!$type->equals(Type::mixed_())) {
-                    $types[] = $type;
-                }
+                $properties = array_merge($properties, $this->findProperties($altType, $propertyName, $staticContext));
             }
-            return $types !== [] ? Type::alternatives($types) : Type::mixed_();
 
         } elseif ($objectType instanceof ObjectType) {
             $objectType = $this->resolveSelfParent($objectType);
             $property = $this->reflection->findProperty($objectType->getClass(), $propertyName);
             if ($property !== null && ($staticContext === $property->isStatic())) {
-                return $property->getType();
+                $properties[] = $property;
             }
         }
 
-        return Type::mixed_();
+        return $properties;
+    }
+
+    /**
+     * @param Variable[]|Property[] $vars
+     *
+     * @return Type
+     */
+    protected function variablesType(array $vars)
+    {
+        $types = [];
+        foreach ($vars as $var) {
+            $type = $var->getType();
+            if (!$type->equals(Type::mixed_())) {
+                $types[] = $type;
+            }
+        }
+
+        return $types !== [] ? Type::alternatives($types) : Type::mixed_();
     }
 
     /**
      * @param Type   $objectType
      * @param string $constName
      *
+     * @return Const_
+     */
+    protected function findClassConsts(Type $objectType, $constName)
+    {
+        return []; // TODO
+    }
+
+    /**
+     * @param Const_[] $consts
+     *
      * @return Type
      */
-    protected function classConstType(Type $objectType, $constName)
+    protected function constsType(array $consts)
     {
         return Type::mixed_(); // TODO
     }
@@ -250,6 +295,7 @@ class ReflectionInferrerComponent extends NodeVisitorComponent
         }
 
         $type = null;
+        $reflections = null;
 
         if ($node instanceof Expr\Variable) {
             if (is_string($node->name)) {
@@ -261,53 +307,51 @@ class ReflectionInferrerComponent extends NodeVisitorComponent
             }
 
         } elseif ($node instanceof Expr\FuncCall) {
+            $reflections = [];
             if ($node->name instanceof Name) {
-                $functions = $this->reflection->findFunction(Type::nameToString($node->name));
-                $types = [];
-                foreach ($functions as $function) {
-                    $types[] = $function->getDocReturnType();
-                }
-                $type = $types !== [] ? Type::alternatives($types) : Type::mixed_();
+                $reflections = $this->reflection->findFunction(Type::nameToString($node->name));
             } else {
-                $type = $this->methodReturnType($node->name->getAttribute('type'), '__invoke');
+                $reflections = $this->findMethods($node->name->getAttribute('type'), '__invoke');
             }
+            $type = $this->functionsReturnType($reflections);
 
         // TODO: ConstFetch
         } elseif ($node instanceof Expr\MethodCall) {
+            $reflections = [];
             if (is_string($node->name)) {
-                $type = $this->methodReturnType($node->var->getAttribute('type'), $node->name);
-            } else {
-                $type = Type::mixed_();
+                $reflections = $this->findMethods($node->var->getAttribute('type'), $node->name);
             }
+            $type = $this->functionsReturnType($reflections);
 
         } elseif ($node instanceof Expr\StaticCall) {
+            $reflections = [];
             if ($node->class instanceof Name && is_string($node->name)) {
-                $type = $this->methodReturnType(Type::object_(Type::nameToString($node->class)), $node->name, true);
-            } else {
-                $type = Type::mixed_();
+                $reflections = $this->findMethods(Type::object_(Type::nameToString($node->class)), $node->name, true);
             }
+            $type = $this->functionsReturnType($reflections);
 
         } elseif ($node instanceof Expr\PropertyFetch) {
+            $reflections = [];
             if (is_string($node->name)) {
-                $type = $this->propertyType($node->var->getAttribute('type'), '$' . $node->name);
-            } else {
-                $type = Type::mixed_();
+                $reflections = $this->findProperties($node->var->getAttribute('type'), '$' . $node->name);
             }
+            $type = $this->variablesType($reflections);
 
         } elseif ($node instanceof Expr\StaticPropertyFetch) {
+            $reflections = [];
             if ($node->class instanceof Name && is_string($node->name)) {
-                $type = $this->propertyType(Type::object_(Type::nameToString($node->class)), '$' . $node->name, true);
-            } else {
-                $type = Type::mixed_();
+                $reflections = $this->findProperties(Type::object_(Type::nameToString($node->class)),
+                    '$' . $node->name, true);
             }
+            $type = $this->variablesType($reflections);
 
         } elseif ($node instanceof Expr\ClassConstFetch) {
             // TODO ::class
+            $reflections = [];
             if ($node->class instanceof Name) {
-                $type = $this->classConstType(Type::object_(Type::nameToString($node->class)), $node->name);
-            } else {
-                $type = Type::mixed_();
+                $reflections = $this->findClassConsts(Type::object_(Type::nameToString($node->class)), $node->name);
             }
+            $type = $this->constsType($reflections);
 
         } elseif ($node instanceof Expr\ArrayDimFetch) {
             $arrayType = $node->var->getAttribute('type');
@@ -320,7 +364,8 @@ class ReflectionInferrerComponent extends NodeVisitorComponent
                 if ($altType instanceof ArrayType) {
                     $types[] = $altType->getValueType();
                 } elseif ($altType instanceof ObjectType) {
-                    $types[] = $this->methodReturnType($altType, 'offsetGet'); // TODO: check for ArrayAccess
+                    $types[] = $this->functionsReturnType($this->findMethods($altType, 'offsetGet'));
+                    // TODO: check for ArrayAccess
                 }
             }
             return $types !== [] ? Type::alternatives($types) : Type::mixed_();
@@ -382,6 +427,9 @@ class ReflectionInferrerComponent extends NodeVisitorComponent
 
         if ($type !== null) {
             $node->setAttribute('type', $type);
+        }
+        if ($reflections !== null) {
+            $node->setAttribute('reflections', $reflections);
         }
     }
 

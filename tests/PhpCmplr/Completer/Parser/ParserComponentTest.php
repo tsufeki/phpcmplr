@@ -3,6 +3,8 @@
 namespace Tests\PhpCmplr\Completer\Parser;
 
 use PhpParser\NodeDumper;
+use PhpParser\Node\Expr;
+use PhpParser\Node\Stmt;
 
 use PhpCmplr\Completer\Container;
 use PhpCmplr\Completer\SourceFile;

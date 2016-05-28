@@ -44,6 +44,7 @@ class ReflectionInferrerComponentTest extends \PHPUnit_Framework_TestCase
         $expr = new Expr\MethodCall($var1, 'f');
         $this->infer([$expr], $refl);
         $this->assertTrue($expr->getAttribute('type')->equals(Type::int_()));
+        $this->assertSame([$method], $expr->getAttribute('reflections'));
     }
 
     public function test_MethodCall_alternatives()
@@ -110,5 +111,6 @@ class ReflectionInferrerComponentTest extends \PHPUnit_Framework_TestCase
         ]], ['namespacedName' => new Name\FullyQualified('C')]);
         $this->infer([$class], $refl);
         $this->assertTrue($expr->getAttribute('type')->equals(Type::int_()));
+        $this->assertSame([$prop], $expr->getAttribute('reflections'));
     }
 }

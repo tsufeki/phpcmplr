@@ -52,12 +52,14 @@ class LocatorReflectionComponentTest extends \PHPUnit_Framework_TestCase
         $cont2->set('locator', $locator, ['reflection.locator']);
 
         $io = $this->getMockForAbstractClass(FileIOInterface::class);
+        $cont2->set('io', $io);
 
         $project = new Project($factory);
         $project->addFile('/qaz.php', '');
         $project->addFile('/wsx.php', '');
+        $cont2->set('project', $project);
 
-        $refl = new LocatorReflectionComponent($cont2, $project, $io);
+        $refl = new LocatorReflectionComponent($cont2);
 
         $classes = $refl->findClass('\\CC');
         $this->assertCount(1, $classes);
@@ -86,12 +88,14 @@ class LocatorReflectionComponentTest extends \PHPUnit_Framework_TestCase
         $cont2->set('locator', $locator, ['reflection.locator']);
 
         $io = $this->getMockForAbstractClass(FileIOInterface::class);
+        $cont2->set('io', $io);
 
         $project = new Project($factory);
         $project->addFile('/qaz.php', '');
         $project->addFile('/wsx.php', '');
+        $cont2->set('project', $project);
 
-        $refl = new LocatorReflectionComponent($cont2, $project, $io);
+        $refl = new LocatorReflectionComponent($cont2);
 
         $functions = $refl->findFunction('\\fff');
         $this->assertCount(1, $functions);
@@ -119,12 +123,14 @@ class LocatorReflectionComponentTest extends \PHPUnit_Framework_TestCase
         $cont2->set('locator', $locator, ['reflection.locator']);
 
         $io = $this->getMockForAbstractClass(FileIOInterface::class);
+        $cont2->set('io', $io);
 
         $project = new Project($factory);
         $project->addFile('/qaz.php', '');
         $project->addFile('/wsx.php', '');
+        $cont2->set('project', $project);
 
-        $refl = new LocatorReflectionComponent($cont2, $project, $io);
+        $refl = new LocatorReflectionComponent($cont2);
 
         $consts = $refl->findConst('\\ZZ');
         $this->assertCount(1, $consts);

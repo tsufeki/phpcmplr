@@ -40,18 +40,6 @@ class LocatorReflectionComponent extends Component implements ReflectionComponen
      */
     private $constCache = [];
 
-    /**
-     * @param Container       $container
-     * @param Project         $project
-     * @param FileIOInterface $io
-     */
-    public function __construct(Container $container, Project $project, FileIOInterface $io)
-    {
-        parent::__construct($container);
-        $this->project = $project;
-        $this->io = $io;
-    }
-
     public function findClass($fullyQualifiedName)
     {
         $this->run();
@@ -141,6 +129,8 @@ class LocatorReflectionComponent extends Component implements ReflectionComponen
 
     protected function doRun()
     {
+        $this->io = $this->container->get('io');
+        $this->project = $this->container->get('project');
         $this->locators = $this->container->getByTag('reflection.locator');
     }
 }

@@ -12,4 +12,13 @@ interface FileIOInterface
      * @throws IOException
      */
     public function read($path);
+
+    /**
+     * Check if file  exists.
+     *
+     * @param string $path
+     *
+     * @return bool
+     */
+    public function exists($path);
 }

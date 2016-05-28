@@ -302,6 +302,7 @@ class ReflectionInferrerComponent extends NodeVisitorComponent
             }
 
         } elseif ($node instanceof Expr\ClassConstFetch) {
+            // TODO ::class
             if ($node->class instanceof Name) {
                 $type = $this->classConstType(Type::object_(Type::nameToString($node->class)), $node->name);
             } else {

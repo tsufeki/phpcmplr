@@ -6,7 +6,7 @@ use PhpParser\NodeTraverser;
 use PhpParser\NodeVisitor;
 
 /**
- * Component which run some visitors on the node tree.
+ * Component which runs some visitors on the node tree.
  */
 class NodeTraverserComponent extends Component
 {

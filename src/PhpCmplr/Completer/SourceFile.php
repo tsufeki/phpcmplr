@@ -71,8 +71,4 @@ class SourceFile extends Component implements SourceFileInterface
         }
         return [$line, 1 + max(0, $offset - $lastOffset)];
     }
-
-    protected function doRun()
-    {
-    }
 }

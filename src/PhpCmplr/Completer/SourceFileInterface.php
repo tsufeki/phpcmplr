@@ -5,7 +5,7 @@ namespace PhpCmplr\Completer;
 /**
  * Source file with contents.
  */
-interface SourceFileInterface extends ComponentInterface
+interface SourceFileInterface
 {
     /**
      * @return string

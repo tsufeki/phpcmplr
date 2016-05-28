@@ -2,9 +2,7 @@
 
 namespace PhpCmplr\Completer\Reflection;
 
-use PhpCmplr\Completer\ComponentInterface;
-
-interface ReflectionComponentInterface extends ComponentInterface
+interface ReflectionComponentInterface
 {
     /**
      * Find semantic information about a class, interface or trait.

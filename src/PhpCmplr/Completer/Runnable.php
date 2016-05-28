@@ -2,10 +2,7 @@
 
 namespace PhpCmplr\Completer;
 
-/**
- * Component.
- */
-interface ComponentInterface
+interface Runnable
 {
     /**
      * Do your job.

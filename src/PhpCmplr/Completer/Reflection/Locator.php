@@ -2,9 +2,7 @@
 
 namespace PhpCmplr\Completer\Reflection;
 
-use PhpCmplr\Completer\ComponentInterface;
-
-interface Locator extends ComponentInterface
+interface Locator
 {
     /**
      * Get list of possible files defining the given class.

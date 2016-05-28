@@ -5,12 +5,12 @@ namespace PhpCmplr\Completer;
 class Container
 {
     /**
-     * @var ComponentInterface[]
+     * @var object[]
      */
     private $components;
 
     /**
-     * @var ComponentInterface[]
+     * @var object[]
      */
     private $componentsByTag;
 
@@ -23,7 +23,7 @@ class Container
     /**
      * @param string $componentKey
      *
-     * @return ComponentInterface
+     * @return object
      */
     public function get($componentKey)
     {
@@ -37,7 +37,7 @@ class Container
     /**
      * @param string $tag
      *
-     * @return ComponentInterface[]
+     * @return object[]
      */
     public function getByTag($tag)
     {
@@ -49,13 +49,13 @@ class Container
     }
 
     /**
-     * @param string             $componentKey
-     * @param ComponentInterface $component
-     * @param string[]           $tags
+     * @param string   $componentKey
+     * @param object   $component
+     * @param string[] $tags
      *
      * @return $this
      */
-    public function set($componentKey, ComponentInterface $component, $tags = [])
+    public function set($componentKey, $component, $tags = [])
     {
         $this->components[$componentKey] = $component;
         foreach ($tags as $tag) {

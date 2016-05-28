@@ -5,7 +5,7 @@ namespace PhpCmplr\Completer;
 /**
  * Abstract component.
  */
-abstract class Component implements ComponentInterface
+abstract class Component implements Runnable
 {
     /**
      * @var Container
@@ -28,7 +28,9 @@ abstract class Component implements ComponentInterface
      *
      * This method will only be called once.
      */
-    abstract protected function doRun();
+    protected function doRun()
+    {
+    }
 
     public function run()
     {

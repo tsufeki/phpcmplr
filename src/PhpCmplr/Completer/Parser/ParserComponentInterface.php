@@ -19,4 +19,13 @@ interface ParserComponentInterface
      * @return ParserError[]
      */
     public function getErrors();
+
+    /**
+     * Get all nodes containing given offset.
+     *
+     * @param int $offset
+     *
+     * @return Node[] Top-most node last.
+     */
+    public function getNodesAtOffset($offset);
 }

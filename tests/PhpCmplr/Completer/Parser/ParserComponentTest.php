@@ -56,4 +56,12 @@ DUMP;
         $errors = $this->loadFile('<?php 7 + 1;')->getErrors();
         $this->assertCount(0, $errors);
     }
+
+    public function test_getNodesAtOffset()
+    {
+        $nodes = $this->loadFile('<?php function f() { $x = 0; $y->qaz; }')->getNodesAtOffset(35);
+        $this->assertCount(2, $nodes);
+        $this->assertInstanceOf(Expr\PropertyFetch::class, $nodes[0]);
+        $this->assertInstanceOf(Stmt\Function_::class, $nodes[1]);
+    }
 }

@@ -52,6 +52,45 @@ class ParserComponent extends Component implements ParserComponentInterface
         return $this->errors;
     }
 
+    /**
+     * @param Node|array|mixed $nodes
+     * @param int              $offset
+     * @param Node[]           $result
+     *
+     * @return bool True iff anything in $nodes include offset.
+     */
+    private function getNodeAtOffsetRecursive($nodes, $offset, array &$result)
+    {
+        if ($nodes instanceof Node) {
+            if ($nodes->getAttribute('startFilePos') <= $offset &&
+                    $nodes->getAttribute('endFilePos') >= $offset) {
+                $result[] = $nodes;
+                foreach ($nodes->getSubNodeNames() as $subnode) {
+                    if ($this->getNodeAtOffsetRecursive($nodes->$subnode, $offset, $result)) {
+                        break;
+                    }
+                }
+                return true;
+            } else {
+                return false;
+            }
+        } elseif (is_array($nodes)) {
+            foreach ($nodes as $node) {
+                if ($this->getNodeAtOffsetRecursive($node, $offset, $result)) {
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
+
+    public function getNodesAtOffset($offset)
+    {
+        $result = [];
+        $this->getNodeAtOffsetRecursive($this->getNodes(), $offset, $result);
+        return array_reverse($result);
+    }
+
     protected function doRun()
     {
         try {

@@ -25,7 +25,7 @@ class Project
 
     public function addFile($path, $contents, array $options = [])
     {
-        return $this->containers[$path] = $this->factory->create($path, $contents, $options);
+        return $this->containers[$path] = $this->factory->createContainer($path, $contents, $options);
     }
 
     public function removeFile($path)

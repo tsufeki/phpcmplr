@@ -41,7 +41,7 @@ class LocatorReflectionComponentTest extends \PHPUnit_Framework_TestCase
 
         $factory = $this->getMockForAbstractClass(ContainerFactoryInterface::class);
         $factory->expects($this->exactly(2))
-            ->method('create')
+            ->method('createContainer')
             ->will($this->onConsecutiveCalls($cont1, $cont2));
 
         $locator = $this->getMockForAbstractClass(Locator::class);
@@ -77,7 +77,7 @@ class LocatorReflectionComponentTest extends \PHPUnit_Framework_TestCase
 
         $factory = $this->getMockForAbstractClass(ContainerFactoryInterface::class);
         $factory->expects($this->exactly(2))
-            ->method('create')
+            ->method('createContainer')
             ->will($this->onConsecutiveCalls($cont1, $cont2));
 
         $locator = $this->getMockForAbstractClass(Locator::class);
@@ -112,7 +112,7 @@ class LocatorReflectionComponentTest extends \PHPUnit_Framework_TestCase
 
         $factory = $this->getMockForAbstractClass(ContainerFactoryInterface::class);
         $factory->expects($this->exactly(2))
-            ->method('create')
+            ->method('createContainer')
             ->will($this->onConsecutiveCalls($cont1, $cont2));
 
         $locator = $this->getMockForAbstractClass(Locator::class);

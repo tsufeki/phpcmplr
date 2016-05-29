@@ -3,7 +3,7 @@
 
 require_once(__DIR__ . '/../vendor/autoload.php');
 
-use PhpCmplr\Server\Server;
+use PhpCmplr\PhpCmplr;
 
 $opts = getopt('', ['help', 'port:']);
 if (!is_array($opts)) {
@@ -24,6 +24,6 @@ if (!array_key_exists('port', $opts)) {
     exit(2);
 }
 
-$server = new Server((int)$opts['port']);
-$server->run();
+$phpcmplr = new PhpCmplr((int)$opts['port']);
+$phpcmplr->run();
 

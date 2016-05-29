@@ -11,5 +11,5 @@ interface ContainerFactoryInterface
      *
      * @return Container
      */
-    public function create($path, $contents, array $options = []);
+    public function createContainer($path, $contents, array $options = []);
 }

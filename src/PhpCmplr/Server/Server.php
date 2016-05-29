@@ -11,20 +11,9 @@ use React\Http\Response;
 use React\Http\ResponseCodes;
 
 use PhpCmplr\Completer\Project;
-use PhpCmplr\Completer\ContainerFactory;
 
 /**
  * HTTP server.
- *
- * - All requests are POST.
- * - Request Content-Type must be 'application/json'.
- * - Requests and responses' bodies are JSON.
- * - Locations in a file look like that: {"line": 11, "col": 22} and are 1-based.
- * - All string offsets (including "col" above) are counted in bytes, not UTF-8
- *   characters.
- * - (start, end) ranges are inclusive.
- *
- * /ping command returns {}.
  */
 class Server
 {
@@ -59,14 +48,41 @@ class Server
     private $project;
 
     /**
-     * @param int    $port
-     * @param string $host
+     * @var mixed
      */
-    public function __construct($port, $host = '127.0.0.1')
+    private $logger;
+
+    /**
+     * @var ActionInterface[]
+     */
+    private $actions;
+
+    /**
+     * @param Project $project
+     * @param mixed   $logger
+     * @param int     $port
+     * @param string  $host
+     */
+    public function __construct(Project $project, $logger, $port, $host = '127.0.0.1')
     {
         $this->host = $host;
         $this->port = $port;
-        $this->project = new Project(new ContainerFactory());
+        $this->project = $project;
+        $this->logger = $logger;
+        $this->actions = [];
+    }
+
+    /**
+     * @param ActionInterface $action
+     *
+     * @return $this
+     */
+    public function addAction(ActionInterface $action)
+    {
+        $this->actions[$action->getPath()] = $action;
+        $action->setLogger($this->logger);
+
+        return $this;
     }
 
     /**
@@ -92,37 +108,33 @@ class Server
      * @param Request  $request
      * @param Response $response
      */
-    private function handle(Request $request, Response $response)
+    public function handle(Request $request, Response $response)
     {
         $status = 200;
-        $responseJson = '{}';
+        $responseBody = '{}';
 
         try {
             if ($request->getMethod() !== 'POST') {
                 throw new HttpException(405);
             }
 
-            $data = json_decode($request->getBody());
-            if ($data === null || !is_object($data)) {
-                throw new HttpException(400);
+            if (!array_key_exists($request->getPath(), $this->actions)) {
+                throw new HttpException(404);
             }
 
-            $responseData = $this->route($request->getPath(), $data);
-
-            $responseJson = json_encode($responseData);
-            if ($responseJson === false) {
-                throw new HttpException(500);
-            }
+            $responseBody = $this->actions[$request->getPath()]->handleRequest(
+                $request->getBody(),
+                $this->project);
 
         } catch (HttpException $e) {
             $status = $e->getStatus();
-            $responseJson = json_encode([
+            $responseBody = json_encode([
                 'error' => $e->getStatus(),
                 'message' => ResponseCodes::$statusTexts[$e->getStatus()],
             ]);
         } catch (Exception $e) {
             $status = 500;
-            $responseJson = json_encode([
+            $responseBody = json_encode([
                 'error' => 500,
                 'message' => ResponseCodes::$statusTexts[500] . ': ' . $e->getMessage(),
             ]);
@@ -130,197 +142,16 @@ class Server
 
         $response->writeHead($status, [
             'Content-Type' => 'application/json',
-            'Content-Length' => strlen($responseJson),
+            'Content-Length' => strlen($responseBody),
         ]);
-        $response->end($responseJson);
+        $response->end($responseBody);
     }
 
     /**
-     * Find and execute requested action.
-     *
-     * @param string $path
-     * @param object $data
-     *
-     * @return object
+     * Quit the server.
      */
-    protected function route($path, $data)
-    {
-        $response = new \stdClass();
-        switch ($path) {
-            case '/ping':
-                break;
-            case '/load':
-                $response = $this->load($data);
-                break;
-            case '/diagnostics':
-                $response = $this->diagnostics($data);
-                break;
-            case '/quit':
-                $response = $this->quit($data);
-                break;
-            default:
-                throw new HttpException(404);
-        }
-
-        return $response;
-    }
-
-    /**
-     * Return property value if it exists and check the type.
-     *
-     * Type 'location' transforms value to int array: [line, column].
-     *
-     * @param mixed       $data
-     * @param string      $property
-     * @param string|null $type     'location'|'object'|'array'|'string'|'int'|'bool'|null
-     * @param mixed       $default  If not null and property doesn't exist,
-     *                              return this instead of throwing.
-     *
-     * @return mixed
-     * @throw HttpException 400
-     */
-    protected static function getPropertyOr400($data, $property, $type = null, $default = null)
-    {
-        if (!isset($data->$property)) {
-            if ($default === null) {
-                throw new HttpException(400);
-            } else {
-                return $default;
-            }
-        }
-
-        $value = $data->$property;
-        switch ($type) {
-            case 'object':
-                if (!is_object($value)) {
-                    throw new HttpException(400);
-                }
-                break;
-            case 'array':
-                if (!is_array($value)) {
-                    throw new HttpException(400);
-                }
-                break;
-            case 'string':
-                if (!is_string($value)) {
-                    throw new HttpException(400);
-                }
-                break;
-            case 'int':
-                if (!is_int($value)) {
-                    throw new HttpException(400);
-                }
-                break;
-            case 'bool':
-                if (!is_bool($value)) {
-                    throw new HttpException(400);
-                }
-                break;
-            case 'location':
-                if (!is_object($value)) {
-                    throw new HttpException(400);
-                }
-                $value = [
-                    self::getPropertyOr400($value, 'line', 'int'),
-                    self::getPropertyOr400($value, 'col', 'int'),
-                ];
-                break;
-        }
-
-        return $value;
-    }
-
-    //
-    // Commands.
-    //
-
-    /**
-     * /load Load files.
-     *
-     * $data structure:
-     * {
-     *   "files": [ // (optional)
-     *     {
-     *       "path": full and absolute path,
-     *       "contents": file contents as a string,
-     *     },
-     *     ...
-     *  ]
-     * }
-     *
-     * Return: {} on success.
-     */
-    public function load($data)
-    {
-        foreach (self::getPropertyOr400($data, 'files', 'array', []) as $fileData) {
-            $path = self::getPropertyOr400($fileData, 'path', 'string');
-            $contents = self::getPropertyOr400($fileData, 'contents', 'string');
-
-            $this->project->addFile($path, $contents);
-        }
-
-        return new \stdClass();
-    }
-
-    /**
-     * /diagnostics Get diagnostics for a file.
-     *
-     * $data structure:
-     * {
-     *   "path": path of source file to get diagnostics for,
-     *   "files": as for /load (optional)
-     * }
-     *
-     * Return:
-     * {
-     *   "diagnostics": [
-     *     {
-     *       "start": start offset,
-     *       "end": end offset,
-     *       "description": description
-     *     },
-     *     ...
-     *   ]
-     * }
-     */
-    public function diagnostics($data)
-    {
-        $this->load($data);
-
-        $path = self::getPropertyOr400($data, 'path', 'string');
-        $container = $this->project->getFile($path);
-
-        if ($container === null) {
-            return new \stdClass();
-        }
-
-        $diagsData = [];
-        $file = $container->get('file');
-        foreach ($container->get('diagnostics')->getDiagnostics() as $diag) {
-            $diagData = new \stdClass();
-            $diagData->start = new \stdClass();
-            list($diagData->start->line, $diagData->start->col) =
-                $file->getLineAndColumn($diag->getStart());
-            $diagData->end = new \stdClass();
-            list($diagData->end->line, $diagData->end->col) =
-                $file->getLineAndColumn($diag->getEnd());
-            $diagData->description = $diag->getDescription();
-            $diagsData[] = $diagData;
-        }
-
-        $result = new \stdClass();
-        $result->diagnostics = $diagsData;
-        return $result;
-    }
-
-    /**
-     * /quit Quit the server.
-     *
-     * Return: {}
-     */
-    public function quit($data = null)
+    public function quit()
     {
         $this->socket->shutdown();
-        return new \stdClass();
     }
 }

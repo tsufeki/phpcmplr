@@ -75,7 +75,7 @@ class PhpCmplr extends Plugin implements ContainerFactoryInterface
         $container->set('file', new SourceFile($container, $path, $contents));
 
         foreach ($this->plugins as $plugin) {
-            $plugin->addComponents($container);
+            $plugin->addComponents($container, $options);
         }
 
         return $container;
@@ -89,7 +89,7 @@ class PhpCmplr extends Plugin implements ContainerFactoryInterface
         $server->addAction(new Action\Quit($server));
     }
 
-    public function addComponents(Container $container)
+    public function addComponents(Container $container, array $options)
     {
         $container->set('logger', $this->logger);
         $container->set('io', $this->io);

@@ -19,8 +19,9 @@ abstract class Plugin
 
     /**
      * @param Container $container
+     * @param array     $options
      */
-    public function addComponents(Container $container)
+    public function addComponents(Container $container, array $options)
     {
     }
 }

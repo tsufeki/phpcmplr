@@ -29,7 +29,7 @@ class ParserComponentTest extends \PHPUnit_Framework_TestCase
     public function test_getNodes()
     {
         $nodes = $this->loadFile('<?php $qaz = 7;')->getNodes();
-        $dump = <<<'DUMP'
+        $dump = <<<'END'
 array(
     0: Expr_Assign(
         var: Expr_Variable(
@@ -40,7 +40,24 @@ array(
         )
     )
 )
-DUMP;
+END;
+        $this->assertSame($dump, $this->dumper->dump($nodes));
+    }
+
+    public function test_getNodes_lenient_objectOperator()
+    {
+        $nodes = $this->loadFile('<?php $a->;')->getNodes();
+        $dump = <<<'END'
+array(
+    0: Expr_PropertyFetch(
+        var: Expr_Variable(
+            name: a
+        )
+        name: ErrorNode_NoString(
+        )
+    )
+)
+END;
         $this->assertSame($dump, $this->dumper->dump($nodes));
     }
 

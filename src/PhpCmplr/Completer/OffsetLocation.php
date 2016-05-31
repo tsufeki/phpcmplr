@@ -33,4 +33,9 @@ class OffsetLocation implements Location
     {
         return $this->offset;
     }
+
+    public function getLineAndColumn(SourceFile $file)
+    {
+        return $file->getLineAndColumn($this->getOffset());
+    }
 }

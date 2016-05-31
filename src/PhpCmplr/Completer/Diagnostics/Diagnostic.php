@@ -2,24 +2,17 @@
 
 namespace PhpCmplr\Completer\Diagnostics;
 
+use PhpCmplr\Completer\Location;
+
 class Diagnostic
 {
     /**
-     * @var string
-     */
-    private $file;
-
-    /**
-     * File offset.
-     *
-     * @var int
+     * @var Location
      */
     private $start;
 
     /**
-     * File offset.
-     *
-     * @var int
+     * @var Location
      */
     private $end;
 
@@ -29,14 +22,12 @@ class Diagnostic
     private $description;
 
     /**
-     * @param string $file
-     * @param int    $start
-     * @param int    $end
-     * @param string $description
+     * @param Location $start
+     * @param Location $end
+     * @param string   $description
      */
-    public function __construct($file, $start, $end, $description)
+    public function __construct(Location $start, Location $end, $description)
     {
-        $this->file = $file;
         $this->start = $start;
         $this->end = $end;
         $this->description = $description;
@@ -45,13 +36,13 @@ class Diagnostic
     /**
      * @return string
      */
-    public function getFile()
+    public function getPath()
     {
-        return $this->file;
+        return $this->getStart()->getPath();
     }
 
     /**
-     * @return int
+     * @return Location
      */
     public function getStart()
     {
@@ -59,7 +50,7 @@ class Diagnostic
     }
 
     /**
-     * @return int
+     * @return Location
      */
     public function getEnd()
     {

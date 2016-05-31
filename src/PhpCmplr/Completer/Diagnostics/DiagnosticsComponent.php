@@ -6,6 +6,7 @@ use PhpParser\Error as ParserError;
 
 use PhpCmplr\Completer\Container;
 use PhpCmplr\Completer\NodeTraverserComponent;
+use PhpCmplr\Completer\OffsetLocation;
 
 class DiagnosticsComponent extends NodeTraverserComponent implements DiagnosticsComponentInterface
 {
@@ -22,7 +23,6 @@ class DiagnosticsComponent extends NodeTraverserComponent implements Diagnostics
     public function __construct(Container $container)
     {
         parent::__construct($container);
-        $this->path = $this->container->get('file')->getPath();
         $this->diagnostics = [];
     }
 
@@ -36,7 +36,11 @@ class DiagnosticsComponent extends NodeTraverserComponent implements Diagnostics
         $attributes = $error->getAttributes();
         $start = array_key_exists('startFilePos', $attributes) ? $attributes['startFilePos'] : 0;
         $end = array_key_exists('endFilePos', $attributes) ? $attributes['endFilePos'] : $start;
-        return new Diagnostic($this->path, $start, $end, $error->getRawMessage());
+
+        return new Diagnostic(
+            new OffsetLocation($this->path, $start),
+            new OffsetLocation($this->path, $end),
+            $error->getRawMessage());
     }
 
     public function getDiagnostics()
@@ -47,6 +51,7 @@ class DiagnosticsComponent extends NodeTraverserComponent implements Diagnostics
 
     protected function doRun()
     {
+        $this->path = $this->container->get('file')->getPath();
         foreach ($this->container->get('parser')->getErrors() as $error) {
             $this->diagnostics[] = $this->makeDiagnosticFromError($error);
         }

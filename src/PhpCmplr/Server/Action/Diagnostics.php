@@ -55,12 +55,8 @@ END;
         $file = $container->get('file');
         foreach ($container->get('diagnostics')->getDiagnostics() as $diag) {
             $diagData = new \stdClass();
-            $diagData->start = new \stdClass();
-            list($diagData->start->line, $diagData->start->col) =
-                $file->getLineAndColumn($diag->getStart());
-            $diagData->end = new \stdClass();
-            list($diagData->end->line, $diagData->end->col) =
-                $file->getLineAndColumn($diag->getEnd());
+            $diagData->start = $this->makeLocation($diag->getStart(), $file);
+            $diagData->end = $this->makeLocation($diag->getEnd(), $file);
             $diagData->description = $diag->getDescription();
             $diagsData[] = $diagData;
         }

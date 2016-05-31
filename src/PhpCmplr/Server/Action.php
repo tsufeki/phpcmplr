@@ -3,6 +3,8 @@
 namespace PhpCmplr\Server;
 
 use PhpCmplr\Completer\Project;
+use PhpCmplr\Completer\Location;
+use PhpCmplr\Completer\SourceFile;
 use PhpCmplr\Util\Json;
 use PhpCmplr\Util\JsonLoadException;
 use PhpCmplr\Util\JsonDumpException;
@@ -116,5 +118,25 @@ abstract class Action implements ActionInterface
     protected function getLogger()
     {
         return $this->logger;
+    }
+
+    /**
+     * 
+     *
+     * @param Location   $location
+     * @param SourceFile $file
+     * @param bool       $withPath
+     *
+     * @return object
+     */
+    protected function makeLocation(Location $location, SourceFile $file, $withPath = false)
+    {
+        $loc = new \stdClass();
+        list($loc->line, $loc->col) = $location->getLineAndColumn($file);
+        if ($withPath) {
+            $loc->path = $location->getPath();
+        }
+
+        return $loc;
     }
 }

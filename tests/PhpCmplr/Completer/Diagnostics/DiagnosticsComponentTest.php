@@ -22,11 +22,11 @@ class DiagnosticsComponentTest extends \PHPUnit_Framework_TestCase
         list($file, $diagsComponent) = $this->loadFile('<?php '."\n\n".'$a = 7 + *f("wsx");', 'qaz.php');
         $diags = $diagsComponent->getDiagnostics();
         $this->assertSame(1, count($diags));
-        $this->assertSame('qaz.php', $diags[0]->getFile());
-        $this->assertSame(17, $diags[0]->getStart());
-        $this->assertSame(17, $diags[0]->getEnd());
-        $this->assertSame([3, 10], $file->getLineAndColumn($diags[0]->getStart()));
-        $this->assertSame([3, 10], $file->getLineAndColumn($diags[0]->getEnd()));
+        $this->assertSame('qaz.php', $diags[0]->getPath());
+        $this->assertSame(17, $diags[0]->getStart()->getOffset());
+        $this->assertSame(17, $diags[0]->getEnd()->getOffset());
+        $this->assertSame([3, 10], $diags[0]->getStart()->getLineAndColumn($file));
+        $this->assertSame([3, 10], $diags[0]->getEnd()->getLineAndColumn($file));
         $this->assertSame("Syntax error, unexpected '*'", $diags[0]->getDescription());
     }
 }

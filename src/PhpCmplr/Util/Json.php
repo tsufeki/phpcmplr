@@ -10,13 +10,25 @@ use JsonSchema\Validator;
 
 class Json
 {
-    public static function loadSchema($string)
+    private static $uriPrefix = 'http://phpcmplr/';
+
+    /**
+     * @param string   $string
+     * @param string[] Predefined schemas: $defs name => schema.
+     *
+     * @return object
+     */
+    public static function loadSchema($string, $defs = [])
     {
-        $uri = 'http://phpcmplr/loadedschema.json';
-        $uriRetriever = new UriRetriever();
-        $uriRetriever->setUriRetriever(new PredefinedArray([
+        $uri = static::$uriPrefix . 'loadedschema.json';
+        $schemas = [
             $uri => $string,
-        ]));
+        ];
+        foreach ($defs as $defName => $def) {
+            $schemas[static::$uriPrefix . $defName] = $def;
+        }
+        $uriRetriever = new UriRetriever();
+        $uriRetriever->setUriRetriever(new PredefinedArray($schemas));
         $uriResolver = new UriResolver();
         $refResolver = new RefResolver($uriRetriever, $uriResolver);
 

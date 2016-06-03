@@ -40,15 +40,29 @@ abstract class Action implements ActionInterface
      */
     private $logger = null;
 
+    const LOCATION_SCHEMA = <<<'END'
+{
+    "type": "object",
+    "properties": {
+        "path": {"type": "string"},
+        "line": {"type": "integer"},
+        "col": {"type": "integer"}
+    },
+    "required": ["path", "line", "col"]
+}
+END;
+
     /**
-     * @param string $path   Path which will invoke this action.
+     * @param string $path Path which will invoke this action.
      */
     public function __construct($path)
     {
         $this->path = $path;
         $schema = $this->getSchema();
         if ($schema !== null) {
-            $this->schema = Json::loadSchema($schema);
+            $this->schema = Json::loadSchema($schema, [
+                'location.json' => self::LOCATION_SCHEMA,
+            ]);
         }
     }
 

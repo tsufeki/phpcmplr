@@ -7,7 +7,16 @@ use PhpCmplr\Completer\ContainerFactoryInterface;
 use PhpCmplr\Completer\Project;
 use PhpCmplr\Completer\SourceFile;
 use PhpCmplr\Completer\Parser\ParserComponent;
+use PhpCmplr\Completer\Parser\NameResolverComponent;
+use PhpCmplr\Completer\Parser\DocCommentComponent;
 use PhpCmplr\Completer\Diagnostics\DiagnosticsComponent;
+use PhpCmplr\Completer\Reflection\ReflectionComponent;
+use PhpCmplr\Completer\Reflection\FileReflectionComponent;
+use PhpCmplr\Completer\Reflection\LocatorReflectionComponent;
+use PhpCmplr\Completer\Composer\ComposerLocator;
+use PhpCmplr\Completer\TypeInferrer\TypeInferrerComponent;
+use PhpCmplr\Completer\TypeInferrer\ReflectionInferrerComponent;
+use PhpCmplr\Completer\GoTo_\GoToComponent;
 use PhpCmplr\Server\Server;
 use PhpCmplr\Server\Action;
 use PhpCmplr\Util\FileIO;
@@ -86,6 +95,7 @@ class PhpCmplr extends Plugin implements ContainerFactoryInterface
         $server->addAction(new Action\Ping());
         $server->addAction(new Action\Load());
         $server->addAction(new Action\Diagnostics());
+        $server->addAction(new Action\GoTo_());
         $server->addAction(new Action\Quit($server));
     }
 
@@ -95,6 +105,31 @@ class PhpCmplr extends Plugin implements ContainerFactoryInterface
         $container->set('io', $this->io);
         $container->set('project', $this->project);
         $container->set('parser', new ParserComponent($container));
+        $container->set('name_resolver', new NameResolverComponent($container));
+        $container->set('doc_comment', new DocCommentComponent($container));
         $container->set('diagnostics', new DiagnosticsComponent($container));
+        $container->set('reflection', new ReflectionComponent($container));
+        $container->set('reflection.file', new FileReflectionComponent($container), ['reflection.component']);
+        $container->set('reflection.locator', new LocatorReflectionComponent($container));
+        $container->set('composer.locator', new ComposerLocator($container), ['reflection.locator']);
+        $container->set('typeinfer', new TypeInferrerComponent($container));
+        $container->set('typeinfer.reflection', new ReflectionInferrerComponent($container), ['typeinfer.visitor']);
+        $container->set('goto', new GoToComponent($container));
+    }
+
+    /**
+     * @return Server
+     */
+    public function getServer()
+    {
+        return $this->server;
+    }
+
+    /**
+     * @return Project
+     */
+    public function getProject()
+    {
+        return $this->project;
     }
 }

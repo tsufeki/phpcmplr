@@ -41,4 +41,25 @@ class GoToComponentTest extends \PHPUnit_Framework_TestCase
         $goto = new GoToComponent($container);
         $this->assertSame([$loc], $goto->getGoToLocations(5));
     }
+
+    public function test_StaticCall()
+    {
+        $loc = new OffsetLocation('/qaz.php', 5);
+        $method = (new Method())->setLocation($loc)->setStatic(true);
+        $cls = new Name\FullyQualified('A\\B\\C');
+        $expr = new Expr\StaticCall($cls, 'f', [], ['reflections' => [$method]]);
+
+        $container = new Container();
+        $parser = $this->getMockBuilder(ParserComponent::class)->disableOriginalConstructor()->getMock();
+        $parser
+            ->method('getNodesAtOffset')
+            ->with($this->equalTo(5))
+            ->willReturn([$cls, $expr]);
+        $container->set('parser', $parser);
+        $typeinfer = $this->getMockBuilder(TypeInferrerComponent::class)->disableOriginalConstructor()->getMock();
+        $container->set('typeinfer', $typeinfer);
+
+        $goto = new GoToComponent($container);
+        $this->assertSame([$loc], $goto->getGoToLocations(5));
+    }
 }

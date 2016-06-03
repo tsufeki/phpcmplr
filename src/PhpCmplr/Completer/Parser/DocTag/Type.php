@@ -262,7 +262,7 @@ class Type
             return '\\' . $name->toString();
         }
 
-        if ($name instanceof Name && $name->hasAttribute('resolved')) {
+        if ($name instanceof Name && $name->hasAttribute('resolved') && $name !== $name->getAttribute('resolved')) {
             return static::nameToString($name->getAttribute('resolved'));
         }
 

@@ -45,7 +45,7 @@ class ReflectionComponent extends Component implements ReflectionComponentInterf
         $this->run();
         $functions = [];
         foreach ($this->reflectionComponents as $component) {
-            $functions = array_merge($functions, $component->findClass($fullyQualifiedName));
+            $functions = array_merge($functions, $component->findFunction($fullyQualifiedName));
         }
 
         // TODO: merge returnType and docReturnType, and param types
@@ -57,7 +57,7 @@ class ReflectionComponent extends Component implements ReflectionComponentInterf
         $this->run();
         $consts = [];
         foreach ($this->reflectionComponents as $component) {
-            $consts = array_merge($consts, $component->findClass($fullyQualifiedName));
+            $consts = array_merge($consts, $component->findConst($fullyQualifiedName));
         }
 
         return $consts;

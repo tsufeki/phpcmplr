@@ -41,6 +41,8 @@ class ReflectionInferrerComponent extends NodeVisitorComponent
     {
         $this->functionScopeStack = [[]]; // global scope
         $this->classStack = [];
+        $this->reflection = $this->container->get('reflection');
+        $this->reflection->run();
     }
 
     /**
@@ -431,11 +433,5 @@ class ReflectionInferrerComponent extends NodeVisitorComponent
         if ($reflections !== null) {
             $node->setAttribute('reflections', $reflections);
         }
-    }
-
-    protected function doRun()
-    {
-        $this->reflection = $this->container->get('reflection');
-        parent::doRun();
     }
 }

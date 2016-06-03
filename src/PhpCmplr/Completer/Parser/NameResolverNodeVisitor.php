@@ -21,6 +21,10 @@ class NameResolverNodeVisitor extends NameResolver
     protected function resolveOtherName(Name $name, $type)
     {
         $resolved = parent::resolveOtherName($name, $type);
+        if ($resolved->isUnqualified()) {
+            // Assume it's global.
+            $resolved = new FullyQualified($name->parts, $name->getAttributes());
+        }
         $name->setAttribute('resolved', $resolved);
         return $name;
     }

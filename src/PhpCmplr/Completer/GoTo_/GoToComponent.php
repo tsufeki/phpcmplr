@@ -37,7 +37,7 @@ class GoToComponent extends Component implements GoToComponentInterface
 
         $locations = [];
 
-        if ($node->hasAttribute('reflections')) {
+        if ($node !== null && $node->hasAttribute('reflections')) {
             foreach ($node->getAttribute('reflections') as $refl) {
                 $loc = $refl->getLocation();
                 if ($loc !== null) {

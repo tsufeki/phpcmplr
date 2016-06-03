@@ -135,8 +135,6 @@ END;
     }
 
     /**
-     * 
-     *
      * @param Location   $location
      * @param SourceFile $file
      * @param bool       $withPath

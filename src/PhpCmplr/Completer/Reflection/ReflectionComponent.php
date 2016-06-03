@@ -219,18 +219,20 @@ class ReflectionComponent extends Component implements ReflectionComponentInterf
     /**
      * @internal
      *
-     * @param Type $type
+     * @param Type   $type
+     * @param string $class  Current class name.
+     * @param string $parent
      *
      * @return Type
      */
-    public function resolveType(Type $type) {
+    public function resolveType(Type $type, $class, $parent) {
         if ($type instanceof ObjectType) {
             if ($type->getClass() === 'self') {
-                return Type::object_($class->getName());
+                return Type::object_($class);
             } elseif ($type->getClass() === 'parent' && $parent !== null) {
                 return Type::object_($parent);
             } elseif ($type->getClass() === 'static' && $withStatic) {
-                return Type::object_($class->getName());
+                return Type::object_($class);
             }
         }
         return $type;
@@ -246,7 +248,9 @@ class ReflectionComponent extends Component implements ReflectionComponentInterf
     protected function resolveMethodTypes(array &$methods, ClassLike $class, $withStatic)
     {
         $parent = ($class instanceof Class_ && $class->getExtends()) ? $class->getExtends() : null;
-        $transformer = [$this, 'resolveType'];
+        $transformer = function (Type $type) use ($class, $parent) {
+            return $this->resolveType($type, $class->getName(), $parent);
+        };
 
         foreach ($methods as $method) {
             $method->setReturnType($method->getReturnType()->walk($transformer));
@@ -375,7 +379,9 @@ class ReflectionComponent extends Component implements ReflectionComponentInterf
     protected function resolvePropertyTypes(array &$properties, ClassLike $class, $withStatic)
     {
         $parent = ($class instanceof Class_ && $class->getExtends()) ? $class->getExtends() : null;
-        $transformer = [$this, 'resolveType'];
+        $transformer = function (Type $type) use ($class, $parent) {
+            return $this->resolveType($type, $class->getName(), $parent);
+        };
 
         foreach ($properties as $property) {
             $property->setType($property->getType()->walk($transformer));

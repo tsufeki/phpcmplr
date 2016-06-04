@@ -76,8 +76,8 @@ class ReflectionInferrerComponent extends NodeVisitorComponent
             $self = $this->getCurrentClass();
             if (!empty($self) && !empty($self->getClass())) {
                 $selfClass = $this->reflection->findClass($self->getClass());
-                if (!empty($selfClass) && $selfClass[0] instanceof Class_ && !empty($selfClass->getExtends())) {
-                    $resolved = Type::object_($selfClass->getExtends());
+                if (!empty($selfClass) && $selfClass[0] instanceof Class_ && !empty($selfClass[0]->getExtends())) {
+                    $resolved = Type::object_($selfClass[0]->getExtends());
                 }
             }
         }
@@ -249,7 +249,7 @@ class ReflectionInferrerComponent extends NodeVisitorComponent
             $scope = [];
             $class = $this->getCurrentClass();
             if (!empty($class) && !empty($class->getClass())) {
-                $method = $this->reflection->findMethod($class, $node->name);
+                $method = $this->reflection->findMethod($class->getClass(), $node->name);
                 if (!empty($method)) {
                     foreach ($method->getParams() as $param) {
                         $scope[$param->getName()] = $param->getDocType();
@@ -267,7 +267,7 @@ class ReflectionInferrerComponent extends NodeVisitorComponent
                 }
             }
             foreach ($node->params as $param) {
-                $scope['$' . $node->name] = Type::fromString(Type::nameToString($param->type));
+                $scope['$' . $param->name] = Type::fromString(Type::nameToString($param->type));
             }
             $this->functionScopeStack[] = $scope;
 
@@ -370,7 +370,7 @@ class ReflectionInferrerComponent extends NodeVisitorComponent
                     // TODO: check for ArrayAccess
                 }
             }
-            return $types !== [] ? Type::alternatives($types) : Type::mixed_();
+            $type = $types !== [] ? Type::alternatives($types) : Type::mixed_();
 
         } elseif ($node instanceof Expr\Array_) {
             $type = Type::array_();
@@ -402,7 +402,7 @@ class ReflectionInferrerComponent extends NodeVisitorComponent
                     $types[] = Type::array_(); // TODO primitives: (array)int --> int[]
                 }
             }
-            return $types !== [] ? Type::alternatives($types) : Type::mixed_();
+            $type = $types !== [] ? Type::alternatives($types) : Type::mixed_();
 
         } elseif ($node instanceof Expr\Cast\Object_) {
             $exprType = $node->var->getAttribute('type');
@@ -418,7 +418,7 @@ class ReflectionInferrerComponent extends NodeVisitorComponent
                     $types[] = Type::object_('\\stdClass');
                 }
             }
-            return $types !== [] ? Type::alternatives($types) : Type::mixed_();
+            $type = $types !== [] ? Type::alternatives($types) : Type::mixed_();
 
         } elseif ($node instanceof Expr\Include_) {
             $type = Type::mixed_();

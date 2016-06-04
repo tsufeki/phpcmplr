@@ -81,4 +81,13 @@ END;
         $this->assertInstanceOf(Expr\PropertyFetch::class, $nodes[0]);
         $this->assertInstanceOf(Stmt\Function_::class, $nodes[1]);
     }
+
+    public function test_getNodesAtOffset_namespace()
+    {
+        $nodes = $this->loadFile('<?php namespace N; function f() { $x = 0; $y->qaz; }')->getNodesAtOffset(48);
+        $this->assertCount(3, $nodes);
+        $this->assertInstanceOf(Expr\PropertyFetch::class, $nodes[0]);
+        $this->assertInstanceOf(Stmt\Function_::class, $nodes[1]);
+        $this->assertInstanceOf(Stmt\Namespace_::class, $nodes[2]);
+    }
 }

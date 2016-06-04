@@ -70,17 +70,24 @@ class ParserComponent extends Component implements ParserComponentInterface
     private function getNodeAtOffsetRecursive($nodes, $offset, array &$result)
     {
         if ($nodes instanceof Node) {
-            if ($nodes->getAttribute('startFilePos') <= $offset &&
-                    $nodes->getAttribute('endFilePos') >= $offset) {
+
+            // Namespace node needs special handling as it can be a no-braces namespace
+            // where offsets include only declaration and not the logically contained statements.
+            $isNamespace = $nodes instanceof Node\Stmt\Namespace_;
+
+            $inRange = $nodes->getAttribute('startFilePos') <= $offset &&
+                $nodes->getAttribute('endFilePos') >= $offset;
+
+            if ($isNamespace || $inRange) {
                 $result[] = $nodes;
                 foreach ($nodes->getSubNodeNames() as $subnode) {
                     if ($this->getNodeAtOffsetRecursive($nodes->$subnode, $offset, $result)) {
-                        break;
+                        return true;
                     }
                 }
-                return true;
-            } else {
-                return false;
+                if ($inRange) {
+                    return true;
+                }
             }
         } elseif (is_array($nodes)) {
             foreach ($nodes as $node) {
@@ -94,6 +101,7 @@ class ParserComponent extends Component implements ParserComponentInterface
 
     public function getNodesAtOffset($offset)
     {
+        $this->run();
         $result = [];
         $this->getNodeAtOffsetRecursive($this->getNodes(), $offset, $result);
         return array_reverse($result);

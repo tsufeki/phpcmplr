@@ -132,7 +132,13 @@ class Server
                 'error' => $e->getStatus(),
                 'message' => ResponseCodes::$statusTexts[$e->getStatus()],
             ]);
-        } catch (Exception $e) {
+        } catch (\Exception $e) {
+            $status = 500;
+            $responseBody = json_encode([
+                'error' => 500,
+                'message' => ResponseCodes::$statusTexts[500] . ': ' . $e->getMessage(),
+            ]);
+        } catch (\Error $e) { // PHP7
             $status = 500;
             $responseBody = json_encode([
                 'error' => 500,

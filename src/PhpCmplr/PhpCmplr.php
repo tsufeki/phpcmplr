@@ -110,7 +110,7 @@ class PhpCmplr extends Plugin implements ContainerFactoryInterface
         $container->set('diagnostics', new DiagnosticsComponent($container));
         $container->set('reflection', new ReflectionComponent($container));
         $container->set('reflection.file', new FileReflectionComponent($container), ['reflection.component']);
-        $container->set('reflection.locator', new LocatorReflectionComponent($container));
+        $container->set('reflection.locator', new LocatorReflectionComponent($container), ['reflection.component']);
         $container->set('composer.locator', new ComposerLocator($container), ['reflection.locator']);
         $container->set('typeinfer', new TypeInferrerComponent($container));
         $container->set('typeinfer.reflection', new ReflectionInferrerComponent($container), ['typeinfer.visitor']);

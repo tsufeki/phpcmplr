@@ -4,6 +4,7 @@ namespace PhpCmplr\Completer\Parser;
 
 use PhpParser\Error as ParserError;
 use PhpParser\Node;
+use PhpParser\Comment;
 
 /**
  * Parser-wrapping component.
@@ -25,7 +26,7 @@ interface ParserComponentInterface
      *
      * @param int $offset
      *
-     * @return Node[] Top-most node last.
+     * @return (Node|Comment)[] Top-most node last.
      */
     public function getNodesAtOffset($offset);
 }

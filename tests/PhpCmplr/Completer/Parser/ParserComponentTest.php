@@ -5,6 +5,7 @@ namespace Tests\PhpCmplr\Completer\Parser;
 use PhpParser\NodeDumper;
 use PhpParser\Node\Expr;
 use PhpParser\Node\Stmt;
+use PhpParser\Comment;
 
 use PhpCmplr\Completer\Container;
 use PhpCmplr\Completer\SourceFile;
@@ -89,5 +90,14 @@ END;
         $this->assertInstanceOf(Expr\PropertyFetch::class, $nodes[0]);
         $this->assertInstanceOf(Stmt\Function_::class, $nodes[1]);
         $this->assertInstanceOf(Stmt\Namespace_::class, $nodes[2]);
+    }
+
+    public function test_getNodesAtOffset_docComments()
+    {
+        $nodes = $this->loadFile('<?php /** qaz */ function f() { $x = 0; }')->getNodesAtOffset(12);
+        $this->assertCount(2, $nodes);
+        $this->assertInstanceOf(Comment\Doc::class, $nodes[0]);
+        $this->assertSame('/** qaz */', $nodes[0]->getText());
+        $this->assertInstanceOf(Stmt\Function_::class, $nodes[1]);
     }
 }

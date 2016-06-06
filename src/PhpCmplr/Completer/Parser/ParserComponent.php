@@ -6,6 +6,7 @@ use PhpParser\Error as ParserError;
 use PhpParser\Lexer\Emulative as Lexer;
 use PhpParser\Parser\Multiple;
 use PhpParser\Node;
+use PhpParser\Comment;
 
 use PhpCmplr\Completer\Container;
 use PhpCmplr\Completer\Component;
@@ -63,13 +64,26 @@ class ParserComponent extends Component implements ParserComponentInterface
     /**
      * @param Node|array|mixed $nodes
      * @param int              $offset
-     * @param Node[]           $result
+     * @param (Comment|Node)[] $result
      *
      * @return bool True iff anything in $nodes include offset.
      */
     private function getNodeAtOffsetRecursive($nodes, $offset, array &$result)
     {
         if ($nodes instanceof Node) {
+
+            $comments = $nodes->getAttribute('comments', []);
+            foreach ($comments as $comment) {
+                if ($comment instanceof Comment\Doc) {
+                    $start = $comment->getFilePos();
+                    $end = $start + strlen($comment->getText());
+                    if ($start <= $offset && $end > $offset) {
+                        $result[] = $nodes;
+                        $result[] = $comment;
+                        return true;
+                    }
+                }
+            }
 
             // Namespace node needs special handling as it can be a no-braces namespace
             // where offsets include only declaration and not the logically contained statements.

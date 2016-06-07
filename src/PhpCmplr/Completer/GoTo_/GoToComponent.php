@@ -6,14 +6,7 @@ use PhpParser\Node\Expr;
 use PhpParser\Node\Name;
 
 use PhpCmplr\Completer\Component;
-use PhpCmplr\Completer\Parser\DocTag\Type;
-use PhpCmplr\Completer\Parser\DocTag\AlternativesType;
-use PhpCmplr\Completer\Parser\DocTag\ObjectType;
 use PhpCmplr\Completer\Parser\ParserComponent;
-use PhpCmplr\Completer\Reflection\ReflectionComponent;
-use PhpCmplr\Completer\Reflection\Method;
-use PhpCmplr\Completer\Reflection\Property;
-use PhpCmplr\Completer\Reflection\Const_;
 
 class GoToComponent extends Component implements GoToComponentInterface
 {

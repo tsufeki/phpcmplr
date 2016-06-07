@@ -25,7 +25,7 @@ class ReflectionComponent extends Component implements ReflectionComponentInterf
     private $classPropertiesCache = [];
 
     /**
-     * @var Const_[][] Class name => Const_[].
+     * @var ClassConst[][] Class name => ClassConst[].
      */
     private $classConstsCache = [];
 
@@ -443,17 +443,17 @@ class ReflectionComponent extends Component implements ReflectionComponentInterf
     }
 
     /**
-     * @param Const_[] $consts
-     * @param Const_   $const
+     * @param ClassConst[] $consts
+     * @param ClassConst   $const
      */
-    protected function mergeConst(array &$consts, Const_ $const)
+    protected function mergeConst(array &$consts, ClassConst $const)
     {
         $consts[$const->getName()] = $const;
     }
 
     /**
-     * @param Const_[] $consts
-     * @param Class_   $class
+     * @param ClassConst[] $consts
+     * @param Class_       $class
      */
     protected function addConstsFromBaseClass(array &$consts, Class_ $class)
     {
@@ -465,8 +465,8 @@ class ReflectionComponent extends Component implements ReflectionComponentInterf
     }
 
     /**
-     * @param Const_[] $consts
-     * @param Class_   $class
+     * @param ClassConst[] $consts
+     * @param Class_       $class
      */
     protected function addConstsFromImplementedInterfaces(array &$consts, Class_ $class)
     {
@@ -480,8 +480,8 @@ class ReflectionComponent extends Component implements ReflectionComponentInterf
     }
 
     /**
-     * @param Const_[]   $consts
-     * @param Interface_ $class
+     * @param ClassConst[] $consts
+     * @param Interface_   $class
      */
     protected function addConstsFromExtendedInterfaces(array &$consts, Interface_ $class)
     {
@@ -495,8 +495,8 @@ class ReflectionComponent extends Component implements ReflectionComponentInterf
     }
 
     /**
-     * @param Const_[]  $consts
-     * @param ClassLike $class
+     * @param ClassConst[] $consts
+     * @param ClassLike    $class
      */
     protected function addOwnConsts(array &$consts, ClassLike $class)
     {
@@ -510,7 +510,7 @@ class ReflectionComponent extends Component implements ReflectionComponentInterf
      *
      * @param string $className
      *
-     * @return Const_[]
+     * @return ClassConst[]
      */
     public function findAllClassConsts($className)
     {
@@ -545,7 +545,7 @@ class ReflectionComponent extends Component implements ReflectionComponentInterf
      * @param string $className
      * @param string $constName
      *
-     * @return Const_
+     * @return ClassConst
      */
     public function findClassConst($className, $constName)
     {

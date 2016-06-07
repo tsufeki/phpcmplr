@@ -138,7 +138,7 @@ class FileReflectionComponent extends NodeVisitorComponent implements Reflection
         foreach ($node->stmts as $child) {
             if ($child instanceof Stmt\ClassConst) {
                 foreach ($child->consts as $constNode) {
-                    $const = new Const_();
+                    $const = new ClassConst();
                     $this->init($const, $constNode);
                     $class->addConst($const);
                 }

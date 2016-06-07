@@ -14,7 +14,6 @@ use PhpCmplr\Completer\Reflection\LocatorReflectionComponent;
 use PhpCmplr\Completer\Reflection\Locator;
 use PhpCmplr\Completer\Reflection\Class_;
 use PhpCmplr\Completer\Reflection\ClassLike;
-use PhpCmplr\Completer\Reflection\Const_;
 use PhpCmplr\Completer\Reflection\Function_;
 use PhpCmplr\Completer\Reflection\Interface_;
 use PhpCmplr\Completer\Reflection\Trait_;

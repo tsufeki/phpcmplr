@@ -14,7 +14,7 @@ abstract class ClassLike extends Element
     const M_PUBLIC = 3;
 
     /**
-     * @var Const_[]
+     * @var ClassConst[]
      */
     private $consts = [];
 
@@ -29,7 +29,7 @@ abstract class ClassLike extends Element
     private $methods = [];
 
     /**
-     * @return Const_[]
+     * @return ClassConst[]
      */
     public function getConsts()
     {
@@ -37,11 +37,11 @@ abstract class ClassLike extends Element
     }
 
     /**
-     * @param Const_ $const
+     * @param ClassConst $const
      *
      * @return $this
      */
-    public function addConst(Const_ $const)
+    public function addConst(ClassConst $const)
     {
         $this->consts[] = $const;
 

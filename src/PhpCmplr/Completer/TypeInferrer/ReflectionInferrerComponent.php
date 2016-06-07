@@ -19,6 +19,7 @@ use PhpCmplr\Completer\Reflection\Method;
 use PhpCmplr\Completer\Reflection\Variable;
 use PhpCmplr\Completer\Reflection\Property;
 use PhpCmplr\Completer\Reflection\Const_;
+use PhpCmplr\Completer\Reflection\ClassConst;
 
 class ReflectionInferrerComponent extends NodeVisitorComponent
 {
@@ -182,7 +183,7 @@ class ReflectionInferrerComponent extends NodeVisitorComponent
      * @param Type   $objectType
      * @param string $constName
      *
-     * @return Const_
+     * @return ClassConst[]
      */
     protected function findClassConsts(Type $objectType, $constName)
     {

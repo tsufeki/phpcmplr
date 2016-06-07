@@ -2,6 +2,7 @@
 
 namespace Tests\PhpCmplr\Server;
 
+use Psr\Log\LogLevel;
 use React\Http\Request;
 use React\Http\Response;
 
@@ -48,7 +49,7 @@ class ServerTest extends \PHPUnit_Framework_TestCase
 
     public function setUp()
     {
-        $this->phpcmplr = new PhpCmplr(7373);
+        $this->phpcmplr = new PhpCmplr(7373, '127.0.0.1', LogLevel::ERROR);
         $this->server = $this->phpcmplr->getServer();
     }
 

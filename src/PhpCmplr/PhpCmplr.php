@@ -2,6 +2,8 @@
 
 namespace PhpCmplr;
 
+use Psr\Log\LogLevel;
+
 use PhpCmplr\Completer\Container;
 use PhpCmplr\Completer\ContainerFactoryInterface;
 use PhpCmplr\Completer\Project;
@@ -20,6 +22,7 @@ use PhpCmplr\Completer\GoTo_\GoToComponent;
 use PhpCmplr\Server\Server;
 use PhpCmplr\Server\Action;
 use PhpCmplr\Util\FileIO;
+use PhpCmplr\Util\Logger;
 
 class PhpCmplr extends Plugin implements ContainerFactoryInterface
 {
@@ -48,10 +51,15 @@ class PhpCmplr extends Plugin implements ContainerFactoryInterface
     /**
      * @param int    $port
      * @param string $host
+     * @param string $logLevel
+     * @param string $logDir
      */
-    public function __construct($port, $host = '127.0.0.1')
+    public function __construct($port, $host = '127.0.0.1', $logLevel = LogLevel::DEBUG, $logDir = 'php://stderr')
     {
-        $this->logger = null;
+        $this->logger = new Logger($logDir, $logLevel, [
+            'logFormat' => "[{date}] [{level}] [pid:{pid}] {message}\n{exception}",
+            'appendContext' => false,
+        ]);
         $this->io = new FileIO();
         $this->project = new Project($this);
         $this->server = new Server($this->project, $this->logger, $port, $host);

@@ -90,6 +90,7 @@ class Server
      */
     public function run()
     {
+        $this->logger->info("Starting server on $this->host:$this->port");
         $this->loop = EventLoopFactory::create();
         $this->socket = new ServerSocket($this->loop);
         $this->http = new HttpServer($this->socket);
@@ -127,18 +128,21 @@ class Server
                 $this->project);
 
         } catch (HttpException $e) {
+            $this->logger->notice($e->getMessage(), ['exception' => $e]);
             $status = $e->getStatus();
             $responseBody = json_encode([
                 'error' => $e->getStatus(),
                 'message' => ResponseCodes::$statusTexts[$e->getStatus()],
             ]);
         } catch (\Exception $e) {
+            $this->logger->error($e->getMessage(), ['exception' => $e]);
             $status = 500;
             $responseBody = json_encode([
                 'error' => 500,
                 'message' => ResponseCodes::$statusTexts[500] . ': ' . $e->getMessage(),
             ]);
         } catch (\Error $e) { // PHP7
+            $this->logger->error($e->getMessage(), ['exception' => $e]);
             $status = 500;
             $responseBody = json_encode([
                 'error' => 500,
@@ -158,6 +162,7 @@ class Server
      */
     public function quit()
     {
+        $this->logger->info("Quitting server");
         $this->socket->shutdown();
     }
 }

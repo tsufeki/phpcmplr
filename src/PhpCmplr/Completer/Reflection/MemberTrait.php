@@ -15,6 +15,11 @@ trait MemberTrait
     private $static = false;
 
     /**
+     * @var ClassLike Class defining this member.
+     */
+    private $class;
+
+    /**
      * @return int
      */
     public function getAccessibility()
@@ -74,6 +79,26 @@ trait MemberTrait
     public function setStatic($static)
     {
         $this->static = $static;
+
+        return $this;
+    }
+
+    /**
+     * @return ClassLike
+     */
+    public function getClass()
+    {
+        return $this->class;
+    }
+
+    /**
+     * @param ClassLike $class
+     *
+     * @return $this
+     */
+    public function setClass(ClassLike $class)
+    {
+        $this->class = $class;
 
         return $this;
     }

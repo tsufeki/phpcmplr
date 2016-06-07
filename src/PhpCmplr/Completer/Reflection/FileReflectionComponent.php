@@ -114,10 +114,11 @@ class FileReflectionComponent extends NodeVisitorComponent implements Reflection
     /**
      * @param Method|Property                $member
      * @param Stmt\ClassMethod|Stmt\Property $node
+     * @param ClassLike                      $class  Class member is defined in.
      *
      * @return 
      */
-    protected function processMember($member, Node $node)
+    protected function processMember($member, Node $node, ClassLike $class)
     {
         $member->setAccessibility(
             $node->isPrivate() ? ClassLike::M_PRIVATE : (
@@ -125,6 +126,7 @@ class FileReflectionComponent extends NodeVisitorComponent implements Reflection
             ClassLike::M_PUBLIC));
 
         $member->setStatic($node->isStatic());
+        $member->setClass($class);
     }
 
     /**
@@ -140,6 +142,7 @@ class FileReflectionComponent extends NodeVisitorComponent implements Reflection
                 foreach ($child->consts as $constNode) {
                     $const = new ClassConst();
                     $this->init($const, $constNode);
+                    $const->setClass($class);
                     $class->addConst($const);
                 }
             } elseif ($child instanceof Stmt\Property) {
@@ -159,7 +162,7 @@ class FileReflectionComponent extends NodeVisitorComponent implements Reflection
                     $property = new Property();
                     $this->init($property, $propertyNode);
                     $property->setName('$' . $property->getName());
-                    $this->processMember($property, $child);
+                    $this->processMember($property, $child, $class);
                     $type = Type::mixed_();
                     if (!empty($docTypes[$property->getName()])) {
                         $type = $docTypes[$property->getName()];
@@ -172,7 +175,7 @@ class FileReflectionComponent extends NodeVisitorComponent implements Reflection
             } elseif ($child instanceof Stmt\ClassMethod) {
                 $method = new Method();
                 $this->processFunction($method, $child);
-                $this->processMember($method, $child);
+                $this->processMember($method, $child, $class);
                 $method->setAbstract($child->isAbstract());
                 $method->setFinal($child->isFinal());
                 $class->addMethod($method);

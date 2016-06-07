@@ -137,14 +137,17 @@ END;
         $this->assertFalse($props[0]->isProtected());
         $this->assertFalse($props[0]->isPrivate());
         $this->assertFalse($props[0]->isStatic());
+        $this->assertSame($cls, $props[0]->getClass());
         $this->assertSame('$y', $props[1]->getName());
         $this->assertSame('mixed', $props[1]->getType()->getName());
         $this->assertTrue($props[1]->isPublic());
         $this->assertFalse($props[1]->isStatic());
+        $this->assertSame($cls, $props[1]->getClass());
         $this->assertSame('$z', $props[2]->getName());
         $this->assertSame('int', $props[2]->getType()->getName());
         $this->assertTrue($props[2]->isPrivate());
         $this->assertTrue($props[2]->isStatic());
+        $this->assertSame($cls, $props[2]->getClass());
 
         $methods = $cls->getMethods();
         $this->assertCount(2, $methods);
@@ -153,11 +156,13 @@ END;
         $this->assertTrue($methods[0]->isFinal());
         $this->assertTrue($methods[0]->isProtected());
         $this->assertFalse($methods[0]->isStatic());
+        $this->assertSame($cls, $methods[0]->getClass());
         $this->assertSame('gg', $methods[1]->getName());
         $this->assertTrue($methods[1]->isAbstract());
         $this->assertFalse($methods[1]->isFinal());
         $this->assertTrue($methods[1]->isPublic());
         $this->assertFalse($methods[1]->isStatic());
+        $this->assertSame($cls, $methods[1]->getClass());
 
         $consts = $cls->getConsts();
         $this->assertCount(2, $consts);
@@ -202,6 +207,7 @@ END;
         $methods = $iface->getMethods();
         $this->assertCount(1, $methods);
         $this->assertSame('ff', $methods[0]->getName());
+        $this->assertSame($iface, $methods[0]->getClass());
 
         $consts = $iface->getConsts();
         $this->assertCount(1, $consts);
@@ -237,12 +243,15 @@ END;
         $this->assertSame('$x', $props[0]->getName());
         $this->assertSame('\\Y', $props[0]->getType()->getClass());
         $this->assertTrue($props[0]->isPublic());
+        $this->assertSame($trait, $props[0]->getClass());
         $this->assertSame('$y', $props[1]->getName());
         $this->assertSame('mixed', $props[1]->getType()->getName());
         $this->assertTrue($props[1]->isPublic());
+        $this->assertSame($trait, $props[1]->getClass());
         $this->assertSame('$z', $props[2]->getName());
         $this->assertSame('int', $props[2]->getType()->getName());
         $this->assertTrue($props[2]->isPrivate());
+        $this->assertSame($trait, $props[2]->getClass());
 
         $methods = $trait->getMethods();
         $this->assertCount(2, $methods);
@@ -250,10 +259,12 @@ END;
         $this->assertFalse($methods[0]->isAbstract());
         $this->assertTrue($methods[0]->isFinal());
         $this->assertTrue($methods[0]->isProtected());
+        $this->assertSame($trait, $methods[0]->getClass());
         $this->assertSame('gg', $methods[1]->getName());
         $this->assertTrue($methods[1]->isAbstract());
         $this->assertFalse($methods[1]->isFinal());
         $this->assertTrue($methods[1]->isPublic());
+        $this->assertSame($trait, $methods[1]->getClass());
     }
 
     public function test_getClasses_multi()

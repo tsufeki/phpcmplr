@@ -390,7 +390,7 @@ class ReflectionInferrerComponent extends NodeVisitorComponent
             $type = Type::object_('\\Closure');
 
         } elseif ($node instanceof Expr\Cast\Array_) {
-            $exprType = $node->var->getAttribute('type');
+            $exprType = $node->expr->getAttribute('type');
             $altTypes = [$exprType];
             if ($exprType instanceof AlternativesType) {
                 $altTypes = $exprType->getAlternatives();
@@ -406,7 +406,7 @@ class ReflectionInferrerComponent extends NodeVisitorComponent
             $type = $types !== [] ? Type::alternatives($types) : Type::mixed_();
 
         } elseif ($node instanceof Expr\Cast\Object_) {
-            $exprType = $node->var->getAttribute('type');
+            $exprType = $node->expr->getAttribute('type');
             $altTypes = [$exprType];
             if ($exprType instanceof AlternativesType) {
                 $altTypes = $exprType->getAlternatives();

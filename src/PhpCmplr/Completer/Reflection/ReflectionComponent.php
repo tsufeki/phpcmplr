@@ -220,12 +220,13 @@ class ReflectionComponent extends Component implements ReflectionComponentInterf
      * @internal
      *
      * @param Type   $type
-     * @param string $class  Current class name.
+     * @param string $class      Current class name.
      * @param string $parent
+     * @param bool   $withStatic Whether to resolve `static` as $class.
      *
      * @return Type
      */
-    public function resolveType(Type $type, $class, $parent) {
+    public function resolveType(Type $type, $class, $parent, $withStatic) {
         if ($type instanceof ObjectType) {
             if ($type->getClass() === 'self') {
                 return Type::object_($class);
@@ -248,8 +249,8 @@ class ReflectionComponent extends Component implements ReflectionComponentInterf
     protected function resolveMethodTypes(array &$methods, ClassLike $class, $withStatic)
     {
         $parent = ($class instanceof Class_ && $class->getExtends()) ? $class->getExtends() : null;
-        $transformer = function (Type $type) use ($class, $parent) {
-            return $this->resolveType($type, $class->getName(), $parent);
+        $transformer = function (Type $type) use ($class, $parent, $withStatic) {
+            return $this->resolveType($type, $class->getName(), $parent, $withStatic);
         };
 
         foreach ($methods as $method) {
@@ -379,8 +380,8 @@ class ReflectionComponent extends Component implements ReflectionComponentInterf
     protected function resolvePropertyTypes(array &$properties, ClassLike $class, $withStatic)
     {
         $parent = ($class instanceof Class_ && $class->getExtends()) ? $class->getExtends() : null;
-        $transformer = function (Type $type) use ($class, $parent) {
-            return $this->resolveType($type, $class->getName(), $parent);
+        $transformer = function (Type $type) use ($class, $parent, $withStatic) {
+            return $this->resolveType($type, $class->getName(), $parent, $withStatic);
         };
 
         foreach ($properties as $property) {

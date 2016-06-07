@@ -4,6 +4,7 @@ namespace PhpCmplr\Completer\GoTo_;
 
 use PhpParser\Node\Expr;
 use PhpParser\Node\Name;
+use PhpParser\Comment;
 
 use PhpCmplr\Completer\Component;
 use PhpCmplr\Completer\Parser\ParserComponent;
@@ -23,7 +24,7 @@ class GoToComponent extends Component implements GoToComponentInterface
         $node = null;
         if (count($nodes) > 0) {
             $node = $nodes[0];
-            if ($node instanceof Name) {
+            if ($node instanceof Name || $node instanceof Comment) {
                 $node = count($nodes) > 1 ? $nodes[1] : null;
             }
         }

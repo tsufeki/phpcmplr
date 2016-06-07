@@ -99,9 +99,9 @@ END;
             $response = Json::dump($responseData);
             return $response;
         } catch (JsonLoadException $e) {
-            throw new HttpException(400);
+            throw new HttpException(400, $e);
         } catch (JsonDumpException $e) {
-            throw new HttpException(500);
+            throw new HttpException(500, $e);
         }
     }
 

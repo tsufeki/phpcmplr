@@ -16,11 +16,6 @@ use PhpCmplr\Completer\Parser\Parser\Php7Lenient;
 class ParserComponent extends Component implements ParserComponentInterface
 {
     /**
-     * @var Parser
-     */
-    private $parser;
-
-    /**
      * @var Node[]
      */
     private $nodes;
@@ -35,7 +30,6 @@ class ParserComponent extends Component implements ParserComponentInterface
         parent::__construct($container);
         $this->nodes = [];
         $this->errors = [];
-        $this->parser = $this->createParser();
     }
 
     protected function createParser()
@@ -124,8 +118,9 @@ class ParserComponent extends Component implements ParserComponentInterface
     protected function doRun()
     {
         try {
-            $this->nodes = $this->parser->parse($this->container->get('file')->getContents());
-            foreach ($this->parser->getErrors() as $error) {
+            $parser = $this->createParser();
+            $this->nodes = $parser->parse($this->container->get('file')->getContents());
+            foreach ($parser->getErrors() as $error) {
                 $this->errors[] = $error;
             }
         } catch (ParserError $error) {

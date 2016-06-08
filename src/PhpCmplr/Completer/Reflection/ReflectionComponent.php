@@ -436,8 +436,8 @@ class ReflectionComponent extends Component implements ReflectionComponentInterf
     public function findProperty($className, $propertyName)
     {
         $properties = $this->findAllProperties($className);
-        if (array_key_exists(strtolower($propertyName), $properties)) {
-            return $properties[strtolower($propertyName)];
+        if (array_key_exists($propertyName, $properties)) {
+            return $properties[$propertyName];
         }
 
         return null;
@@ -551,8 +551,8 @@ class ReflectionComponent extends Component implements ReflectionComponentInterf
     public function findClassConst($className, $constName)
     {
         $consts = $this->findAllClassConsts($className);
-        if (array_key_exists(strtolower($constName), $consts)) {
-            return $consts[strtolower($constName)];
+        if (array_key_exists($constName, $consts)) {
+            return $consts[$constName];
         }
 
         return null;

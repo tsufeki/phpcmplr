@@ -4,11 +4,12 @@ namespace PhpCmplr\Completer\TypeInferrer;
 
 use PhpParser\Node;
 use PhpParser\Node\Expr;
+use PhpParser\Comment;
 
 use PhpCmplr\Completer\NodeVisitorComponent;
 use PhpCmplr\Completer\Parser\DocTag\Type;
 
-class TypeInferrerComponent extends NodeVisitorComponent
+class TypeInferrerComponent extends NodeVisitorComponent implements TypeInferrerComponentInterface
 {
     public function leaveNode(Node $node)
     {
@@ -47,6 +48,30 @@ class TypeInferrerComponent extends NodeVisitorComponent
             }
             $node->setAttribute('type', $type);
         }
+    }
+
+    public function getType($offset)
+    {
+        $this->run();
+        $nodes = $this->container->get('parser')->getNodesAtOffset($offset);
+
+        $node = null;
+        if (count($nodes) > 0) {
+            $node = $nodes[0];
+            if ($node instanceof Name) {
+                $node = count($nodes) > 1 ? $nodes[1] : null;
+            }
+        }
+        if ($node instanceof Comment) {
+            $node = null;
+        }
+
+        $type = null;
+        if ($node instanceof Node\Expr) {
+            $type = $node->getAttribute('type');
+        }
+
+        return $type;
     }
 
     protected function doRun()

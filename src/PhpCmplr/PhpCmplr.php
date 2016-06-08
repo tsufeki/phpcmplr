@@ -103,6 +103,7 @@ class PhpCmplr extends Plugin implements ContainerFactoryInterface
         $server->addAction(new Action\Ping());
         $server->addAction(new Action\Load());
         $server->addAction(new Action\Diagnostics());
+        $server->addAction(new Action\Type());
         $server->addAction(new Action\GoTo_());
         $server->addAction(new Action\Quit($server));
     }

@@ -26,6 +26,13 @@ class AlternativesType extends Type
         return $this->alternatives;
     }
 
+    public function toString()
+    {
+        return implode('|', array_map(
+            function ($a) { return $a->toString(); },
+            $this->getAlternatives()));
+    }
+
     public function compare(Type $other)
     {
         $cmp = parent::compare($other);

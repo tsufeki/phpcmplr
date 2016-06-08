@@ -121,6 +121,26 @@ class ServerTest extends \PHPUnit_Framework_TestCase
             $this->mockResponse(200, json_encode($result)));
     }
 
+    public function test_type()
+    {
+        $data = new \stdClass();
+        $fileData = new \stdClass();
+        $fileData->path = 'qaz.php';
+        $fileData->contents = '<?php /** @var int */ $x;  $y + @$x;';
+        $data->files = [$fileData];
+        $data->location = new \stdClass();
+        $data->location->path = 'qaz.php';
+        $data->location->line = 1;
+        $data->location->col = 34;
+
+        $result = new \stdClass();
+        $result->type = 'int';
+
+        $this->server->handle(
+            $this->mockRequest('/type', json_encode($data)),
+            $this->mockResponse(200, json_encode($result)));
+    }
+
     public function test_NotFound()
     {
         $result = new \stdClass();

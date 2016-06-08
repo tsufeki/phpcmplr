@@ -41,6 +41,12 @@ class ArrayType extends Type
         return $this->keyType;
     }
 
+    public function toString()
+    {
+        $value = $this->getValueType();
+        return self::mixed_()->equals($value) ? $this->getName() : $value->toString() . '[]';
+    }
+
     public function compare(Type $other)
     {
         $cmp = parent::compare($other);

@@ -30,6 +30,14 @@ class Type
     }
 
     /**
+     * @return string
+     */
+    public function toString()
+    {
+        return $this->getName();
+    }
+
+    /**
      * @param Type $other
      *
      * @return bool

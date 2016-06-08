@@ -26,6 +26,11 @@ class ObjectType extends Type
         return $this->class;
     }
 
+    public function toString()
+    {
+        return $this->getClass() ?: $this->getName();
+    }
+
     public function compare(Type $other)
     {
         $cmp = parent::compare($other);

@@ -46,19 +46,17 @@ END;
         parent::handle($data, $project);
 
         $container = $project->getFile($data->path);
-
-        if ($container === null) {
-            return new \stdClass();
-        }
-
         $diagsData = [];
-        $file = $container->get('file');
-        foreach ($container->get('diagnostics')->getDiagnostics() as $diag) {
-            $diagData = new \stdClass();
-            $diagData->start = $this->makeLocation($diag->getStart(), $file);
-            $diagData->end = $this->makeLocation($diag->getEnd(), $file);
-            $diagData->description = $diag->getDescription();
-            $diagsData[] = $diagData;
+
+        if ($container !== null) {
+            $file = $container->get('file');
+            foreach ($container->get('diagnostics')->getDiagnostics() as $diag) {
+                $diagData = new \stdClass();
+                $diagData->start = $this->makeLocation($diag->getStart(), $file);
+                $diagData->end = $this->makeLocation($diag->getEnd(), $file);
+                $diagData->description = $diag->getDescription();
+                $diagsData[] = $diagData;
+            }
         }
 
         $result = new \stdClass();

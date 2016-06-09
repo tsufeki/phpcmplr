@@ -4,6 +4,7 @@ namespace PhpCmplr\Completer\Parser;
 
 use PhpParser\Error as ParserError;
 use PhpParser\Lexer\Emulative as Lexer;
+use PhpParser\Parser;
 use PhpParser\Parser\Multiple;
 use PhpParser\Node;
 use PhpParser\Comment;
@@ -32,6 +33,9 @@ class ParserComponent extends Component implements ParserComponentInterface
         $this->errors = [];
     }
 
+    /**
+     * @return Parser
+     */
     protected function createParser()
     {
         $lexer = new Lexer(['usedAttributes' => ['comments', 'startLine', 'endLine', 'startFilePos', 'endFilePos']]);
@@ -120,6 +124,9 @@ class ParserComponent extends Component implements ParserComponentInterface
         try {
             $parser = $this->createParser();
             $this->nodes = $parser->parse($this->container->get('file')->getContents());
+            if ($this->nodes === null) {
+                $this->nodes = [];
+            }
             foreach ($parser->getErrors() as $error) {
                 $this->errors[] = $error;
             }

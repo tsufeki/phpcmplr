@@ -8,6 +8,7 @@ use PhpParser\Comment;
 
 use PhpCmplr\Completer\Component;
 use PhpCmplr\Completer\Parser\ParserComponent;
+use PhpCmplr\Completer\Parser\Identifier;
 
 class GoToComponent extends Component implements GoToComponentInterface
 {
@@ -24,7 +25,7 @@ class GoToComponent extends Component implements GoToComponentInterface
         $node = null;
         if (count($nodes) > 0) {
             $node = $nodes[0];
-            if ($node instanceof Name || $node instanceof Comment) {
+            if ($node instanceof Name || $node instanceof Identifier || $node instanceof Comment) {
                 $node = count($nodes) > 1 ? $nodes[1] : null;
             }
         }

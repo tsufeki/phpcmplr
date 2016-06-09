@@ -10,6 +10,7 @@ use PhpParser\Node\Scalar;
 use PhpParser\Node\Stmt;
 
 use PhpCmplr\Completer\Parser\ErrorNode;
+use PhpCmplr\Completer\Parser\Identifier;
 
 /* This is an automatically GENERATED file, which should not be manually edited.
  * Instead edit one of the following:
@@ -2367,7 +2368,7 @@ class Php7Lenient extends \PhpParser\ParserAbstract
     }
 
     protected function reduceRule393() {
-         $this->semValue = new Expr\ClassConstFetch($this->semStack[$this->stackPos-(3-1)], $this->semStack[$this->stackPos-(3-3)], $this->startAttributeStack[$this->stackPos-(3-1)] + $this->endAttributes);
+         $this->semValue = new Expr\ClassConstFetch($this->semStack[$this->stackPos-(3-1)], new Identifier($this->semStack[$this->stackPos-(3-3)], $this->startAttributeStack[$this->stackPos-(3-1)] + $this->endAttributes), $this->startAttributeStack[$this->stackPos-(3-1)] + $this->endAttributes);
     }
 
     protected function reduceRule394() {
@@ -2570,7 +2571,7 @@ class Php7Lenient extends \PhpParser\ParserAbstract
     }
 
     protected function reduceRule442() {
-         $this->semValue = $this->semStack[$this->stackPos-(1-1)];
+         $this->semValue = new Identifier($this->semStack[$this->stackPos-(1-1)], $this->startAttributeStack[$this->stackPos-(1-1)] + $this->endAttributes);
     }
 
     protected function reduceRule443() {
@@ -2582,7 +2583,7 @@ class Php7Lenient extends \PhpParser\ParserAbstract
     }
 
     protected function reduceRule445() {
-         $this->semValue = $this->semStack[$this->stackPos-(1-1)];
+         $this->semValue = new Identifier($this->semStack[$this->stackPos-(1-1)], $this->startAttributeStack[$this->stackPos-(1-1)] + $this->endAttributes);
     }
 
     protected function reduceRule446() {
@@ -2682,7 +2683,7 @@ class Php7Lenient extends \PhpParser\ParserAbstract
     }
 
     protected function reduceRule470() {
-         $this->semValue = new Expr\PropertyFetch(new Expr\Variable(substr($this->semStack[$this->stackPos-(3-1)], 1), $this->startAttributeStack[$this->stackPos-(3-1)] + $this->endAttributes), $this->semStack[$this->stackPos-(3-3)], $this->startAttributeStack[$this->stackPos-(3-1)] + $this->endAttributes);
+         $this->semValue = new Expr\PropertyFetch(new Expr\Variable(substr($this->semStack[$this->stackPos-(3-1)], 1), $this->startAttributeStack[$this->stackPos-(3-1)] + $this->endAttributes), new Identifier($this->semStack[$this->stackPos-(3-3)], $this->startAttributeStack[$this->stackPos-(3-1)] + $this->endAttributes), $this->startAttributeStack[$this->stackPos-(3-1)] + $this->endAttributes);
     }
 
     protected function reduceRule471() {

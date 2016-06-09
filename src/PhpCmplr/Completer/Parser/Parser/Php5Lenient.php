@@ -10,6 +10,7 @@ use PhpParser\Node\Scalar;
 use PhpParser\Node\Stmt;
 
 use PhpCmplr\Completer\Parser\ErrorNode;
+use PhpCmplr\Completer\Parser\Identifier;
 
 /* This is an automatically GENERATED file, which should not be manually edited.
  * Instead edit one of the following:
@@ -2488,7 +2489,7 @@ class Php5Lenient extends \PhpParser\ParserAbstract
     }
 
     protected function reduceRule392() {
-         $this->semValue = new Expr\StaticCall($this->semStack[$this->stackPos-(4-1)], $this->semStack[$this->stackPos-(4-3)], $this->semStack[$this->stackPos-(4-4)], $this->startAttributeStack[$this->stackPos-(4-1)] + $this->endAttributes);
+         $this->semValue = new Expr\StaticCall($this->semStack[$this->stackPos-(4-1)], new Identifier($this->semStack[$this->stackPos-(4-3)], $this->startAttributeStack[$this->stackPos-(4-1)] + $this->endAttributes), $this->semStack[$this->stackPos-(4-4)], $this->startAttributeStack[$this->stackPos-(4-1)] + $this->endAttributes);
     }
 
     protected function reduceRule393() {
@@ -2673,7 +2674,7 @@ class Php5Lenient extends \PhpParser\ParserAbstract
     }
 
     protected function reduceRule434() {
-         $this->semValue = new Expr\ClassConstFetch($this->semStack[$this->stackPos-(3-1)], $this->semStack[$this->stackPos-(3-3)], $this->startAttributeStack[$this->stackPos-(3-1)] + $this->endAttributes);
+         $this->semValue = new Expr\ClassConstFetch($this->semStack[$this->stackPos-(3-1)], new Identifier($this->semStack[$this->stackPos-(3-3)], $this->startAttributeStack[$this->stackPos-(3-1)] + $this->endAttributes), $this->startAttributeStack[$this->stackPos-(3-1)] + $this->endAttributes);
     }
 
     protected function reduceRule435() {
@@ -2829,7 +2830,7 @@ class Php5Lenient extends \PhpParser\ParserAbstract
     }
 
     protected function reduceRule473() {
-         $this->semValue = new Expr\ClassConstFetch($this->semStack[$this->stackPos-(3-1)], $this->semStack[$this->stackPos-(3-3)], $this->startAttributeStack[$this->stackPos-(3-1)] + $this->endAttributes);
+         $this->semValue = new Expr\ClassConstFetch($this->semStack[$this->stackPos-(3-1)], new Identifier($this->semStack[$this->stackPos-(3-3)], $this->startAttributeStack[$this->stackPos-(3-1)] + $this->endAttributes), $this->startAttributeStack[$this->stackPos-(3-1)] + $this->endAttributes);
     }
 
     protected function reduceRule474() {
@@ -2999,7 +3000,7 @@ class Php5Lenient extends \PhpParser\ParserAbstract
     }
 
     protected function reduceRule515() {
-         $this->semValue = $this->semStack[$this->stackPos-(1-1)];
+         $this->semValue = new Identifier($this->semStack[$this->stackPos-(1-1)], $this->startAttributeStack[$this->stackPos-(1-1)] + $this->endAttributes);
     }
 
     protected function reduceRule516() {
@@ -3099,7 +3100,7 @@ class Php5Lenient extends \PhpParser\ParserAbstract
     }
 
     protected function reduceRule540() {
-         $this->semValue = new Expr\PropertyFetch(new Expr\Variable(substr($this->semStack[$this->stackPos-(3-1)], 1), $this->startAttributeStack[$this->stackPos-(3-1)] + $this->endAttributes), $this->semStack[$this->stackPos-(3-3)], $this->startAttributeStack[$this->stackPos-(3-1)] + $this->endAttributes);
+         $this->semValue = new Expr\PropertyFetch(new Expr\Variable(substr($this->semStack[$this->stackPos-(3-1)], 1), $this->startAttributeStack[$this->stackPos-(3-1)] + $this->endAttributes), new Identifier($this->semStack[$this->stackPos-(3-3)], $this->startAttributeStack[$this->stackPos-(3-1)] + $this->endAttributes), $this->startAttributeStack[$this->stackPos-(3-1)] + $this->endAttributes);
     }
 
     protected function reduceRule541() {

@@ -8,6 +8,7 @@ use PhpParser\Node\Expr;
 use PhpParser\Node\Stmt;
 
 use PhpCmplr\Completer\NodeVisitorComponent;
+use PhpCmplr\Completer\Parser\Identifier;
 use PhpCmplr\Completer\Parser\DocTag\Type;
 use PhpCmplr\Completer\Parser\DocTag\ArrayType;
 use PhpCmplr\Completer\Parser\DocTag\ObjectType;
@@ -321,22 +322,25 @@ class ReflectionInferrerComponent extends NodeVisitorComponent
         // TODO: ConstFetch
         } elseif ($node instanceof Expr\MethodCall) {
             $reflections = [];
-            if (is_string($node->name)) {
-                $reflections = $this->findMethods($node->var->getAttribute('type'), $node->name);
+            if (is_string($node->name) || $node->name instanceof Identifier) {
+                $reflections = $this->findMethods($node->var->getAttribute('type'), (string)$node->name);
             }
             $type = $this->functionsReturnType($reflections);
 
         } elseif ($node instanceof Expr\StaticCall) {
             $reflections = [];
-            if ($node->class instanceof Name && is_string($node->name)) {
-                $reflections = $this->findMethods(Type::object_(Type::nameToString($node->class)), $node->name, true);
+            if ($node->class instanceof Name && (is_string($node->name) || $node->name instanceof Identifier)) {
+                $reflections = $this->findMethods(
+                    Type::object_(Type::nameToString($node->class)),
+                    (string)$node->name,
+                    true);
             }
             $type = $this->functionsReturnType($reflections);
 
         } elseif ($node instanceof Expr\PropertyFetch) {
             $reflections = [];
-            if (is_string($node->name)) {
-                $reflections = $this->findProperties($node->var->getAttribute('type'), '$' . $node->name);
+            if (is_string($node->name) || $node->name instanceof Identifier) {
+                $reflections = $this->findProperties($node->var->getAttribute('type'), '$' . (string)$node->name);
             }
             $type = $this->variablesType($reflections);
 
@@ -352,7 +356,9 @@ class ReflectionInferrerComponent extends NodeVisitorComponent
             // TODO ::class
             $reflections = [];
             if ($node->class instanceof Name) {
-                $reflections = $this->findClassConsts(Type::object_(Type::nameToString($node->class)), $node->name);
+                $reflections = $this->findClassConsts(
+                    Type::object_(Type::nameToString($node->class)),
+                    (string)$node->name);
             }
             $type = $this->constsType($reflections);
 

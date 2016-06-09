@@ -58,7 +58,7 @@ class TypeInferrerComponent extends NodeVisitorComponent implements TypeInferrer
         $node = null;
         if (count($nodes) > 0) {
             $node = $nodes[0];
-            if ($node instanceof Name) {
+            if ($node instanceof Name || $node instanceof Identifier) {
                 $node = count($nodes) > 1 ? $nodes[1] : null;
             }
         }

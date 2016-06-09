@@ -11,7 +11,8 @@ abstract class ErrorNode extends NodeAbstract
         parent::__construct($attributes);
     }
 
-    public function getType() {
+    public function getType()
+    {
         return strtr(substr(rtrim(get_class($this), '_'), 26), '\\', '_');
     }
 

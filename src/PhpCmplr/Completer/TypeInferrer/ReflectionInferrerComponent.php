@@ -64,33 +64,6 @@ class ReflectionInferrerComponent extends NodeVisitorComponent
     }
 
     /**
-     * @param ObjectType $type
-     *
-     * @return ObjectType
-     */
-    protected function resolveSelfParent(ObjectType $type)
-    {
-        $resolved = null;
-        // Treating `static` as `self` is the best we can do here.
-        if ($type->getClass() === 'self' || $type->getClass() === 'static') {
-            $resolved = $this->getCurrentClass();
-        } elseif ($type->getClass() === 'parent') {
-            $self = $this->getCurrentClass();
-            if (!empty($self) && !empty($self->getClass())) {
-                $selfClass = $this->reflection->findClass($self->getClass());
-                if (!empty($selfClass) && $selfClass[0] instanceof Class_ && !empty($selfClass[0]->getExtends())) {
-                    $resolved = Type::object_($selfClass[0]->getExtends());
-                }
-            }
-        }
-
-        if ($resolved === null) {
-            $resolved = $type;
-        }
-        return $resolved;
-    }
-
-    /**
      * @param Type   $objectType
      * @param string $methodName
      * @param bool   $staticContext
@@ -107,7 +80,6 @@ class ReflectionInferrerComponent extends NodeVisitorComponent
             }
 
         } elseif ($objectType instanceof ObjectType) {
-            $objectType = $this->resolveSelfParent($objectType);
             $method = $this->reflection->findMethod($objectType->getClass(), $methodName);
             if ($method !== null && (!$staticContext || $method->isStatic())) {
                 $methods[] = $method;
@@ -152,7 +124,6 @@ class ReflectionInferrerComponent extends NodeVisitorComponent
             }
 
         } elseif ($objectType instanceof ObjectType) {
-            $objectType = $this->resolveSelfParent($objectType);
             $property = $this->reflection->findProperty($objectType->getClass(), $propertyName);
             if ($property !== null && ($staticContext === $property->isStatic())) {
                 $properties[] = $property;
@@ -235,7 +206,28 @@ class ReflectionInferrerComponent extends NodeVisitorComponent
             }
         }
 
-        if ($node instanceof Stmt\Function_) {
+        if ($node instanceof Name) {
+            $self = $this->getCurrentClass();
+            if (!empty($self) && !empty($self->getClass())) {
+                $resolved = null;
+
+                // Treating `static` as `self` is the best we can do here.
+                if ($node->toString() === 'self' || $node->toString() === 'static') {
+                    $resolved = $self->getClass();
+                } elseif ($node->toString() === 'parent') {
+                    $selfClass = $this->reflection->findClass($self->getClass());
+                    if (!empty($selfClass) && $selfClass[0] instanceof Class_ && !empty($selfClass[0]->getExtends())) {
+                        $resolved = $selfClass[0]->getExtends();
+                    }
+                }
+
+                if (!empty($resolved)) {
+                    $node->setAttribute('resolved', new Name\FullyQualified(
+                        ltrim($resolved, '\\'), $node->getAttributes()));
+                }
+            }
+
+        } elseif ($node instanceof Stmt\Function_) {
             $scope = [];
             $functions = $this->reflection->findFunction($node->hasAttribute('namespacedName')
                 ? Type::nameToString($node->getAttribute('namespacedName'))

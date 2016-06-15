@@ -121,4 +121,11 @@ END;
         $this->assertSame('/** qaz */', $nodes[0]->getText());
         $this->assertInstanceOf(Stmt\Function_::class, $nodes[1]);
     }
+
+    public function test_getNodesAtOffset_leftAdjacent()
+    {
+        $nodes = $this->loadFile('<?php function f() {}$qaz;')->getNodesAtOffset(21, true);
+        $this->assertCount(1, $nodes);
+        $this->assertInstanceOf(Stmt\Function_::class, $nodes[0]);
+    }
 }

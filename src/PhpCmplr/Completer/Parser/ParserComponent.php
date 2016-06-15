@@ -63,10 +63,11 @@ class ParserComponent extends Component implements ParserComponentInterface
      * @param Node|array|mixed $nodes
      * @param int              $offset
      * @param (Comment|Node)[] $result
+     * @param bool             $rightAdjustment
      *
      * @return bool True iff anything in $nodes include offset.
      */
-    private function getNodeAtOffsetRecursive($nodes, $offset, array &$result)
+    private function getNodeAtOffsetRecursive($nodes, $offset, array &$result, $rightAdjustment)
     {
         if ($nodes instanceof Node) {
 
@@ -75,7 +76,7 @@ class ParserComponent extends Component implements ParserComponentInterface
                 if ($comment instanceof Comment\Doc) {
                     $start = $comment->getFilePos();
                     $end = $start + strlen($comment->getText());
-                    if ($start <= $offset && $end > $offset) {
+                    if ($start <= $offset && $end + $rightAdjustment > $offset) {
                         $result[] = $nodes;
                         $result[] = $comment;
                         return true;
@@ -88,12 +89,12 @@ class ParserComponent extends Component implements ParserComponentInterface
             $isNamespace = $nodes instanceof Node\Stmt\Namespace_;
 
             $inRange = $nodes->getAttribute('startFilePos') <= $offset &&
-                $nodes->getAttribute('endFilePos') >= $offset;
+                $nodes->getAttribute('endFilePos') + $rightAdjustment >= $offset;
 
             if ($isNamespace || $inRange) {
                 $result[] = $nodes;
                 foreach ($nodes->getSubNodeNames() as $subnode) {
-                    if ($this->getNodeAtOffsetRecursive($nodes->$subnode, $offset, $result)) {
+                    if ($this->getNodeAtOffsetRecursive($nodes->$subnode, $offset, $result, $rightAdjustment)) {
                         return true;
                     }
                 }
@@ -103,7 +104,7 @@ class ParserComponent extends Component implements ParserComponentInterface
             }
         } elseif (is_array($nodes)) {
             foreach ($nodes as $node) {
-                if ($this->getNodeAtOffsetRecursive($node, $offset, $result)) {
+                if ($this->getNodeAtOffsetRecursive($node, $offset, $result, $rightAdjustment)) {
                     return true;
                 }
             }
@@ -111,11 +112,12 @@ class ParserComponent extends Component implements ParserComponentInterface
         return false;
     }
 
-    public function getNodesAtOffset($offset)
+    public function getNodesAtOffset($offset, $leftAdjacent = false)
     {
         $this->run();
         $result = [];
-        $this->getNodeAtOffsetRecursive($this->getNodes(), $offset, $result);
+        $rightAdjustment = $leftAdjacent ? 1 : 0;
+        $this->getNodeAtOffsetRecursive($this->getNodes(), $offset, $result, $rightAdjustment);
         return array_reverse($result);
     }
 

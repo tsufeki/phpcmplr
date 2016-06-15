@@ -19,6 +19,7 @@ use PhpCmplr\Completer\Composer\ComposerLocator;
 use PhpCmplr\Completer\TypeInferrer\TypeInferrerComponent;
 use PhpCmplr\Completer\TypeInferrer\ReflectionInferrerComponent;
 use PhpCmplr\Completer\GoTo_\GoToComponent;
+use PhpCmplr\Completer\Completer\CompleterComponent;
 use PhpCmplr\Server\Server;
 use PhpCmplr\Server\Action;
 use PhpCmplr\Util\FileIO;
@@ -105,6 +106,7 @@ class PhpCmplr extends Plugin implements ContainerFactoryInterface
         $server->addAction(new Action\Diagnostics());
         $server->addAction(new Action\Type());
         $server->addAction(new Action\GoTo_());
+        $server->addAction(new Action\Complete());
         $server->addAction(new Action\Quit($server));
     }
 
@@ -124,6 +126,7 @@ class PhpCmplr extends Plugin implements ContainerFactoryInterface
         $container->set('typeinfer', new TypeInferrerComponent($container));
         $container->set('typeinfer.reflection', new ReflectionInferrerComponent($container), ['typeinfer.visitor']);
         $container->set('goto', new GoToComponent($container));
+        $container->set('completer', new CompleterComponent($container));
     }
 
     /**

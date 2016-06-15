@@ -115,4 +115,13 @@ class Function_ extends Element
 
         return $this;
     }
+
+    public function getParamsAsString()
+    {
+        $params = [];
+        foreach ($this->getParams() as $param) {
+            $params[] = $param->toString();
+        }
+        return '(' . implode(', ', $params) . ')';
+    }
 }

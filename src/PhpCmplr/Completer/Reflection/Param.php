@@ -155,4 +155,23 @@ class Param
 
         return $this;
     }
+
+    public function toString()
+    {
+        $str = $this->getName();
+        if ($this->isByRef()) {
+            $str = '&' . $str;
+        }
+        if ($this->isVariadic()) {
+            $str = '...' . $str;
+        }
+        $type = $this->getDocType()->toString();
+        if ($type !== 'mixed') {
+            $str = $type . ' ' . $str;
+        }
+        if ($this->isOptional()) {
+            $str = '[' . $str . ']';
+        }
+        return $str;
+    }
 }

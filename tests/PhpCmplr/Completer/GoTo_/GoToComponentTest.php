@@ -16,9 +16,11 @@ use PhpCmplr\Completer\Reflection\ReflectionComponentInterface;
 use PhpCmplr\Completer\Reflection\ReflectionComponent;
 use PhpCmplr\Completer\Reflection\Method;
 use PhpCmplr\Completer\Reflection\Property;
+use PhpCmplr\Completer\Reflection\Class_;
 use PhpCmplr\Completer\TypeInferrer\TypeInferrerComponent;
 use PhpCmplr\Completer\GoTo_\GoToComponent;
 use PhpCmplr\Completer\GoTo_\GoToMemberDefinitionComponent;
+use PhpCmplr\Completer\GoTo_\GoToClassDefinitionComponent;
 
 class GoToComponentTest extends \PHPUnit_Framework_TestCase
 {
@@ -62,6 +64,45 @@ class GoToComponentTest extends \PHPUnit_Framework_TestCase
         $container->set('typeinfer', $typeinfer);
 
         $container->set('goto.member_definition', new GoToMemberDefinitionComponent($container), ['goto']);
+        $goto = new GoToComponent($container);
+        $this->assertSame([$loc], $goto->getGoToLocations(5));
+    }
+
+    public function test_New()
+    {
+        $loc = new OffsetLocation('/qaz.php', 5);
+        $cls = (new Class_())->setLocation($loc);
+        $name = new Name\FullyQualified('A\\B\\C');
+        $expr = new Expr\New_($name, []);
+
+        $container = new Container();
+        $parser = $this->getMockBuilder(ParserComponent::class)->disableOriginalConstructor()->getMock();
+        $parser
+            ->method('getNodesAtOffset')
+            ->with($this->equalTo(5))
+            ->willReturn([$name, $expr]);
+        $container->set('parser', $parser);
+        $nameResolver = $this->getMockBuilder(NameResolverComponent::class)->disableOriginalConstructor()->getMock();
+        $nameResolver
+            ->method('run')
+            ->willReturn(null);
+        $container->set('name_resolver', $nameResolver);
+        $reflection = $this->getMockBuilder(ReflectionComponent::class)->disableOriginalConstructor()->getMock();
+        $reflection
+            ->method('findClass')
+            ->with($this->equalTo('\\A\\B\\C'))
+            ->willReturn([$cls]);
+        $reflection
+            ->method('findFunction')
+            ->with($this->equalTo('\\A\\B\\C'))
+            ->willReturn([]);
+        $reflection
+            ->method('findConst')
+            ->with($this->equalTo('\\A\\B\\C'))
+            ->willReturn([]);
+        $container->set('reflection', $reflection);
+
+        $container->set('goto.name_definition', new GoToClassDefinitionComponent($container), ['goto']);
         $goto = new GoToComponent($container);
         $this->assertSame([$loc], $goto->getGoToLocations(5));
     }

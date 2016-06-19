@@ -97,12 +97,36 @@ class ServerTest extends \PHPUnit_Framework_TestCase
             $this->mockResponse(200, json_encode($result)));
     }
 
-    public function test_goto()
+    public function test_goto_function()
     {
         $data = new \stdClass();
         $fileData = new \stdClass();
         $fileData->path = 'qaz.php';
         $fileData->contents = '<?php function f(){} f();';
+        $data->files = [$fileData];
+        $data->location = new \stdClass();
+        $data->location->path = 'qaz.php';
+        $data->location->line = 1;
+        $data->location->col = 22;
+
+        $result = new \stdClass();
+        $goto = new \stdClass();
+        $goto->path = 'qaz.php';
+        $goto->line = 1;
+        $goto->col = 7;
+        $result->goto = [$goto];
+
+        $this->server->handle(
+            $this->mockRequest('/goto', json_encode($data)),
+            $this->mockResponse(200, json_encode($result)));
+    }
+
+    public function test_goto_class()
+    {
+        $data = new \stdClass();
+        $fileData = new \stdClass();
+        $fileData->path = 'qaz.php';
+        $fileData->contents = '<?php class C {} new C();';
         $data->files = [$fileData];
         $data->location = new \stdClass();
         $data->location->path = 'qaz.php';

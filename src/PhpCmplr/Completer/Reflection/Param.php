@@ -156,7 +156,12 @@ class Param
         return $this;
     }
 
-    public function toString()
+    /**
+     * @param bool $short
+     *
+     * @return string
+     */
+    public function toString($short = false)
     {
         $str = $this->getName();
         if ($this->isByRef()) {
@@ -165,7 +170,7 @@ class Param
         if ($this->isVariadic()) {
             $str = '...' . $str;
         }
-        $type = $this->getDocType()->toString();
+        $type = $this->getDocType()->toString($short);
         if ($type !== 'mixed') {
             $str = $type . ' ' . $str;
         }

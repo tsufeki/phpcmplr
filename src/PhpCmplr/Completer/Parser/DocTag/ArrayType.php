@@ -41,10 +41,10 @@ class ArrayType extends Type
         return $this->keyType;
     }
 
-    public function toString()
+    public function toString($short = false)
     {
         $value = $this->getValueType();
-        return self::mixed_()->equals($value) ? $this->getName() : $value->toString() . '[]';
+        return self::mixed_()->equals($value) ? $this->getName() : $value->toString($short) . '[]';
     }
 
     public function compare(Type $other)

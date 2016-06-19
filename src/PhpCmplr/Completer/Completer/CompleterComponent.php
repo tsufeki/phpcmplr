@@ -119,9 +119,9 @@ class CompleterComponent extends Component implements CompleterComponentInterfac
         foreach ($methods as $method) {
             $completion = new Completion();
             $completion->setInsertion($method->getName());
-            $completion->setDisplay($method->getName() . $method->getParamsAsString());
+            $completion->setDisplay($method->getName() . $method->getParamsAsString(true));
             $completion->setKind($method->isStatic() ? 'static_method' : 'method');
-            $completion->setType($method->getDocReturnType()->toString());
+            $completion->setType($method->getDocReturnType()->toString(true));
             $completions[] = $completion;
         }
         return $completions;
@@ -141,7 +141,7 @@ class CompleterComponent extends Component implements CompleterComponentInterfac
             $completion->setInsertion($staticContext ? $property->getName() : ltrim($property->getName(), '$'));
             $completion->setDisplay($property->getName());
             $completion->setKind($property->isStatic() ? 'static_property' : 'property');
-            $completion->setType($property->getType()->toString());
+            $completion->setType($property->getType()->toString(true));
             $completions[] = $completion;
         }
         return $completions;

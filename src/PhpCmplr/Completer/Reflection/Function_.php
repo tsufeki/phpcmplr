@@ -116,11 +116,16 @@ class Function_ extends Element
         return $this;
     }
 
-    public function getParamsAsString()
+    /**
+     * @param bool $short
+     *
+     * @return string
+     */
+    public function getParamsAsString($short = false)
     {
         $params = [];
         foreach ($this->getParams() as $param) {
-            $params[] = $param->toString();
+            $params[] = $param->toString($short);
         }
         return '(' . implode(', ', $params) . ')';
     }

@@ -26,9 +26,17 @@ class ObjectType extends Type
         return $this->class;
     }
 
-    public function toString()
+    public function toString($short = false)
     {
-        return $this->getClass() ?: $this->getName();
+        if ($this->getClass()) {
+            if ($short) {
+                $parts = explode('\\', $this->getClass());
+                return $parts[count($parts) - 1];
+            } else {
+                return $this->getClass();
+            }
+        }
+        return $this->getName();
     }
 
     public function compare(Type $other)

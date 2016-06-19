@@ -26,10 +26,10 @@ class AlternativesType extends Type
         return $this->alternatives;
     }
 
-    public function toString()
+    public function toString($short = false)
     {
         return implode('|', array_map(
-            function ($a) { return $a->toString(); },
+            function ($a) use ($short) { return $a->toString($short); },
             $this->getAlternatives()));
     }
 

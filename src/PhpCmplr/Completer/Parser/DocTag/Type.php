@@ -30,9 +30,11 @@ class Type
     }
 
     /**
+     * @param bool $short If true, return shortened form.
+     *
      * @return string
      */
-    public function toString()
+    public function toString($short = false)
     {
         return $this->getName();
     }

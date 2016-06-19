@@ -61,7 +61,7 @@ class CompleterComponentTest extends \PHPUnit_Framework_TestCase
 
     public function test_StaticCall()
     {
-        $method = (new Method())->setName('qaz')->setStatic(true)->setDocReturnType(Type::int_());
+        $method = (new Method())->setName('qaz')->setStatic(true)->setDocReturnType(Type::object_('\\X\\Y'));
         $prop = (new Property())->setName('$wsx')->setStatic(true)->setType(Type::string_());
         $const = (new ClassConst())->setName('EDC');
 
@@ -104,7 +104,7 @@ class CompleterComponentTest extends \PHPUnit_Framework_TestCase
         $this->assertSame('qaz', $completions[0]->getInsertion());
         $this->assertSame('qaz()', $completions[0]->getDisplay());
         $this->assertSame('static_method', $completions[0]->getKind());
-        $this->assertSame('int', $completions[0]->getType());
+        $this->assertSame('Y', $completions[0]->getType());
 
         $this->assertSame('EDC', $completions[1]->getInsertion());
         $this->assertSame('EDC', $completions[1]->getDisplay());

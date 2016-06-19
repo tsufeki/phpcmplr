@@ -18,6 +18,7 @@ use PhpCmplr\Completer\Reflection\Method;
 use PhpCmplr\Completer\Reflection\Property;
 use PhpCmplr\Completer\TypeInferrer\TypeInferrerComponent;
 use PhpCmplr\Completer\GoTo_\GoToComponent;
+use PhpCmplr\Completer\GoTo_\GoToMemberDefinitionComponent;
 
 class GoToComponentTest extends \PHPUnit_Framework_TestCase
 {
@@ -38,6 +39,7 @@ class GoToComponentTest extends \PHPUnit_Framework_TestCase
         $typeinfer = $this->getMockBuilder(TypeInferrerComponent::class)->disableOriginalConstructor()->getMock();
         $container->set('typeinfer', $typeinfer);
 
+        $container->set('goto.member_definition', new GoToMemberDefinitionComponent($container), ['goto']);
         $goto = new GoToComponent($container);
         $this->assertSame([$loc], $goto->getGoToLocations(5));
     }
@@ -59,6 +61,7 @@ class GoToComponentTest extends \PHPUnit_Framework_TestCase
         $typeinfer = $this->getMockBuilder(TypeInferrerComponent::class)->disableOriginalConstructor()->getMock();
         $container->set('typeinfer', $typeinfer);
 
+        $container->set('goto.member_definition', new GoToMemberDefinitionComponent($container), ['goto']);
         $goto = new GoToComponent($container);
         $this->assertSame([$loc], $goto->getGoToLocations(5));
     }

@@ -19,6 +19,7 @@ use PhpCmplr\Completer\Composer\ComposerLocator;
 use PhpCmplr\Completer\TypeInferrer\TypeInferrerComponent;
 use PhpCmplr\Completer\TypeInferrer\ReflectionInferrerComponent;
 use PhpCmplr\Completer\GoTo_\GoToComponent;
+use PhpCmplr\Completer\GoTo_\GoToMemberDefinitionComponent;
 use PhpCmplr\Completer\Completer\CompleterComponent;
 use PhpCmplr\Server\Server;
 use PhpCmplr\Server\Action;
@@ -126,6 +127,7 @@ class PhpCmplr extends Plugin implements ContainerFactoryInterface
         $container->set('typeinfer', new TypeInferrerComponent($container));
         $container->set('typeinfer.reflection', new ReflectionInferrerComponent($container), ['typeinfer.visitor']);
         $container->set('goto', new GoToComponent($container));
+        $container->set('goto.member_definition', new GoToMemberDefinitionComponent($container), ['goto']);
         $container->set('completer', new CompleterComponent($container));
     }
 

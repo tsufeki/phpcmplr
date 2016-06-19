@@ -10,35 +10,26 @@ use PhpLenientParser\Comment;
 use PhpCmplr\Completer\Component;
 use PhpCmplr\Completer\Parser\ParserComponent;
 
-class GoToComponent extends Component implements GoToComponentInterface
+class GoToComponent extends Component
 {
     /**
      * @var ParserComponent
      */
     private $parser;
 
+    /**
+     * @var GoToComponentInterface[]
+     */
+    private $goToComponents;
+
     public function getGoToLocations($offset)
     {
         $this->run();
         $nodes = $this->parser->getNodesAtOffset($offset);
 
-        $node = null;
-        if (count($nodes) > 0) {
-            $node = $nodes[0];
-            if ($node instanceof Name || $node instanceof Identifier || $node instanceof Comment) {
-                $node = count($nodes) > 1 ? $nodes[1] : null;
-            }
-        }
-
         $locations = [];
-
-        if ($node !== null && $node->hasAttribute('reflections')) {
-            foreach ($node->getAttribute('reflections') as $refl) {
-                $loc = $refl->getLocation();
-                if ($loc !== null) {
-                    $locations[] = $loc;
-                }
-            }
+        foreach ($this->goToComponents as $goto) {
+            $locations = array_merge($locations, $goto->getGoToLocations($offset, $nodes));
         }
 
         return $locations;
@@ -47,6 +38,6 @@ class GoToComponent extends Component implements GoToComponentInterface
     protected function doRun()
     {
         $this->parser = $this->container->get('parser');
-        $this->container->get('typeinfer')->run();
+        $this->goToComponents = $this->container->getByTag('goto');
     }
 }

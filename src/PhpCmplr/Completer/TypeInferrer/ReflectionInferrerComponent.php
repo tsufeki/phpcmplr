@@ -2,13 +2,13 @@
 
 namespace PhpCmplr\Completer\TypeInferrer;
 
-use PhpParser\Node;
-use PhpParser\Node\Name;
-use PhpParser\Node\Expr;
-use PhpParser\Node\Stmt;
+use PhpLenientParser\Node;
+use PhpLenientParser\Node\Name;
+use PhpLenientParser\Node\Expr;
+use PhpLenientParser\Node\Stmt;
+use PhpLenientParser\Node\Identifier;
 
 use PhpCmplr\Completer\NodeVisitorComponent;
-use PhpCmplr\Completer\Parser\Identifier;
 use PhpCmplr\Completer\Parser\DocTag\Type;
 use PhpCmplr\Completer\Parser\DocTag\ArrayType;
 use PhpCmplr\Completer\Parser\DocTag\ObjectType;

@@ -2,13 +2,13 @@
 
 namespace PhpCmplr\Completer\Reflection;
 
-use PhpParser\Node;
-use PhpParser\Node\Name;
-use PhpParser\Node\Name\Relative;
-use PhpParser\Node\Name\FullyQualified;
-use PhpParser\Node\Stmt;
-use PhpParser\NodeTraverser;
-use PhpParser\NodeVisitorAbstract;
+use PhpLenientParser\Node;
+use PhpLenientParser\Node\Name;
+use PhpLenientParser\Node\Name\Relative;
+use PhpLenientParser\Node\Name\FullyQualified;
+use PhpLenientParser\Node\Stmt;
+use PhpLenientParser\NodeTraverser;
+use PhpLenientParser\NodeVisitorAbstract;
 
 use PhpCmplr\Completer\Container;
 use PhpCmplr\Completer\NodeVisitorComponent;

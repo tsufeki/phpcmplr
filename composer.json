@@ -10,7 +10,7 @@
         }
     ],
     "require": {
-        "nikic/php-parser": "^2.1",
+        "tsufeki/php-lenient-parser": "dev-master",
         "react/http": "@dev",
         "composer/composer": "dev-master",
         "justinrainbow/json-schema": "^2.0",

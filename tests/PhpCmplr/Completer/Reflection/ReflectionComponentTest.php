@@ -23,7 +23,7 @@ class ReflectionComponentTest extends \PHPUnit_Framework_TestCase
             $map[] = [$class->getName(), [$class]];
         }
         $container = new Container();
-        $refl = $this->getMock(ReflectionComponentInterface::class);
+        $refl = $this->createMock(ReflectionComponentInterface::class);
         $refl
             ->method('findClass')
             ->will($this->returnValueMap($map));

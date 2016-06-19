@@ -2,9 +2,10 @@
 
 namespace PhpCmplr\Completer\TypeInferrer;
 
-use PhpParser\Node;
-use PhpParser\Node\Expr;
-use PhpParser\Comment;
+use PhpLenientParser\Node;
+use PhpLenientParser\Node\Expr;
+use PhpLenientParser\Node\Identifier;
+use PhpLenientParser\Comment;
 
 use PhpCmplr\Completer\NodeVisitorComponent;
 use PhpCmplr\Completer\Parser\DocTag\Type;

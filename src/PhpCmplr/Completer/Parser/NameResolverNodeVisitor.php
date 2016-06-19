@@ -2,10 +2,10 @@
 
 namespace PhpCmplr\Completer\Parser;
 
-use PhpParser\Node;
-use PhpParser\Node\Name;
-use PhpParser\Node\Name\FullyQualified;
-use PhpParser\NodeVisitor\NameResolver;
+use PhpLenientParser\Node;
+use PhpLenientParser\Node\Name;
+use PhpLenientParser\Node\Name\FullyQualified;
+use PhpLenientParser\NodeVisitor\NameResolver;
 
 use PhpCmplr\Completer\Parser\DocTag;
 

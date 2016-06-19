@@ -2,9 +2,9 @@
 
 namespace Tests\PhpCmplr\Completer\TypeInferrer;
 
-use PhpParser\Node\Expr;
-use PhpParser\Node\Stmt;
-use PhpParser\Node\Name;
+use PhpLenientParser\Node\Expr;
+use PhpLenientParser\Node\Stmt;
+use PhpLenientParser\Node\Name;
 
 use PhpCmplr\Completer\Container;
 use PhpCmplr\Completer\Parser\ParserComponent;

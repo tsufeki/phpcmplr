@@ -2,7 +2,8 @@
 
 namespace PhpCmplr\Completer\Parser;
 
-use PhpParser\Node;
+use PhpLenientParser\Node;
+use PhpLenientParser\Comment;
 
 use PhpCmplr\Completer\NodeVisitorComponent;
 use PhpCmplr\Completer\Parser\DocTag\DocTag;
@@ -65,7 +66,7 @@ class DocCommentComponent extends NodeVisitorComponent
         if ($node->hasAttribute('comments')) {
             $lastDocComment = null;
             foreach ($node->getAttribute('comments') as $comment) {
-                if ($comment instanceof \PhpParser\Comment\Doc) {
+                if ($comment instanceof Comment\Doc) {
                     $lastDocComment = $comment;
                 }
             }

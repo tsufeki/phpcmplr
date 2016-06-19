@@ -2,7 +2,7 @@
 
 namespace PhpCmplr\Completer\Diagnostics;
 
-use PhpParser\NodeVisitor;
+use PhpLenientParser\NodeVisitor;
 
 /**
  * Node visitor for finding errors and diagnostics.

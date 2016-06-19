@@ -2,7 +2,7 @@
 
 namespace Tests\PhpCmplr\Completer\Parser;
 
-use PhpParser\Node\Name\FullyQualified;
+use PhpLenientParser\Node\Name\FullyQualified;
 
 use PhpCmplr\Completer\Container;
 use PhpCmplr\Completer\SourceFile;

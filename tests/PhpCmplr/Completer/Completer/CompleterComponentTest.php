@@ -2,13 +2,13 @@
 
 namespace Tests\PhpCmplr\Completer\Completer;
 
-use PhpParser\Node\Expr;
-use PhpParser\Node\Stmt;
-use PhpParser\Node\Name;
+use PhpLenientParser\Node\Expr;
+use PhpLenientParser\Node\Stmt;
+use PhpLenientParser\Node\Name;
+use PhpLenientParser\Node\Identifier;
 
 use PhpCmplr\Completer\Container;
 use PhpCmplr\Completer\Parser\ParserComponent;
-use PhpCmplr\Completer\Parser\Identifier;
 use PhpCmplr\Completer\Parser\DocTag\Type;
 use PhpCmplr\Completer\Reflection\ReflectionComponent;
 use PhpCmplr\Completer\Reflection\Method;

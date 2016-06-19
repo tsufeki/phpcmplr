@@ -2,17 +2,15 @@
 
 namespace PhpCmplr\Completer\Parser;
 
-use PhpParser\Error as ParserError;
-use PhpParser\Lexer\Emulative as Lexer;
-use PhpParser\Parser;
-use PhpParser\Parser\Multiple;
-use PhpParser\Node;
-use PhpParser\Comment;
+use PhpLenientParser\Error as ParserError;
+use PhpLenientParser\Lexer\Emulative as Lexer;
+use PhpLenientParser\Parser;
+use PhpLenientParser\ParserFactory;
+use PhpLenientParser\Node;
+use PhpLenientParser\Comment;
 
 use PhpCmplr\Completer\Container;
 use PhpCmplr\Completer\Component;
-use PhpCmplr\Completer\Parser\Parser\Php5Lenient;
-use PhpCmplr\Completer\Parser\Parser\Php7Lenient;
 
 class ParserComponent extends Component implements ParserComponentInterface
 {
@@ -41,10 +39,7 @@ class ParserComponent extends Component implements ParserComponentInterface
         $lexer = new Lexer(['usedAttributes' => ['comments', 'startLine', 'endLine', 'startFilePos', 'endFilePos']]);
         $parserOptions = ['throwOnError' => false];
 
-        return new Multiple([
-            new Php7Lenient($lexer, $parserOptions),
-            new Php5Lenient($lexer, $parserOptions)
-        ]);
+        return (new ParserFactory())->create(ParserFactory::PREFER_PHP7, $lexer, $parserOptions);
     }
 
     public function getNodes()

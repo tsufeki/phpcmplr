@@ -2,9 +2,9 @@
 
 namespace PhpCmplr\Completer\Parser\DocTag;
 
-use PhpParser\Node\Name;
-use PhpParser\Node\Name\FullyQualified;
-use PhpParser\Node\Name\Relative;
+use PhpLenientParser\Node\Name;
+use PhpLenientParser\Node\Name\FullyQualified;
+use PhpLenientParser\Node\Name\Relative;
 
 class Type
 {
@@ -250,7 +250,7 @@ class Type
     }
 
     /**
-     * Convert PhpParser's Name to string.
+     * Convert PhpLenientParser's Name to string.
      *
      * @param Name|string $name
      *

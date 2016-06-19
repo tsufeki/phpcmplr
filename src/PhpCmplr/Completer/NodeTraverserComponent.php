@@ -2,8 +2,8 @@
 
 namespace PhpCmplr\Completer;
 
-use PhpParser\NodeTraverser;
-use PhpParser\NodeVisitor;
+use PhpLenientParser\NodeTraverser;
+use PhpLenientParser\NodeVisitor;
 
 /**
  * Component which runs some visitors on the node tree.

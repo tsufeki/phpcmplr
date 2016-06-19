@@ -2,9 +2,9 @@
 
 namespace PhpCmplr\Completer\Parser;
 
-use PhpParser\Error as ParserError;
-use PhpParser\Node;
-use PhpParser\Comment;
+use PhpLenientParser\Error as ParserError;
+use PhpLenientParser\Node;
+use PhpLenientParser\Comment;
 
 /**
  * Parser-wrapping component.

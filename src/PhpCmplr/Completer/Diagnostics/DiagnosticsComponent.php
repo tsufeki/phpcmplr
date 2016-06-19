@@ -2,7 +2,7 @@
 
 namespace PhpCmplr\Completer\Diagnostics;
 
-use PhpParser\Error as ParserError;
+use PhpLenientParser\Error as ParserError;
 
 use PhpCmplr\Completer\Container;
 use PhpCmplr\Completer\NodeTraverserComponent;

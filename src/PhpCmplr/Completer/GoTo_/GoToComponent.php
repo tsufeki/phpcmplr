@@ -2,13 +2,13 @@
 
 namespace PhpCmplr\Completer\GoTo_;
 
-use PhpParser\Node\Expr;
-use PhpParser\Node\Name;
-use PhpParser\Comment;
+use PhpLenientParser\Node\Expr;
+use PhpLenientParser\Node\Name;
+use PhpLenientParser\Node\Identifier;
+use PhpLenientParser\Comment;
 
 use PhpCmplr\Completer\Component;
 use PhpCmplr\Completer\Parser\ParserComponent;
-use PhpCmplr\Completer\Parser\Identifier;
 
 class GoToComponent extends Component implements GoToComponentInterface
 {

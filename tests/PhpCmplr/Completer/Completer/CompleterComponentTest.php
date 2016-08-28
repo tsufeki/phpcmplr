@@ -11,9 +11,9 @@ use PhpCmplr\Completer\Container;
 use PhpCmplr\Completer\Parser\Parser;
 use PhpCmplr\Completer\Type\Type;
 use PhpCmplr\Completer\Reflection\ReflectionComponent;
-use PhpCmplr\Completer\Reflection\Method;
-use PhpCmplr\Completer\Reflection\Property;
-use PhpCmplr\Completer\Reflection\ClassConst;
+use PhpCmplr\Completer\Reflection\Element\Method;
+use PhpCmplr\Completer\Reflection\Element\Property;
+use PhpCmplr\Completer\Reflection\Element\ClassConst;
 use PhpCmplr\Completer\TypeInferrer\TypeInferrerComponent;
 use PhpCmplr\Completer\Completer\CompleterComponent;
 

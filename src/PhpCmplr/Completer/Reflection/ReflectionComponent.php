@@ -7,6 +7,21 @@ use PhpCmplr\Completer\Container;
 use PhpCmplr\Completer\Type\Type;
 use PhpCmplr\Completer\Type\ObjectType;
 
+use PhpCmplr\Completer\Reflection\Element\ClassConst;
+use PhpCmplr\Completer\Reflection\Element\ClassLike;
+use PhpCmplr\Completer\Reflection\Element\Class_;
+use PhpCmplr\Completer\Reflection\Element\Const_;
+use PhpCmplr\Completer\Reflection\Element\Element;
+use PhpCmplr\Completer\Reflection\Element\Function_;
+use PhpCmplr\Completer\Reflection\Element\Interface_;
+use PhpCmplr\Completer\Reflection\Element\Method;
+use PhpCmplr\Completer\Reflection\Element\Param;
+use PhpCmplr\Completer\Reflection\Element\Property;
+use PhpCmplr\Completer\Reflection\Element\TraitAlias;
+use PhpCmplr\Completer\Reflection\Element\TraitInsteadOf;
+use PhpCmplr\Completer\Reflection\Element\Trait_;
+use PhpCmplr\Completer\Reflection\Element\Variable;
+
 class ReflectionComponent extends Component implements ReflectionComponentInterface
 {
     /**

@@ -12,11 +12,11 @@ use PhpCmplr\Completer\NameResolver\NameResolver;
 use PhpCmplr\Completer\Reflection\FileReflectionComponent;
 use PhpCmplr\Completer\Reflection\LocatorReflectionComponent;
 use PhpCmplr\Completer\Reflection\Locator;
-use PhpCmplr\Completer\Reflection\Class_;
-use PhpCmplr\Completer\Reflection\ClassLike;
-use PhpCmplr\Completer\Reflection\Function_;
-use PhpCmplr\Completer\Reflection\Interface_;
-use PhpCmplr\Completer\Reflection\Trait_;
+use PhpCmplr\Completer\Reflection\Element\Class_;
+use PhpCmplr\Completer\Reflection\Element\ClassLike;
+use PhpCmplr\Completer\Reflection\Element\Function_;
+use PhpCmplr\Completer\Reflection\Element\Interface_;
+use PhpCmplr\Completer\Reflection\Element\Trait_;
 use PhpCmplr\Util\FileIOInterface;
 
 class LocatorReflectionComponentTest extends \PHPUnit_Framework_TestCase

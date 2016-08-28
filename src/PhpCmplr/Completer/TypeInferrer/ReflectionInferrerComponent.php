@@ -14,13 +14,13 @@ use PhpCmplr\Completer\Type\ArrayType;
 use PhpCmplr\Completer\Type\ObjectType;
 use PhpCmplr\Completer\Type\AlternativesType;
 use PhpCmplr\Completer\Reflection\ReflectionComponent;
-use PhpCmplr\Completer\Reflection\Class_;
-use PhpCmplr\Completer\Reflection\Function_;
-use PhpCmplr\Completer\Reflection\Method;
-use PhpCmplr\Completer\Reflection\Variable;
-use PhpCmplr\Completer\Reflection\Property;
-use PhpCmplr\Completer\Reflection\Const_;
-use PhpCmplr\Completer\Reflection\ClassConst;
+use PhpCmplr\Completer\Reflection\Element\Class_;
+use PhpCmplr\Completer\Reflection\Element\Function_;
+use PhpCmplr\Completer\Reflection\Element\Method;
+use PhpCmplr\Completer\Reflection\Element\Variable;
+use PhpCmplr\Completer\Reflection\Element\Property;
+use PhpCmplr\Completer\Reflection\Element\Const_;
+use PhpCmplr\Completer\Reflection\Element\ClassConst;
 
 class ReflectionInferrerComponent extends NodeVisitorComponent
 {

@@ -1,6 +1,6 @@
 <?php
 
-namespace PhpCmplr\Completer\Reflection;
+namespace PhpCmplr\Completer\Reflection\Element;
 
 class Method extends Function_
 {

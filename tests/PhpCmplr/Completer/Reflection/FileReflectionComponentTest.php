@@ -8,12 +8,12 @@ use PhpCmplr\Completer\Parser\Parser;
 use PhpCmplr\Completer\DocComment\DocCommentParser;
 use PhpCmplr\Completer\NameResolver\NameResolver;
 use PhpCmplr\Completer\Reflection\FileReflectionComponent;
-use PhpCmplr\Completer\Reflection\Class_;
-use PhpCmplr\Completer\Reflection\ClassLike;
-use PhpCmplr\Completer\Reflection\Const_;
-use PhpCmplr\Completer\Reflection\Function_;
-use PhpCmplr\Completer\Reflection\Interface_;
-use PhpCmplr\Completer\Reflection\Trait_;
+use PhpCmplr\Completer\Reflection\Element\Class_;
+use PhpCmplr\Completer\Reflection\Element\ClassLike;
+use PhpCmplr\Completer\Reflection\Element\Const_;
+use PhpCmplr\Completer\Reflection\Element\Function_;
+use PhpCmplr\Completer\Reflection\Element\Interface_;
+use PhpCmplr\Completer\Reflection\Element\Trait_;
 
 class FileReflectionComponentTest extends \PHPUnit_Framework_TestCase
 {

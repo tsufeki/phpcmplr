@@ -13,8 +13,8 @@ use PhpCmplr\Completer\Type\Type;
 use PhpCmplr\Completer\DocComment\Tag\Tag;
 use PhpCmplr\Completer\Reflection\ReflectionComponentInterface;
 use PhpCmplr\Completer\Reflection\ReflectionComponent;
-use PhpCmplr\Completer\Reflection\Method;
-use PhpCmplr\Completer\Reflection\Property;
+use PhpCmplr\Completer\Reflection\Element\Method;
+use PhpCmplr\Completer\Reflection\Element\Property;
 use PhpCmplr\Completer\TypeInferrer\ReflectionInferrerComponent;
 
 class ReflectionInferrerComponentTest extends \PHPUnit_Framework_TestCase

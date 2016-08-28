@@ -6,13 +6,13 @@ use PhpCmplr\Completer\Container;
 use PhpCmplr\Completer\Type\Type;
 use PhpCmplr\Completer\Reflection\ReflectionComponentInterface;
 use PhpCmplr\Completer\Reflection\ReflectionComponent;
-use PhpCmplr\Completer\Reflection\ClassLike;
-use PhpCmplr\Completer\Reflection\Class_;
-use PhpCmplr\Completer\Reflection\Interface_;
-use PhpCmplr\Completer\Reflection\Trait_;
-use PhpCmplr\Completer\Reflection\TraitAlias;
-use PhpCmplr\Completer\Reflection\TraitInsteadOf;
-use PhpCmplr\Completer\Reflection\Method;
+use PhpCmplr\Completer\Reflection\Element\ClassLike;
+use PhpCmplr\Completer\Reflection\Element\Class_;
+use PhpCmplr\Completer\Reflection\Element\Interface_;
+use PhpCmplr\Completer\Reflection\Element\Trait_;
+use PhpCmplr\Completer\Reflection\Element\TraitAlias;
+use PhpCmplr\Completer\Reflection\Element\TraitInsteadOf;
+use PhpCmplr\Completer\Reflection\Element\Method;
 
 class ReflectionComponentTest extends \PHPUnit_Framework_TestCase
 {

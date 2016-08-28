@@ -8,6 +8,10 @@ use PhpCmplr\Completer\Project;
 use PhpCmplr\Util\FileIOInterface;
 use PhpCmplr\Util\IOException;
 
+use PhpCmplr\Completer\Reflection\Element\ClassLike;
+use PhpCmplr\Completer\Reflection\Element\Const_;
+use PhpCmplr\Completer\Reflection\Element\Function_;
+
 class LocatorReflectionComponent extends Component implements ReflectionComponentInterface
 {
     /**

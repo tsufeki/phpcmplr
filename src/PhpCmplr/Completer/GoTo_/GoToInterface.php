@@ -6,7 +6,7 @@ use PhpLenientParser\Node;
 
 use PhpCmplr\Completer\SourceFile\Location;
 
-interface GoToComponentInterface
+interface GoToInterface
 {
     /**
      * Get "go to" locations for the given position in current file.

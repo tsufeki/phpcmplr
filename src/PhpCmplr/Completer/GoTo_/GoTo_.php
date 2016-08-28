@@ -10,7 +10,7 @@ use PhpLenientParser\Comment;
 use PhpCmplr\Completer\Component;
 use PhpCmplr\Completer\Parser\Parser;
 
-class GoToComponent extends Component
+class GoTo_ extends Component
 {
     /**
      * @var Parser
@@ -18,7 +18,7 @@ class GoToComponent extends Component
     private $parser;
 
     /**
-     * @var GoToComponentInterface[]
+     * @var GoToInterface[]
      */
     private $goToComponents;
 

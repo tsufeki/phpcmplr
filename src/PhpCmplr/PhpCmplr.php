@@ -19,9 +19,9 @@ use PhpCmplr\Completer\Composer\ComposerLocator;
 use PhpCmplr\Completer\TypeInferrer\TypeInferrer;
 use PhpCmplr\Completer\TypeInferrer\BasicInferrer;
 use PhpCmplr\Completer\TypeInferrer\ReflectionInferrer;
-use PhpCmplr\Completer\GoTo_\GoToComponent;
-use PhpCmplr\Completer\GoTo_\GoToMemberDefinitionComponent;
-use PhpCmplr\Completer\GoTo_\GoToClassDefinitionComponent;
+use PhpCmplr\Completer\GoTo_\GoTo_;
+use PhpCmplr\Completer\GoTo_\GoToMemberDefinition;
+use PhpCmplr\Completer\GoTo_\GoToClassDefinition;
 use PhpCmplr\Completer\Completer\Completer;
 use PhpCmplr\Server\Server;
 use PhpCmplr\Server\Action;
@@ -129,9 +129,9 @@ class PhpCmplr extends Plugin implements ContainerFactoryInterface
         $container->set('typeinfer', new TypeInferrer($container));
         $container->set('typeinfer.basic', new BasicInferrer($container), ['typeinfer.visitor']);
         $container->set('typeinfer.reflection', new ReflectionInferrer($container), ['typeinfer.visitor']);
-        $container->set('goto', new GoToComponent($container));
-        $container->set('goto.member_definition', new GoToMemberDefinitionComponent($container), ['goto']);
-        $container->set('goto.class_definition', new GoToClassDefinitionComponent($container), ['goto']);
+        $container->set('goto', new GoTo_($container));
+        $container->set('goto.member_definition', new GoToMemberDefinition($container), ['goto']);
+        $container->set('goto.class_definition', new GoToClassDefinition($container), ['goto']);
         $container->set('completer', new Completer($container));
     }
 

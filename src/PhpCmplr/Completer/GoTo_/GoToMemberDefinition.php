@@ -8,7 +8,7 @@ use PhpLenientParser\Comment;
 
 use PhpCmplr\Completer\Component;
 
-class GoToMemberDefinitionComponent extends Component implements GoToComponentInterface
+class GoToMemberDefinition extends Component implements GoToInterface
 {
     public function getGoToLocations($offset, $nodes)
     {

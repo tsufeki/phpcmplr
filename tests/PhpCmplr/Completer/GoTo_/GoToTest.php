@@ -18,11 +18,11 @@ use PhpCmplr\Completer\Reflection\Element\Method;
 use PhpCmplr\Completer\Reflection\Element\Property;
 use PhpCmplr\Completer\Reflection\Element\Class_;
 use PhpCmplr\Completer\TypeInferrer\TypeInferrer;
-use PhpCmplr\Completer\GoTo_\GoToComponent;
-use PhpCmplr\Completer\GoTo_\GoToMemberDefinitionComponent;
-use PhpCmplr\Completer\GoTo_\GoToClassDefinitionComponent;
+use PhpCmplr\Completer\GoTo_\GoTo_;
+use PhpCmplr\Completer\GoTo_\GoToMemberDefinition;
+use PhpCmplr\Completer\GoTo_\GoToClassDefinition;
 
-class GoToComponentTest extends \PHPUnit_Framework_TestCase
+class GoToTest extends \PHPUnit_Framework_TestCase
 {
     public function test_MethodCall()
     {
@@ -41,8 +41,8 @@ class GoToComponentTest extends \PHPUnit_Framework_TestCase
         $typeinfer = $this->getMockBuilder(TypeInferrer::class)->disableOriginalConstructor()->getMock();
         $container->set('typeinfer', $typeinfer);
 
-        $container->set('goto.member_definition', new GoToMemberDefinitionComponent($container), ['goto']);
-        $goto = new GoToComponent($container);
+        $container->set('goto.member_definition', new GoToMemberDefinition($container), ['goto']);
+        $goto = new GoTo_($container);
         $this->assertSame([$loc], $goto->getGoToLocations(5));
     }
 
@@ -63,8 +63,8 @@ class GoToComponentTest extends \PHPUnit_Framework_TestCase
         $typeinfer = $this->getMockBuilder(TypeInferrer::class)->disableOriginalConstructor()->getMock();
         $container->set('typeinfer', $typeinfer);
 
-        $container->set('goto.member_definition', new GoToMemberDefinitionComponent($container), ['goto']);
-        $goto = new GoToComponent($container);
+        $container->set('goto.member_definition', new GoToMemberDefinition($container), ['goto']);
+        $goto = new GoTo_($container);
         $this->assertSame([$loc], $goto->getGoToLocations(5));
     }
 
@@ -102,8 +102,8 @@ class GoToComponentTest extends \PHPUnit_Framework_TestCase
             ->willReturn([]);
         $container->set('reflection', $reflection);
 
-        $container->set('goto.name_definition', new GoToClassDefinitionComponent($container), ['goto']);
-        $goto = new GoToComponent($container);
+        $container->set('goto.name_definition', new GoToClassDefinition($container), ['goto']);
+        $goto = new GoTo_($container);
         $this->assertSame([$loc], $goto->getGoToLocations(5));
     }
 }

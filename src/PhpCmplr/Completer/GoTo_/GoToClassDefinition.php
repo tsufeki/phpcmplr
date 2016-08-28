@@ -11,7 +11,7 @@ use PhpCmplr\Completer\Component;
 use PhpCmplr\Completer\Type\Type;
 use PhpCmplr\Completer\Reflection\Reflection;
 
-class GoToClassDefinitionComponent extends Component implements GoToComponentInterface
+class GoToClassDefinition extends Component implements GoToInterface
 {
     /**
      * @var Reflection

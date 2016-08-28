@@ -11,8 +11,11 @@ use PhpLenientParser\Comment;
 
 use PhpCmplr\Completer\Container;
 use PhpCmplr\Completer\Component;
+use PhpCmplr\Completer\OffsetLocation;
+use PhpCmplr\Completer\Diagnostics\DiagnosticsInterface;
+use PhpCmplr\Completer\Diagnostics\Diagnostic;
 
-class Parser extends Component implements ParserInterface
+class Parser extends Component implements ParserInterface, DiagnosticsInterface
 {
     /**
      * @var Node[]
@@ -20,15 +23,15 @@ class Parser extends Component implements ParserInterface
     private $nodes;
 
     /**
-     * @var ParserError[]
+     * @var Diagnostic[]
      */
-    private $errors;
+    private $diagnostics;
 
     public function __construct(Container $container)
     {
         parent::__construct($container);
         $this->nodes = [];
-        $this->errors = [];
+        $this->diagnostics = [];
     }
 
     /**
@@ -46,12 +49,6 @@ class Parser extends Component implements ParserInterface
     {
         $this->run();
         return $this->nodes;
-    }
-
-    public function getErrors()
-    {
-        $this->run();
-        return $this->errors;
     }
 
     /**
@@ -116,8 +113,33 @@ class Parser extends Component implements ParserInterface
         return array_reverse($result);
     }
 
+    /**
+     * @param ParserError $error
+     * @param string      $path
+     *
+     * @return Diagnostic
+     */
+    private function makeDiagnosticFromError(ParserError $error, $path)
+    {
+        $attributes = $error->getAttributes();
+        $start = array_key_exists('startFilePos', $attributes) ? $attributes['startFilePos'] : 0;
+        $end = array_key_exists('endFilePos', $attributes) ? $attributes['endFilePos'] : $start;
+
+        return new Diagnostic(
+            new OffsetLocation($path, $start),
+            new OffsetLocation($path, $end),
+            $error->getRawMessage());
+    }
+
+    public function getDiagnostics()
+    {
+        $this->run();
+        return $this->diagnostics;
+    }
+
     protected function doRun()
     {
+        $path = $this->container->get('file')->getPath();
         try {
             $parser = $this->createParser();
             $this->nodes = $parser->parse($this->container->get('file')->getContents());
@@ -125,10 +147,10 @@ class Parser extends Component implements ParserInterface
                 $this->nodes = [];
             }
             foreach ($parser->getErrors() as $error) {
-                $this->errors[] = $error;
+                $this->diagnostics[] = $this->makeDiagnosticFromError($error, $path);
             }
         } catch (ParserError $error) {
-            $this->errors[] = $error;
+            $this->diagnostics[] = $this->makeDiagnosticFromError($error, $path);
         }
     }
 }

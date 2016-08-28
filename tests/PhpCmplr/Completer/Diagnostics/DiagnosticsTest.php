@@ -5,16 +5,16 @@ namespace Tests\PhpCmplr\Completer\Diagnostics;
 use PhpCmplr\Completer\Container;
 use PhpCmplr\Completer\SourceFile;
 use PhpCmplr\Completer\Parser\Parser;
-use PhpCmplr\Completer\Diagnostics\DiagnosticsComponent;
+use PhpCmplr\Completer\Diagnostics\Diagnostics;
 
-class DiagnosticsComponentTest extends \PHPUnit_Framework_TestCase
+class DiagnosticsTest extends \PHPUnit_Framework_TestCase
 {
     protected function loadFile($contents, $path = 'qaz.php')
     {
         $container = new Container();
         $container->set('file', $file = new SourceFile($container, $path, $contents));
-        $container->set('parser', new Parser($container));
-        return [$file, new DiagnosticsComponent($container)];
+        $container->set('parser', new Parser($container), ['diagnostics']);
+        return [$file, new Diagnostics($container)];
     }
 
     public function test_getDiagnostics()

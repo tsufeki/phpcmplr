@@ -81,17 +81,17 @@ END;
         $this->assertSame($dump, $this->dumper->dump($nodes));
     }
 
-    public function test_getErrors()
+    public function test_getDiagnostics()
     {
-        $errors = $this->loadFile('<?php 7 + *1;')->getErrors();
-        $this->assertCount(1, $errors);
-        $this->assertSame("Syntax error, unexpected '*'", $errors[0]->getRawMessage());
+        $diags = $this->loadFile('<?php 7 + *1;')->getDiagnostics();
+        $this->assertCount(1, $diags);
+        $this->assertSame("Syntax error, unexpected '*'", $diags[0]->getDescription());
     }
 
-    public function test_getErrors_empty()
+    public function test_getDiagnostics_empty()
     {
-        $errors = $this->loadFile('<?php 7 + 1;')->getErrors();
-        $this->assertCount(0, $errors);
+        $diags = $this->loadFile('<?php 7 + 1;')->getDiagnostics();
+        $this->assertCount(0, $diags);
     }
 
     public function test_getNodesAtOffset()

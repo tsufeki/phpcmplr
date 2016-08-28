@@ -17,11 +17,6 @@ interface ParserInterface
     public function getNodes();
 
     /**
-     * @return ParserError[]
-     */
-    public function getErrors();
-
-    /**
      * Get all nodes containing given offset.
      *
      * @param int  $offset

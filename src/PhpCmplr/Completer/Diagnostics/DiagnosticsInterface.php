@@ -5,7 +5,7 @@ namespace PhpCmplr\Completer\Diagnostics;
 /**
  * Provides errors and warnings about the source code.
  */
-interface DiagnosticsComponentInterface
+interface DiagnosticsInterface
 {
     /**
      * @return Diagnostic[]

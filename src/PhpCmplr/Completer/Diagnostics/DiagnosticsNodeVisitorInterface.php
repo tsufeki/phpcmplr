@@ -7,7 +7,7 @@ use PhpLenientParser\NodeVisitor;
 /**
  * Node visitor for finding errors and diagnostics.
  */
-interface DiagnosticsNodeVisitor extends NodeVisitor
+interface DiagnosticsNodeVisitorInterface extends NodeVisitor
 {
     /**
      * @return Diagnostic[]

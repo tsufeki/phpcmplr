@@ -30,7 +30,7 @@ use PhpCmplr\Completer\Reflection\Element\TraitInsteadOf;
 use PhpCmplr\Completer\Reflection\Element\Trait_;
 use PhpCmplr\Completer\Reflection\Element\Variable;
 
-class FileReflectionComponent extends NodeVisitorComponent implements ReflectionComponentInterface
+class FileReflection extends NodeVisitorComponent implements ReflectionInterface
 {
     /**
      * @var ClassLike[]

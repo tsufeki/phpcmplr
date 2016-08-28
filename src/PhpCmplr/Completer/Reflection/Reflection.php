@@ -22,10 +22,10 @@ use PhpCmplr\Completer\Reflection\Element\TraitInsteadOf;
 use PhpCmplr\Completer\Reflection\Element\Trait_;
 use PhpCmplr\Completer\Reflection\Element\Variable;
 
-class ReflectionComponent extends Component implements ReflectionComponentInterface
+class Reflection extends Component
 {
     /**
-     * @var ReflectionComponentInterface[]
+     * @var ReflectionInterface[]
      */
     private $reflectionComponents;
 
@@ -575,6 +575,6 @@ class ReflectionComponent extends Component implements ReflectionComponentInterf
 
     protected function doRun()
     {
-        $this->reflectionComponents = $this->container->getByTag('reflection.component');
+        $this->reflectionComponents = $this->container->getByTag('reflection');
     }
 }

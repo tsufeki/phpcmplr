@@ -12,8 +12,8 @@ use PhpCmplr\Completer\Parser\Parser;
 use PhpCmplr\Completer\NameResolver\NameResolver;
 use PhpCmplr\Completer\Type\Type;
 use PhpCmplr\Completer\DocComment\Tag\Tag;
-use PhpCmplr\Completer\Reflection\ReflectionComponentInterface;
-use PhpCmplr\Completer\Reflection\ReflectionComponent;
+use PhpCmplr\Completer\Reflection\ReflectionInterface;
+use PhpCmplr\Completer\Reflection\Reflection;
 use PhpCmplr\Completer\Reflection\Element\Method;
 use PhpCmplr\Completer\Reflection\Element\Property;
 use PhpCmplr\Completer\Reflection\Element\Class_;
@@ -87,7 +87,7 @@ class GoToComponentTest extends \PHPUnit_Framework_TestCase
             ->method('run')
             ->willReturn(null);
         $container->set('name_resolver', $nameResolver);
-        $reflection = $this->getMockBuilder(ReflectionComponent::class)->disableOriginalConstructor()->getMock();
+        $reflection = $this->getMockBuilder(Reflection::class)->disableOriginalConstructor()->getMock();
         $reflection
             ->method('findClass')
             ->with($this->equalTo('\\A\\B\\C'))

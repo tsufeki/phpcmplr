@@ -13,7 +13,7 @@ use PhpCmplr\Completer\Type\Type;
 use PhpCmplr\Completer\Type\ArrayType;
 use PhpCmplr\Completer\Type\ObjectType;
 use PhpCmplr\Completer\Type\AlternativesType;
-use PhpCmplr\Completer\Reflection\ReflectionComponent;
+use PhpCmplr\Completer\Reflection\Reflection;
 use PhpCmplr\Completer\Reflection\Element\Class_;
 use PhpCmplr\Completer\Reflection\Element\Function_;
 use PhpCmplr\Completer\Reflection\Element\Method;
@@ -25,7 +25,7 @@ use PhpCmplr\Completer\Reflection\Element\ClassConst;
 class ReflectionInferrerComponent extends NodeVisitorComponent
 {
     /**
-     * @var ReflectionComponent
+     * @var Reflection
      */
     private $reflection;
 

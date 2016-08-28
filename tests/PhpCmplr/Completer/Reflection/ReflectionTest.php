@@ -4,8 +4,8 @@ namespace Tests\PhpCmplr\Completer\Reflection;
 
 use PhpCmplr\Completer\Container;
 use PhpCmplr\Completer\Type\Type;
-use PhpCmplr\Completer\Reflection\ReflectionComponentInterface;
-use PhpCmplr\Completer\Reflection\ReflectionComponent;
+use PhpCmplr\Completer\Reflection\ReflectionInterface;
+use PhpCmplr\Completer\Reflection\Reflection;
 use PhpCmplr\Completer\Reflection\Element\ClassLike;
 use PhpCmplr\Completer\Reflection\Element\Class_;
 use PhpCmplr\Completer\Reflection\Element\Interface_;
@@ -14,7 +14,7 @@ use PhpCmplr\Completer\Reflection\Element\TraitAlias;
 use PhpCmplr\Completer\Reflection\Element\TraitInsteadOf;
 use PhpCmplr\Completer\Reflection\Element\Method;
 
-class ReflectionComponentTest extends \PHPUnit_Framework_TestCase
+class ReflectionTest extends \PHPUnit_Framework_TestCase
 {
     protected function prepare(...$classes)
     {
@@ -23,12 +23,12 @@ class ReflectionComponentTest extends \PHPUnit_Framework_TestCase
             $map[] = [$class->getName(), [$class]];
         }
         $container = new Container();
-        $refl = $this->createMock(ReflectionComponentInterface::class);
+        $refl = $this->createMock(ReflectionInterface::class);
         $refl
             ->method('findClass')
             ->will($this->returnValueMap($map));
-        $container->set('reflection.component', $refl, ['reflection.component']);
-        return new ReflectionComponent($container);
+        $container->set('reflection', $refl, ['reflection']);
+        return new Reflection($container);
     }
 
     protected function makeMethod($name)

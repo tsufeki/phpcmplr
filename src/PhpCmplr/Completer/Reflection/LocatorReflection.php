@@ -12,7 +12,7 @@ use PhpCmplr\Completer\Reflection\Element\ClassLike;
 use PhpCmplr\Completer\Reflection\Element\Const_;
 use PhpCmplr\Completer\Reflection\Element\Function_;
 
-class LocatorReflectionComponent extends Component implements ReflectionComponentInterface
+class LocatorReflection extends Component implements ReflectionInterface
 {
     /**
      * @var Project
@@ -25,7 +25,7 @@ class LocatorReflectionComponent extends Component implements ReflectionComponen
     private $io;
 
     /**
-     * @var Locator[]
+     * @var LocatorInterface[]
      */
     private $locators;
 

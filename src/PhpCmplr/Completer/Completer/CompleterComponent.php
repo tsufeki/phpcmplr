@@ -12,7 +12,7 @@ use PhpCmplr\Completer\Parser\Parser;
 use PhpCmplr\Completer\Type\Type;
 use PhpCmplr\Completer\Type\ObjectType;
 use PhpCmplr\Completer\Type\AlternativesType;
-use PhpCmplr\Completer\Reflection\ReflectionComponent;
+use PhpCmplr\Completer\Reflection\Reflection;
 use PhpCmplr\Completer\Reflection\Element\Class_;
 use PhpCmplr\Completer\Reflection\Element\Function_;
 use PhpCmplr\Completer\Reflection\Element\Method;
@@ -29,7 +29,7 @@ class CompleterComponent extends Component implements CompleterComponentInterfac
     private $parser;
 
     /**
-     * @var ReflectionComponent
+     * @var Reflection
      */
     private $reflection;
 

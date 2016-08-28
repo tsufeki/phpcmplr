@@ -7,7 +7,7 @@ use PhpCmplr\Completer\SourceFile\SourceFile;
 use PhpCmplr\Completer\Parser\Parser;
 use PhpCmplr\Completer\DocComment\DocCommentParser;
 use PhpCmplr\Completer\NameResolver\NameResolver;
-use PhpCmplr\Completer\Reflection\FileReflectionComponent;
+use PhpCmplr\Completer\Reflection\FileReflection;
 use PhpCmplr\Completer\Reflection\Element\Class_;
 use PhpCmplr\Completer\Reflection\Element\ClassLike;
 use PhpCmplr\Completer\Reflection\Element\Const_;
@@ -15,7 +15,7 @@ use PhpCmplr\Completer\Reflection\Element\Function_;
 use PhpCmplr\Completer\Reflection\Element\Interface_;
 use PhpCmplr\Completer\Reflection\Element\Trait_;
 
-class FileReflectionComponentTest extends \PHPUnit_Framework_TestCase
+class FileReflectionTest extends \PHPUnit_Framework_TestCase
 {
     protected function loadFile($contents, $path = 'qaz.php')
     {
@@ -24,7 +24,7 @@ class FileReflectionComponentTest extends \PHPUnit_Framework_TestCase
         $container->set('parser', new Parser($container));
         $container->set('doc_comment', new DocCommentParser($container));
         $container->set('name_resolver', new NameResolver($container));
-        return new FileReflectionComponent($container);
+        return new FileReflection($container);
     }
 
     public function test_getFunctions()

@@ -3,9 +3,9 @@
 namespace PhpCmplr\Completer\Composer;
 
 use PhpCmplr\Completer\Component;
-use PhpCmplr\Completer\Reflection\Locator;
+use PhpCmplr\Completer\Reflection\LocatorInterface;
 
-class ComposerLocator extends Component implements Locator
+class ComposerLocator extends Component implements LocatorInterface
 {
     /**
      * @var ComposerPackage

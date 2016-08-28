@@ -10,7 +10,7 @@ use PhpLenientParser\Node\Identifier;
 use PhpCmplr\Completer\Container;
 use PhpCmplr\Completer\Parser\Parser;
 use PhpCmplr\Completer\Type\Type;
-use PhpCmplr\Completer\Reflection\ReflectionComponent;
+use PhpCmplr\Completer\Reflection\Reflection;
 use PhpCmplr\Completer\Reflection\Element\Method;
 use PhpCmplr\Completer\Reflection\Element\Property;
 use PhpCmplr\Completer\Reflection\Element\ClassConst;
@@ -38,7 +38,7 @@ class CompleterComponentTest extends \PHPUnit_Framework_TestCase
             ->method('run')
             ->willReturn(null);
         $container->set('typeinfer', $typeinfer);
-        $reflection = $this->getMockBuilder(ReflectionComponent::class)->disableOriginalConstructor()->getMock();
+        $reflection = $this->getMockBuilder(Reflection::class)->disableOriginalConstructor()->getMock();
         $reflection
             ->method('findAllMethods')
             ->with($this->equalTo('\\C'))
@@ -81,7 +81,7 @@ class CompleterComponentTest extends \PHPUnit_Framework_TestCase
             ->method('run')
             ->willReturn(null);
         $container->set('typeinfer', $typeinfer);
-        $reflection = $this->getMockBuilder(ReflectionComponent::class)->disableOriginalConstructor()->getMock();
+        $reflection = $this->getMockBuilder(Reflection::class)->disableOriginalConstructor()->getMock();
         $reflection
             ->method('findAllMethods')
             ->with($this->equalTo('\\C'))

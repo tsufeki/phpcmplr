@@ -9,9 +9,9 @@ use PhpCmplr\Completer\SourceFile\SourceFile;
 use PhpCmplr\Completer\Parser\Parser;
 use PhpCmplr\Completer\DocComment\DocCommentParser;
 use PhpCmplr\Completer\NameResolver\NameResolver;
-use PhpCmplr\Completer\Reflection\FileReflectionComponent;
-use PhpCmplr\Completer\Reflection\LocatorReflectionComponent;
-use PhpCmplr\Completer\Reflection\Locator;
+use PhpCmplr\Completer\Reflection\FileReflection;
+use PhpCmplr\Completer\Reflection\LocatorReflection;
+use PhpCmplr\Completer\Reflection\LocatorInterface;
 use PhpCmplr\Completer\Reflection\Element\Class_;
 use PhpCmplr\Completer\Reflection\Element\ClassLike;
 use PhpCmplr\Completer\Reflection\Element\Function_;
@@ -19,7 +19,7 @@ use PhpCmplr\Completer\Reflection\Element\Interface_;
 use PhpCmplr\Completer\Reflection\Element\Trait_;
 use PhpCmplr\Util\FileIOInterface;
 
-class LocatorReflectionComponentTest extends \PHPUnit_Framework_TestCase
+class LocatorReflectionTest extends \PHPUnit_Framework_TestCase
 {
     protected function loadFile($contents, $path = 'qaz.php')
     {
@@ -28,7 +28,7 @@ class LocatorReflectionComponentTest extends \PHPUnit_Framework_TestCase
         $container->set('parser', new Parser($container));
         $container->set('doc_comment', new DocCommentParser($container));
         $container->set('name_resolver', new NameResolver($container));
-        $container->set('reflection.file', new FileReflectionComponent($container));
+        $container->set('reflection.file', new FileReflection($container));
 
         return $container;
     }
@@ -43,7 +43,7 @@ class LocatorReflectionComponentTest extends \PHPUnit_Framework_TestCase
             ->method('createContainer')
             ->will($this->onConsecutiveCalls($cont1, $cont2));
 
-        $locator = $this->getMockForAbstractClass(Locator::class);
+        $locator = $this->getMockForAbstractClass(LocatorInterface::class);
         $locator->expects($this->once())
             ->method('getPathsForClass')
             ->with($this->equalTo('\\CC'))
@@ -58,7 +58,7 @@ class LocatorReflectionComponentTest extends \PHPUnit_Framework_TestCase
         $project->addFile('/wsx.php', '');
         $cont2->set('project', $project);
 
-        $refl = new LocatorReflectionComponent($cont2);
+        $refl = new LocatorReflection($cont2);
 
         $classes = $refl->findClass('\\CC');
         $this->assertCount(1, $classes);
@@ -79,7 +79,7 @@ class LocatorReflectionComponentTest extends \PHPUnit_Framework_TestCase
             ->method('createContainer')
             ->will($this->onConsecutiveCalls($cont1, $cont2));
 
-        $locator = $this->getMockForAbstractClass(Locator::class);
+        $locator = $this->getMockForAbstractClass(LocatorInterface::class);
         $locator->expects($this->once())
             ->method('getPathsForFunction')
             ->with($this->equalTo('\\fff'))
@@ -94,7 +94,7 @@ class LocatorReflectionComponentTest extends \PHPUnit_Framework_TestCase
         $project->addFile('/wsx.php', '');
         $cont2->set('project', $project);
 
-        $refl = new LocatorReflectionComponent($cont2);
+        $refl = new LocatorReflection($cont2);
 
         $functions = $refl->findFunction('\\fff');
         $this->assertCount(1, $functions);
@@ -114,7 +114,7 @@ class LocatorReflectionComponentTest extends \PHPUnit_Framework_TestCase
             ->method('createContainer')
             ->will($this->onConsecutiveCalls($cont1, $cont2));
 
-        $locator = $this->getMockForAbstractClass(Locator::class);
+        $locator = $this->getMockForAbstractClass(LocatorInterface::class);
         $locator->expects($this->exactly(2))
             ->method('getPathsForConst')
             ->withConsecutive([$this->equalTo('\\ZZ')], [$this->equalTo('\\zZ')])
@@ -129,7 +129,7 @@ class LocatorReflectionComponentTest extends \PHPUnit_Framework_TestCase
         $project->addFile('/wsx.php', '');
         $cont2->set('project', $project);
 
-        $refl = new LocatorReflectionComponent($cont2);
+        $refl = new LocatorReflection($cont2);
 
         $consts = $refl->findConst('\\ZZ');
         $this->assertCount(1, $consts);

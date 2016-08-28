@@ -11,8 +11,8 @@ use PhpCmplr\Completer\Parser\Parser;
 use PhpCmplr\Completer\NameResolver\NameResolver;
 use PhpCmplr\Completer\Type\Type;
 use PhpCmplr\Completer\DocComment\Tag\Tag;
-use PhpCmplr\Completer\Reflection\ReflectionComponentInterface;
-use PhpCmplr\Completer\Reflection\ReflectionComponent;
+use PhpCmplr\Completer\Reflection\ReflectionInterface;
+use PhpCmplr\Completer\Reflection\Reflection;
 use PhpCmplr\Completer\Reflection\Element\Method;
 use PhpCmplr\Completer\Reflection\Element\Property;
 use PhpCmplr\Completer\TypeInferrer\ReflectionInferrerComponent;
@@ -34,7 +34,7 @@ class ReflectionInferrerComponentTest extends \PHPUnit_Framework_TestCase
     public function test_MethodCall()
     {
         $method = (new Method())->setDocReturnType(Type::int_())->setStatic(false);
-        $refl = $this->getMockBuilder(ReflectionComponent::class)->disableOriginalConstructor()->getMock();
+        $refl = $this->getMockBuilder(Reflection::class)->disableOriginalConstructor()->getMock();
         $refl
             ->expects($this->once())
             ->method('findMethod')
@@ -50,7 +50,7 @@ class ReflectionInferrerComponentTest extends \PHPUnit_Framework_TestCase
     public function test_MethodCall_alternatives()
     {
         $method = (new Method())->setDocReturnType(Type::int_())->setStatic(false);
-        $refl = $this->getMockBuilder(ReflectionComponent::class)->disableOriginalConstructor()->getMock();
+        $refl = $this->getMockBuilder(Reflection::class)->disableOriginalConstructor()->getMock();
         $refl
             ->expects($this->once())
             ->method('findMethod')
@@ -67,7 +67,7 @@ class ReflectionInferrerComponentTest extends \PHPUnit_Framework_TestCase
 
     public function test_Variable()
     {
-        $refl = $this->getMockBuilder(ReflectionComponent::class)->disableOriginalConstructor()->getMock();
+        $refl = $this->getMockBuilder(Reflection::class)->disableOriginalConstructor()->getMock();
         $var1 = new Expr\Variable('a', ['annotations' => ['var' => [Tag::get('var', 'int $a')]]]);
         $var2 = new Expr\Variable('a');
         $this->infer([$var1, $var2], $refl);
@@ -76,7 +76,7 @@ class ReflectionInferrerComponentTest extends \PHPUnit_Framework_TestCase
 
     public function test_Variable_this()
     {
-        $refl = $this->getMockBuilder(ReflectionComponent::class)->disableOriginalConstructor()->getMock();
+        $refl = $this->getMockBuilder(Reflection::class)->disableOriginalConstructor()->getMock();
         $var1 = new Expr\Variable('this');
         $class = new Stmt\Class_('C', ['stmts' => [
             new Stmt\ClassMethod('f', ['stmts' => [$var1]]),
@@ -87,7 +87,7 @@ class ReflectionInferrerComponentTest extends \PHPUnit_Framework_TestCase
 
     public function test_Variable_for()
     {
-        $refl = $this->getMockBuilder(ReflectionComponent::class)->disableOriginalConstructor()->getMock();
+        $refl = $this->getMockBuilder(Reflection::class)->disableOriginalConstructor()->getMock();
         $for = new Stmt\For_([
             'init' => new Expr\Assign(new Expr\Variable('a'), new Expr\Variable('b')),
         ], ['annotations' => ['var' => [Tag::get('var', 'int')]]]);
@@ -99,7 +99,7 @@ class ReflectionInferrerComponentTest extends \PHPUnit_Framework_TestCase
     public function test_StaticPropertyFetch_self()
     {
         $prop = (new Property())->setName('x')->setStatic(true)->setType(Type::int_());
-        $refl = $this->getMockBuilder(ReflectionComponent::class)->disableOriginalConstructor()->getMock();
+        $refl = $this->getMockBuilder(Reflection::class)->disableOriginalConstructor()->getMock();
         $refl
             ->expects($this->once())
             ->method('findProperty')

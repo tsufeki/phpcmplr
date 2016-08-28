@@ -9,12 +9,12 @@ use PhpLenientParser\Node\Name;
 
 use PhpCmplr\Completer\Component;
 use PhpCmplr\Completer\Type\Type;
-use PhpCmplr\Completer\Reflection\ReflectionComponent;
+use PhpCmplr\Completer\Reflection\Reflection;
 
 class GoToClassDefinitionComponent extends Component implements GoToComponentInterface
 {
     /**
-     * @var ReflectionComponent
+     * @var Reflection
      */
     private $reflection;
 

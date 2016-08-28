@@ -8,23 +8,11 @@ use PhpCmplr\Completer\Container;
 use PhpCmplr\Completer\Parser\Parser;
 use PhpCmplr\Completer\NameResolver\NameResolver;
 use PhpCmplr\Completer\Type\Type;
-use PhpCmplr\Completer\TypeInferrer\TypeInferrerComponent;
+use PhpCmplr\Completer\TypeInferrer\TypeInferrer;
+use PhpCmplr\Completer\TypeInferrer\BasicInferrer;
 
-class TypeInferrerComponentTest extends \PHPUnit_Framework_TestCase
+class BasicInferrerTest extends \PHPUnit_Framework_TestCase
 {
-    public function test_getType()
-    {
-        $expr = new Expr\Variable('qaz', ['type' => Type::int_()]);
-        $container = new Container();
-        $parser = $this->getMockBuilder(Parser::class)->disableOriginalConstructor()->getMock();
-        $parser->method('getNodes')->willReturn([]);
-        $parser->method('getNodesAtOffset')->with($this->equalTo(7))->willReturn([$expr]);
-        $resolver = $this->getMockBuilder(NameResolver::class)->disableOriginalConstructor()->getMock();
-        $container->set('parser', $parser);
-        $container->set('name_resolver', $resolver);
-        $this->assertTrue(Type::int_()->equals((new TypeInferrerComponent($container))->getType(7)));
-    }
-
     protected function infer(array $nodes)
     {
         $container = new Container();
@@ -33,7 +21,8 @@ class TypeInferrerComponentTest extends \PHPUnit_Framework_TestCase
         $resolver = $this->getMockBuilder(NameResolver::class)->disableOriginalConstructor()->getMock();
         $container->set('parser', $parser);
         $container->set('name_resolver', $resolver);
-        (new TypeInferrerComponent($container))->run();
+        $container->set('typeinfer.basic', new BasicInferrer($container), ['typeinfer.visitor']);
+        (new TypeInferrer($container))->run();
     }
 
     public function test_Assign()

@@ -4,7 +4,7 @@ namespace PhpCmplr\Completer\TypeInferrer;
 
 use PhpCmplr\Completer\Type\Type;
 
-interface TypeInferrerComponentInterface
+interface TypeInferrerInterface
 {
     /**
      * Get type of the expression at offset.

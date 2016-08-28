@@ -17,7 +17,7 @@ use PhpCmplr\Completer\Reflection\Reflection;
 use PhpCmplr\Completer\Reflection\Element\Method;
 use PhpCmplr\Completer\Reflection\Element\Property;
 use PhpCmplr\Completer\Reflection\Element\Class_;
-use PhpCmplr\Completer\TypeInferrer\TypeInferrerComponent;
+use PhpCmplr\Completer\TypeInferrer\TypeInferrer;
 use PhpCmplr\Completer\GoTo_\GoToComponent;
 use PhpCmplr\Completer\GoTo_\GoToMemberDefinitionComponent;
 use PhpCmplr\Completer\GoTo_\GoToClassDefinitionComponent;
@@ -38,7 +38,7 @@ class GoToComponentTest extends \PHPUnit_Framework_TestCase
             ->with($this->equalTo(5))
             ->willReturn([$expr]);
         $container->set('parser', $parser);
-        $typeinfer = $this->getMockBuilder(TypeInferrerComponent::class)->disableOriginalConstructor()->getMock();
+        $typeinfer = $this->getMockBuilder(TypeInferrer::class)->disableOriginalConstructor()->getMock();
         $container->set('typeinfer', $typeinfer);
 
         $container->set('goto.member_definition', new GoToMemberDefinitionComponent($container), ['goto']);
@@ -60,7 +60,7 @@ class GoToComponentTest extends \PHPUnit_Framework_TestCase
             ->with($this->equalTo(5))
             ->willReturn([$cls, $expr]);
         $container->set('parser', $parser);
-        $typeinfer = $this->getMockBuilder(TypeInferrerComponent::class)->disableOriginalConstructor()->getMock();
+        $typeinfer = $this->getMockBuilder(TypeInferrer::class)->disableOriginalConstructor()->getMock();
         $container->set('typeinfer', $typeinfer);
 
         $container->set('goto.member_definition', new GoToMemberDefinitionComponent($container), ['goto']);

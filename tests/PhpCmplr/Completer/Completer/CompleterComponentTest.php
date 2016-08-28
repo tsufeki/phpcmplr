@@ -14,7 +14,7 @@ use PhpCmplr\Completer\Reflection\Reflection;
 use PhpCmplr\Completer\Reflection\Element\Method;
 use PhpCmplr\Completer\Reflection\Element\Property;
 use PhpCmplr\Completer\Reflection\Element\ClassConst;
-use PhpCmplr\Completer\TypeInferrer\TypeInferrerComponent;
+use PhpCmplr\Completer\TypeInferrer\TypeInferrer;
 use PhpCmplr\Completer\Completer\CompleterComponent;
 
 class CompleterComponentTest extends \PHPUnit_Framework_TestCase
@@ -33,7 +33,7 @@ class CompleterComponentTest extends \PHPUnit_Framework_TestCase
             ->with($this->equalTo(5), $this->equalTo(true))
             ->willReturn([$id, $expr]);
         $container->set('parser', $parser);
-        $typeinfer = $this->getMockBuilder(TypeInferrerComponent::class)->disableOriginalConstructor()->getMock();
+        $typeinfer = $this->getMockBuilder(TypeInferrer::class)->disableOriginalConstructor()->getMock();
         $typeinfer
             ->method('run')
             ->willReturn(null);
@@ -76,7 +76,7 @@ class CompleterComponentTest extends \PHPUnit_Framework_TestCase
             ->with($this->equalTo(5), $this->equalTo(true))
             ->willReturn([$id, $expr]);
         $container->set('parser', $parser);
-        $typeinfer = $this->getMockBuilder(TypeInferrerComponent::class)->disableOriginalConstructor()->getMock();
+        $typeinfer = $this->getMockBuilder(TypeInferrer::class)->disableOriginalConstructor()->getMock();
         $typeinfer
             ->method('run')
             ->willReturn(null);

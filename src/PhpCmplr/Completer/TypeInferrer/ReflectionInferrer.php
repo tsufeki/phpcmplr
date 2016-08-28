@@ -22,7 +22,7 @@ use PhpCmplr\Completer\Reflection\Element\Property;
 use PhpCmplr\Completer\Reflection\Element\Const_;
 use PhpCmplr\Completer\Reflection\Element\ClassConst;
 
-class ReflectionInferrerComponent extends NodeVisitorComponent
+class ReflectionInferrer extends NodeVisitorComponent
 {
     /**
      * @var Reflection

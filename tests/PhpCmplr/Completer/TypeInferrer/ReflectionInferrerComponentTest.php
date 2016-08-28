@@ -7,10 +7,10 @@ use PhpLenientParser\Node\Stmt;
 use PhpLenientParser\Node\Name;
 
 use PhpCmplr\Completer\Container;
-use PhpCmplr\Completer\Parser\ParserComponent;
-use PhpCmplr\Completer\Parser\NameResolverComponent;
-use PhpCmplr\Completer\Parser\DocTag\Type;
-use PhpCmplr\Completer\Parser\DocTag\DocTag;
+use PhpCmplr\Completer\Parser\Parser;
+use PhpCmplr\Completer\NameResolver\NameResolver;
+use PhpCmplr\Completer\Type\Type;
+use PhpCmplr\Completer\DocComment\Tag\Tag;
 use PhpCmplr\Completer\Reflection\ReflectionComponentInterface;
 use PhpCmplr\Completer\Reflection\ReflectionComponent;
 use PhpCmplr\Completer\Reflection\Method;
@@ -22,9 +22,9 @@ class ReflectionInferrerComponentTest extends \PHPUnit_Framework_TestCase
     protected function infer(array $nodes, $reflection)
     {
         $container = new Container();
-        $parser = $this->getMockBuilder(ParserComponent::class)->disableOriginalConstructor()->getMock();
+        $parser = $this->getMockBuilder(Parser::class)->disableOriginalConstructor()->getMock();
         $parser->method('getNodes')->willReturn($nodes);
-        $resolver = $this->getMockBuilder(NameResolverComponent::class)->disableOriginalConstructor()->getMock();
+        $resolver = $this->getMockBuilder(NameResolver::class)->disableOriginalConstructor()->getMock();
         $container->set('parser', $parser);
         $container->set('name_resolver', $resolver);
         $container->set('reflection', $reflection);
@@ -68,7 +68,7 @@ class ReflectionInferrerComponentTest extends \PHPUnit_Framework_TestCase
     public function test_Variable()
     {
         $refl = $this->getMockBuilder(ReflectionComponent::class)->disableOriginalConstructor()->getMock();
-        $var1 = new Expr\Variable('a', ['annotations' => ['var' => [DocTag::get('var', 'int $a')]]]);
+        $var1 = new Expr\Variable('a', ['annotations' => ['var' => [Tag::get('var', 'int $a')]]]);
         $var2 = new Expr\Variable('a');
         $this->infer([$var1, $var2], $refl);
         $this->assertTrue($var2->getAttribute('type')->equals(Type::int_()));
@@ -90,7 +90,7 @@ class ReflectionInferrerComponentTest extends \PHPUnit_Framework_TestCase
         $refl = $this->getMockBuilder(ReflectionComponent::class)->disableOriginalConstructor()->getMock();
         $for = new Stmt\For_([
             'init' => new Expr\Assign(new Expr\Variable('a'), new Expr\Variable('b')),
-        ], ['annotations' => ['var' => [DocTag::get('var', 'int')]]]);
+        ], ['annotations' => ['var' => [Tag::get('var', 'int')]]]);
         $var1 = new Expr\Variable('a');
         $this->infer([$for, $var1], $refl);
         $this->assertTrue($var1->getAttribute('type')->equals(Type::int_()));

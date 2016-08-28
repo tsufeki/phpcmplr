@@ -4,7 +4,7 @@ namespace Tests\PhpCmplr\Completer\Diagnostics;
 
 use PhpCmplr\Completer\Container;
 use PhpCmplr\Completer\SourceFile;
-use PhpCmplr\Completer\Parser\ParserComponent;
+use PhpCmplr\Completer\Parser\Parser;
 use PhpCmplr\Completer\Diagnostics\DiagnosticsComponent;
 
 class DiagnosticsComponentTest extends \PHPUnit_Framework_TestCase
@@ -13,7 +13,7 @@ class DiagnosticsComponentTest extends \PHPUnit_Framework_TestCase
     {
         $container = new Container();
         $container->set('file', $file = new SourceFile($container, $path, $contents));
-        $container->set('parser', new ParserComponent($container));
+        $container->set('parser', new Parser($container));
         return [$file, new DiagnosticsComponent($container)];
     }
 

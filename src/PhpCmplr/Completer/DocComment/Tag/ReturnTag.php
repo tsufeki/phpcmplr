@@ -1,6 +1,6 @@
 <?php
 
-namespace PhpCmplr\Completer\Parser\DocTag;
+namespace PhpCmplr\Completer\DocComment\Tag;
 
 class ReturnTag extends TypedTag
 {

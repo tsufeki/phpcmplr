@@ -3,7 +3,7 @@
 namespace Tests\PhpCmplr\Completer\Reflection;
 
 use PhpCmplr\Completer\Container;
-use PhpCmplr\Completer\Parser\DocTag\Type;
+use PhpCmplr\Completer\Type\Type;
 use PhpCmplr\Completer\Reflection\ReflectionComponentInterface;
 use PhpCmplr\Completer\Reflection\ReflectionComponent;
 use PhpCmplr\Completer\Reflection\ClassLike;

@@ -1,11 +1,11 @@
 <?php
 
-namespace PhpCmplr\Completer\Parser;
+namespace PhpCmplr\Completer\NameResolver;
 
 use PhpCmplr\Completer\Container;
 use PhpCmplr\Completer\NodeTraverserComponent;
 
-class NameResolverComponent extends NodeTraverserComponent
+class NameResolver extends NodeTraverserComponent
 {
     public function __construct(Container $container)
     {

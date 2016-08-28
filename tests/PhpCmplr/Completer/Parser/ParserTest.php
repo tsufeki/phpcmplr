@@ -10,9 +10,9 @@ use PhpLenientParser\Comment;
 
 use PhpCmplr\Completer\Container;
 use PhpCmplr\Completer\SourceFile;
-use PhpCmplr\Completer\Parser\ParserComponent;
+use PhpCmplr\Completer\Parser\Parser;
 
-class ParserComponentTest extends \PHPUnit_Framework_TestCase
+class ParserTest extends \PHPUnit_Framework_TestCase
 {
     protected $dumper;
 
@@ -25,7 +25,7 @@ class ParserComponentTest extends \PHPUnit_Framework_TestCase
     {
         $container = new Container();
         $container->set('file', new SourceFile($container, $path, $contents));
-        return new ParserComponent($container);
+        return new Parser($container);
     }
 
     public function test_getNodes()

@@ -2,7 +2,7 @@
 
 namespace PhpCmplr\Completer\Completer;
 
-use PhpCmplr\Completer\Parser\DocTag\Type;
+use PhpCmplr\Completer\Type\Type;
 
 class Completion
 {

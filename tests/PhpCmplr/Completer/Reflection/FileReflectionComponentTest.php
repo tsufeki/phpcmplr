@@ -4,9 +4,9 @@ namespace Tests\PhpCmplr\Completer\Reflection;
 
 use PhpCmplr\Completer\Container;
 use PhpCmplr\Completer\SourceFile;
-use PhpCmplr\Completer\Parser\ParserComponent;
-use PhpCmplr\Completer\Parser\DocCommentComponent;
-use PhpCmplr\Completer\Parser\NameResolverComponent;
+use PhpCmplr\Completer\Parser\Parser;
+use PhpCmplr\Completer\DocComment\DocCommentParser;
+use PhpCmplr\Completer\NameResolver\NameResolver;
 use PhpCmplr\Completer\Reflection\FileReflectionComponent;
 use PhpCmplr\Completer\Reflection\Class_;
 use PhpCmplr\Completer\Reflection\ClassLike;
@@ -21,9 +21,9 @@ class FileReflectionComponentTest extends \PHPUnit_Framework_TestCase
     {
         $container = new Container();
         $container->set('file', new SourceFile($container, $path, $contents));
-        $container->set('parser', new ParserComponent($container));
-        $container->set('doc_comment', new DocCommentComponent($container));
-        $container->set('name_resolver', new NameResolverComponent($container));
+        $container->set('parser', new Parser($container));
+        $container->set('doc_comment', new DocCommentParser($container));
+        $container->set('name_resolver', new NameResolver($container));
         return new FileReflectionComponent($container);
     }
 

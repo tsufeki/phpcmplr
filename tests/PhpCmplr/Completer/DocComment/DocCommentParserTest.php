@@ -1,28 +1,28 @@
 <?php
 
-namespace Tests\PhpCmplr\Completer\Parser;
+namespace Tests\PhpCmplr\Completer\DocComment;
 
 use PhpCmplr\Completer\Container;
 use PhpCmplr\Completer\SourceFile;
-use PhpCmplr\Completer\Parser\ParserComponent;
-use PhpCmplr\Completer\Parser\DocCommentComponent;
-use PhpCmplr\Completer\Parser\DocTag\DocTag;
-use PhpCmplr\Completer\Parser\DocTag\VarTag;
-use PhpCmplr\Completer\Parser\DocTag\ParamTag;
-use PhpCmplr\Completer\Parser\DocTag\ReturnTag;
-use PhpCmplr\Completer\Parser\DocTag\ThrowsTag;
-use PhpCmplr\Completer\Parser\DocTag\Type;
-use PhpCmplr\Completer\Parser\DocTag\ArrayType;
-use PhpCmplr\Completer\Parser\DocTag\ObjectType;
+use PhpCmplr\Completer\Parser\Parser;
+use PhpCmplr\Completer\DocComment\DocCommentParser;
+use PhpCmplr\Completer\DocComment\Tag\Tag;
+use PhpCmplr\Completer\DocComment\Tag\VarTag;
+use PhpCmplr\Completer\DocComment\Tag\ParamTag;
+use PhpCmplr\Completer\DocComment\Tag\ReturnTag;
+use PhpCmplr\Completer\DocComment\Tag\ThrowsTag;
+use PhpCmplr\Completer\Type\Type;
+use PhpCmplr\Completer\Type\ArrayType;
+use PhpCmplr\Completer\Type\ObjectType;
 
-class DocCommentComponentTest extends \PHPUnit_Framework_TestCase
+class DocCommentParserTest extends \PHPUnit_Framework_TestCase
 {
     protected function loadFile($contents, $path = 'qaz.php')
     {
         $container = new Container();
         $container->set('file', new SourceFile($container, $path, $contents));
-        $container->set('parser', $parser = new ParserComponent($container));
-        return [$parser, new DocCommentComponent($container)];
+        $container->set('parser', $parser = new Parser($container));
+        return [$parser, new DocCommentParser($container)];
     }
 
     public function test_run()
@@ -137,7 +137,7 @@ END;
         $annot = $nodes[0]->getAttribute('annotations');
         $this->assertCount(1, $annot);
         $this->assertCount(1, $annot['version']);
-        $this->assertInstanceOf(DocTag::class, $annot['version'][0]);
+        $this->assertInstanceOf(Tag::class, $annot['version'][0]);
         $this->assertSame('version', $annot['version'][0]->getName());
         $this->assertSame('17', $annot['version'][0]->getText());
     }

@@ -1,6 +1,6 @@
 <?php
 
-namespace PhpCmplr\Completer\Parser\DocTag;
+namespace PhpCmplr\Completer\Type;
 
 class ObjectType extends Type
 {

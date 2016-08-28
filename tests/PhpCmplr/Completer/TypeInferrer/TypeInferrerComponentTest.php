@@ -5,9 +5,9 @@ namespace Tests\PhpCmplr\Completer\TypeInferrer;
 use PhpLenientParser\Node\Expr;
 
 use PhpCmplr\Completer\Container;
-use PhpCmplr\Completer\Parser\ParserComponent;
-use PhpCmplr\Completer\Parser\NameResolverComponent;
-use PhpCmplr\Completer\Parser\DocTag\Type;
+use PhpCmplr\Completer\Parser\Parser;
+use PhpCmplr\Completer\NameResolver\NameResolver;
+use PhpCmplr\Completer\Type\Type;
 use PhpCmplr\Completer\TypeInferrer\TypeInferrerComponent;
 
 class TypeInferrerComponentTest extends \PHPUnit_Framework_TestCase
@@ -16,10 +16,10 @@ class TypeInferrerComponentTest extends \PHPUnit_Framework_TestCase
     {
         $expr = new Expr\Variable('qaz', ['type' => Type::int_()]);
         $container = new Container();
-        $parser = $this->getMockBuilder(ParserComponent::class)->disableOriginalConstructor()->getMock();
+        $parser = $this->getMockBuilder(Parser::class)->disableOriginalConstructor()->getMock();
         $parser->method('getNodes')->willReturn([]);
         $parser->method('getNodesAtOffset')->with($this->equalTo(7))->willReturn([$expr]);
-        $resolver = $this->getMockBuilder(NameResolverComponent::class)->disableOriginalConstructor()->getMock();
+        $resolver = $this->getMockBuilder(NameResolver::class)->disableOriginalConstructor()->getMock();
         $container->set('parser', $parser);
         $container->set('name_resolver', $resolver);
         $this->assertTrue(Type::int_()->equals((new TypeInferrerComponent($container))->getType(7)));
@@ -28,9 +28,9 @@ class TypeInferrerComponentTest extends \PHPUnit_Framework_TestCase
     protected function infer(array $nodes)
     {
         $container = new Container();
-        $parser = $this->getMockBuilder(ParserComponent::class)->disableOriginalConstructor()->getMock();
+        $parser = $this->getMockBuilder(Parser::class)->disableOriginalConstructor()->getMock();
         $parser->method('getNodes')->willReturn($nodes);
-        $resolver = $this->getMockBuilder(NameResolverComponent::class)->disableOriginalConstructor()->getMock();
+        $resolver = $this->getMockBuilder(NameResolver::class)->disableOriginalConstructor()->getMock();
         $container->set('parser', $parser);
         $container->set('name_resolver', $resolver);
         (new TypeInferrerComponent($container))->run();

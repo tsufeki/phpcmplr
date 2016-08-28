@@ -1,15 +1,17 @@
 <?php
 
-namespace PhpCmplr\Completer\Parser;
+namespace PhpCmplr\Completer\NameResolver;
 
 use PhpLenientParser\Node;
 use PhpLenientParser\Node\Name;
 use PhpLenientParser\Node\Name\FullyQualified;
-use PhpLenientParser\NodeVisitor\NameResolver;
+use PhpLenientParser\NodeVisitor\NameResolver as PhpParserNameResolver;
 
-use PhpCmplr\Completer\Parser\DocTag;
+use PhpCmplr\Completer\Type\Type;
+use PhpCmplr\Completer\Type\ObjectType;
+use PhpCmplr\Completer\DocComment\Tag\TypedTag;
 
-class NameResolverNodeVisitor extends NameResolver
+class NameResolverNodeVisitor extends PhpParserNameResolver
 {
     protected function resolveClassName(Name $name)
     {
@@ -39,10 +41,10 @@ class NameResolverNodeVisitor extends NameResolver
         $node->setAttribute('namespacedName', new FullyQualified($namespacedName->parts));
     }
 
-    protected function resolveDocTagType(DocTag\Type $type)
+    protected function resolveDocTagType(Type $type)
     {
-        return $type->walk(function (DocTag\Type $type) {
-            if ($type instanceof DocTag\ObjectType) {
+        return $type->walk(function (Type $type) {
+            if ($type instanceof ObjectType) {
                 $nameStr = $type->getClass();
                 if ($nameStr !== null && $nameStr !== '') {
                     if ($nameStr[0] === '\\') {
@@ -55,7 +57,7 @@ class NameResolverNodeVisitor extends NameResolver
                     if ($name instanceof FullyQualified) {
                         $nameStr = '\\' . $nameStr;
                     }
-                    return DocTag\Type::object_($nameStr);
+                    return Type::object_($nameStr);
                 }
             }
 
@@ -67,7 +69,7 @@ class NameResolverNodeVisitor extends NameResolver
         if ($node->hasAttribute('annotations')) {
             foreach ($node->getAttribute('annotations') as $annotations) {
                 foreach ($annotations as $docTag) {
-                    if ($docTag instanceof DocTag\TypedTag) {
+                    if ($docTag instanceof TypedTag) {
                         $docTag->setType($this->resolveDocTagType($docTag->getType()));
                     }
                 }

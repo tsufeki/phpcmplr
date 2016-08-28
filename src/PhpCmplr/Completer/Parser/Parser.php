@@ -4,7 +4,7 @@ namespace PhpCmplr\Completer\Parser;
 
 use PhpLenientParser\Error as ParserError;
 use PhpLenientParser\Lexer\Emulative as Lexer;
-use PhpLenientParser\Parser;
+use PhpLenientParser\Parser as RealParser;
 use PhpLenientParser\ParserFactory;
 use PhpLenientParser\Node;
 use PhpLenientParser\Comment;
@@ -12,7 +12,7 @@ use PhpLenientParser\Comment;
 use PhpCmplr\Completer\Container;
 use PhpCmplr\Completer\Component;
 
-class ParserComponent extends Component implements ParserComponentInterface
+class Parser extends Component implements ParserInterface
 {
     /**
      * @var Node[]
@@ -32,7 +32,7 @@ class ParserComponent extends Component implements ParserComponentInterface
     }
 
     /**
-     * @return Parser
+     * @return RealParser
      */
     protected function createParser()
     {

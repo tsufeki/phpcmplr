@@ -1,8 +1,10 @@
 <?php
 
-namespace PhpCmplr\Completer\Parser\DocTag;
+namespace PhpCmplr\Completer\DocComment\Tag;
 
-abstract class TypedTag extends DocTag
+use PhpCmplr\Completer\Type\Type;
+
+abstract class TypedTag extends Tag
 {
     /**
      * @var Type

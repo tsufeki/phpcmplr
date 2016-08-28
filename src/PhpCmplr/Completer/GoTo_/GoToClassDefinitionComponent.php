@@ -8,7 +8,7 @@ use PhpLenientParser\Node\Param;
 use PhpLenientParser\Node\Name;
 
 use PhpCmplr\Completer\Component;
-use PhpCmplr\Completer\Parser\DocTag\Type;
+use PhpCmplr\Completer\Type\Type;
 use PhpCmplr\Completer\Reflection\ReflectionComponent;
 
 class GoToClassDefinitionComponent extends Component implements GoToComponentInterface

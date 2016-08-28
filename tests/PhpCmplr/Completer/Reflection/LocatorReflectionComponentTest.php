@@ -6,9 +6,9 @@ use PhpCmplr\Completer\Container;
 use PhpCmplr\Completer\ContainerFactoryInterface;
 use PhpCmplr\Completer\Project;
 use PhpCmplr\Completer\SourceFile;
-use PhpCmplr\Completer\Parser\ParserComponent;
-use PhpCmplr\Completer\Parser\DocCommentComponent;
-use PhpCmplr\Completer\Parser\NameResolverComponent;
+use PhpCmplr\Completer\Parser\Parser;
+use PhpCmplr\Completer\DocComment\DocCommentParser;
+use PhpCmplr\Completer\NameResolver\NameResolver;
 use PhpCmplr\Completer\Reflection\FileReflectionComponent;
 use PhpCmplr\Completer\Reflection\LocatorReflectionComponent;
 use PhpCmplr\Completer\Reflection\Locator;
@@ -25,9 +25,9 @@ class LocatorReflectionComponentTest extends \PHPUnit_Framework_TestCase
     {
         $container = new Container();
         $container->set('file', new SourceFile($container, $path, $contents));
-        $container->set('parser', new ParserComponent($container));
-        $container->set('doc_comment', new DocCommentComponent($container));
-        $container->set('name_resolver', new NameResolverComponent($container));
+        $container->set('parser', new Parser($container));
+        $container->set('doc_comment', new DocCommentParser($container));
+        $container->set('name_resolver', new NameResolver($container));
         $container->set('reflection.file', new FileReflectionComponent($container));
 
         return $container;

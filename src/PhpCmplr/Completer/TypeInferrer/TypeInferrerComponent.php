@@ -8,7 +8,7 @@ use PhpLenientParser\Node\Identifier;
 use PhpLenientParser\Comment;
 
 use PhpCmplr\Completer\NodeVisitorComponent;
-use PhpCmplr\Completer\Parser\DocTag\Type;
+use PhpCmplr\Completer\Type\Type;
 
 class TypeInferrerComponent extends NodeVisitorComponent implements TypeInferrerComponentInterface
 {

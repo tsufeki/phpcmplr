@@ -8,12 +8,12 @@ use PhpLenientParser\Node\Identifier;
 use PhpLenientParser\Comment;
 
 use PhpCmplr\Completer\Component;
-use PhpCmplr\Completer\Parser\ParserComponent;
+use PhpCmplr\Completer\Parser\Parser;
 
 class GoToComponent extends Component
 {
     /**
-     * @var ParserComponent
+     * @var Parser
      */
     private $parser;
 

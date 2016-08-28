@@ -9,10 +9,10 @@ use PhpLenientParser\Node\Stmt;
 use PhpLenientParser\Node\Identifier;
 
 use PhpCmplr\Completer\NodeVisitorComponent;
-use PhpCmplr\Completer\Parser\DocTag\Type;
-use PhpCmplr\Completer\Parser\DocTag\ArrayType;
-use PhpCmplr\Completer\Parser\DocTag\ObjectType;
-use PhpCmplr\Completer\Parser\DocTag\AlternativesType;
+use PhpCmplr\Completer\Type\Type;
+use PhpCmplr\Completer\Type\ArrayType;
+use PhpCmplr\Completer\Type\ObjectType;
+use PhpCmplr\Completer\Type\AlternativesType;
 use PhpCmplr\Completer\Reflection\ReflectionComponent;
 use PhpCmplr\Completer\Reflection\Class_;
 use PhpCmplr\Completer\Reflection\Function_;

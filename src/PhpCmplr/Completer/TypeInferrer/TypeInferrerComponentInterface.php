@@ -2,7 +2,7 @@
 
 namespace PhpCmplr\Completer\TypeInferrer;
 
-use PhpCmplr\Completer\Parser\DocTag\Type;
+use PhpCmplr\Completer\Type\Type;
 
 interface TypeInferrerComponentInterface
 {

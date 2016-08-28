@@ -1,24 +1,24 @@
 <?php
 
-namespace Tests\PhpCmplr\Completer\Parser;
+namespace Tests\PhpCmplr\Completer\NameResolver;
 
 use PhpLenientParser\Node\Name\FullyQualified;
 
 use PhpCmplr\Completer\Container;
 use PhpCmplr\Completer\SourceFile;
-use PhpCmplr\Completer\Parser\ParserComponent;
-use PhpCmplr\Completer\Parser\DocCommentComponent;
-use PhpCmplr\Completer\Parser\NameResolverComponent;
+use PhpCmplr\Completer\Parser\Parser;
+use PhpCmplr\Completer\DocComment\DocCommentParser;
+use PhpCmplr\Completer\NameResolver\NameResolver;
 
-class NameResolverComponentTest extends \PHPUnit_Framework_TestCase
+class NameResolverTest extends \PHPUnit_Framework_TestCase
 {
     protected function loadFile($contents, $path = 'qaz.php')
     {
         $container = new Container();
         $container->set('file', new SourceFile($container, $path, $contents));
-        $container->set('parser', $parser = new ParserComponent($container));
-        $container->set('doc_comment', new DocCommentComponent($container));
-        return [$parser, new NameResolverComponent($container)];
+        $container->set('parser', $parser = new Parser($container));
+        $container->set('doc_comment', new DocCommentParser($container));
+        return [$parser, new NameResolver($container)];
     }
 
     public function test_run()

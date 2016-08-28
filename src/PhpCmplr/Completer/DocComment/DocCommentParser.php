@@ -1,19 +1,19 @@
 <?php
 
-namespace PhpCmplr\Completer\Parser;
+namespace PhpCmplr\Completer\DocComment;
 
 use PhpLenientParser\Node;
 use PhpLenientParser\Comment;
 
 use PhpCmplr\Completer\NodeVisitorComponent;
-use PhpCmplr\Completer\Parser\DocTag\DocTag;
+use PhpCmplr\Completer\DocComment\Tag\Tag;
 
-class DocCommentComponent extends NodeVisitorComponent
+class DocCommentParser extends NodeVisitorComponent
 {
     /**
      * @param string $docComment
      *
-     * @return array [short description string, long description string, DocTag[][]]
+     * @return array [short description string, long description string, Tag[][]]
      */
     protected function parse($docComment)
     {
@@ -53,7 +53,7 @@ class DocCommentComponent extends NodeVisitorComponent
         array_walk_recursive($annotations, function (&$value) { $value = trim($value); });
         foreach ($annotations as $aname => &$alist) {
             foreach ($alist as &$annot) {
-                $annot = DocTag::get($aname, $annot);
+                $annot = Tag::get($aname, $annot);
                 unset($annot);
             }
             unset($alist);

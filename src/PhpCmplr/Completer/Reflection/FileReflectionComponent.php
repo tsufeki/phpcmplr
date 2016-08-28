@@ -13,7 +13,7 @@ use PhpLenientParser\NodeVisitorAbstract;
 use PhpCmplr\Completer\Container;
 use PhpCmplr\Completer\NodeVisitorComponent;
 use PhpCmplr\Completer\OffsetLocation;
-use PhpCmplr\Completer\Parser\DocTag\Type;
+use PhpCmplr\Completer\Type\Type;
 
 class FileReflectionComponent extends NodeVisitorComponent implements ReflectionComponentInterface
 {

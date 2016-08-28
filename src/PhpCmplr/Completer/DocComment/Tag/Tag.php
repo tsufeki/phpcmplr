@@ -1,8 +1,8 @@
 <?php
 
-namespace PhpCmplr\Completer\Parser\DocTag;
+namespace PhpCmplr\Completer\DocComment\Tag;
 
-class DocTag
+class Tag
 {
     /**
      * @var string
@@ -44,7 +44,7 @@ class DocTag
      * @param string $name
      * @param string $text
      *
-     * @return DocTag
+     * @return Tag
      */
     public static function get($name, $text) {
         switch ($name) {
@@ -58,7 +58,7 @@ class DocTag
             case 'throw':
                 return new ThrowsTag('throws', $text);
             default:
-                return new DocTag($name, $text);
+                return new Tag($name, $text);
         }
     }
 }

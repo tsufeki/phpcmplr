@@ -4,8 +4,8 @@ namespace PhpCmplr\Completer\Reflection;
 
 use PhpCmplr\Completer\Component;
 use PhpCmplr\Completer\Container;
-use PhpCmplr\Completer\Parser\DocTag\Type;
-use PhpCmplr\Completer\Parser\DocTag\ObjectType;
+use PhpCmplr\Completer\Type\Type;
+use PhpCmplr\Completer\Type\ObjectType;
 
 class ReflectionComponent extends Component implements ReflectionComponentInterface
 {

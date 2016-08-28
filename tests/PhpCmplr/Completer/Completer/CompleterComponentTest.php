@@ -8,8 +8,8 @@ use PhpLenientParser\Node\Name;
 use PhpLenientParser\Node\Identifier;
 
 use PhpCmplr\Completer\Container;
-use PhpCmplr\Completer\Parser\ParserComponent;
-use PhpCmplr\Completer\Parser\DocTag\Type;
+use PhpCmplr\Completer\Parser\Parser;
+use PhpCmplr\Completer\Type\Type;
 use PhpCmplr\Completer\Reflection\ReflectionComponent;
 use PhpCmplr\Completer\Reflection\Method;
 use PhpCmplr\Completer\Reflection\Property;
@@ -27,7 +27,7 @@ class CompleterComponentTest extends \PHPUnit_Framework_TestCase
         $expr = new Expr\MethodCall($var1, $id, []);
 
         $container = new Container();
-        $parser = $this->getMockBuilder(ParserComponent::class)->disableOriginalConstructor()->getMock();
+        $parser = $this->getMockBuilder(Parser::class)->disableOriginalConstructor()->getMock();
         $parser
             ->method('getNodesAtOffset')
             ->with($this->equalTo(5), $this->equalTo(true))
@@ -70,7 +70,7 @@ class CompleterComponentTest extends \PHPUnit_Framework_TestCase
         $expr = new Expr\StaticCall($cls, $id, []);
 
         $container = new Container();
-        $parser = $this->getMockBuilder(ParserComponent::class)->disableOriginalConstructor()->getMock();
+        $parser = $this->getMockBuilder(Parser::class)->disableOriginalConstructor()->getMock();
         $parser
             ->method('getNodesAtOffset')
             ->with($this->equalTo(5), $this->equalTo(true))

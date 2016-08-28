@@ -8,10 +8,10 @@ use PhpLenientParser\Node\Name;
 
 use PhpCmplr\Completer\Container;
 use PhpCmplr\Completer\OffsetLocation;
-use PhpCmplr\Completer\Parser\ParserComponent;
-use PhpCmplr\Completer\Parser\NameResolverComponent;
-use PhpCmplr\Completer\Parser\DocTag\Type;
-use PhpCmplr\Completer\Parser\DocTag\DocTag;
+use PhpCmplr\Completer\Parser\Parser;
+use PhpCmplr\Completer\NameResolver\NameResolver;
+use PhpCmplr\Completer\Type\Type;
+use PhpCmplr\Completer\DocComment\Tag\Tag;
 use PhpCmplr\Completer\Reflection\ReflectionComponentInterface;
 use PhpCmplr\Completer\Reflection\ReflectionComponent;
 use PhpCmplr\Completer\Reflection\Method;
@@ -32,7 +32,7 @@ class GoToComponentTest extends \PHPUnit_Framework_TestCase
         $expr = new Expr\MethodCall($var1, 'f', [], ['reflections' => [$method]]);
 
         $container = new Container();
-        $parser = $this->getMockBuilder(ParserComponent::class)->disableOriginalConstructor()->getMock();
+        $parser = $this->getMockBuilder(Parser::class)->disableOriginalConstructor()->getMock();
         $parser
             ->method('getNodesAtOffset')
             ->with($this->equalTo(5))
@@ -54,7 +54,7 @@ class GoToComponentTest extends \PHPUnit_Framework_TestCase
         $expr = new Expr\StaticCall($cls, 'f', [], ['reflections' => [$method]]);
 
         $container = new Container();
-        $parser = $this->getMockBuilder(ParserComponent::class)->disableOriginalConstructor()->getMock();
+        $parser = $this->getMockBuilder(Parser::class)->disableOriginalConstructor()->getMock();
         $parser
             ->method('getNodesAtOffset')
             ->with($this->equalTo(5))
@@ -76,13 +76,13 @@ class GoToComponentTest extends \PHPUnit_Framework_TestCase
         $expr = new Expr\New_($name, []);
 
         $container = new Container();
-        $parser = $this->getMockBuilder(ParserComponent::class)->disableOriginalConstructor()->getMock();
+        $parser = $this->getMockBuilder(Parser::class)->disableOriginalConstructor()->getMock();
         $parser
             ->method('getNodesAtOffset')
             ->with($this->equalTo(5))
             ->willReturn([$name, $expr]);
         $container->set('parser', $parser);
-        $nameResolver = $this->getMockBuilder(NameResolverComponent::class)->disableOriginalConstructor()->getMock();
+        $nameResolver = $this->getMockBuilder(NameResolver::class)->disableOriginalConstructor()->getMock();
         $nameResolver
             ->method('run')
             ->willReturn(null);

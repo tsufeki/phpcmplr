@@ -9,7 +9,7 @@ use PhpLenientParser\Comment;
 /**
  * Parser-wrapping component.
  */
-interface ParserComponentInterface
+interface ParserInterface
 {
     /**
      * @return Node[]

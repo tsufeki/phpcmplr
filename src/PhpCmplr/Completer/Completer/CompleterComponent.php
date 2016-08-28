@@ -8,10 +8,10 @@ use PhpLenientParser\Node\Identifier;
 use PhpLenientParser\Node\ErrorNode;
 
 use PhpCmplr\Completer\Component;
-use PhpCmplr\Completer\Parser\ParserComponent;
-use PhpCmplr\Completer\Parser\DocTag\Type;
-use PhpCmplr\Completer\Parser\DocTag\ObjectType;
-use PhpCmplr\Completer\Parser\DocTag\AlternativesType;
+use PhpCmplr\Completer\Parser\Parser;
+use PhpCmplr\Completer\Type\Type;
+use PhpCmplr\Completer\Type\ObjectType;
+use PhpCmplr\Completer\Type\AlternativesType;
 use PhpCmplr\Completer\Reflection\ReflectionComponent;
 use PhpCmplr\Completer\Reflection\Class_;
 use PhpCmplr\Completer\Reflection\Function_;
@@ -24,7 +24,7 @@ use PhpCmplr\Completer\Reflection\ClassConst;
 class CompleterComponent extends Component implements CompleterComponentInterface
 {
     /**
-     * @var ParserComponent
+     * @var Parser
      */
     private $parser;
 

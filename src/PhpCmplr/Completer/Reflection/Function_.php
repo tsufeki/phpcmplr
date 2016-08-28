@@ -2,7 +2,7 @@
 
 namespace PhpCmplr\Completer\Reflection;
 
-use PhpCmplr\Completer\Parser\DocTag\Type;
+use PhpCmplr\Completer\Type\Type;
 
 class Function_ extends Element
 {

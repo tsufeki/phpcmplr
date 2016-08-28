@@ -7,12 +7,6 @@ use React\Http\Request;
 use React\Http\Response;
 
 use PhpCmplr\PhpCmplr;
-use PhpCmplr\Completer\ContainerFactoryInterface;
-use PhpCmplr\Completer\Container;
-use PhpCmplr\Completer\Project;
-use PhpCmplr\Completer\SourceFile;
-use PhpCmplr\Completer\Parser\ParserComponent;
-use PhpCmplr\Completer\Diagnostics\DiagnosticsComponent;
 use PhpCmplr\Server\Server;
 use PhpCmplr\Server\Action;
 

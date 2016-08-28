@@ -3,8 +3,8 @@
 namespace PhpCmplr\Server;
 
 use PhpCmplr\Completer\Project;
-use PhpCmplr\Completer\Location;
-use PhpCmplr\Completer\SourceFile;
+use PhpCmplr\Completer\SourceFile\Location;
+use PhpCmplr\Completer\SourceFile\SourceFileInterface;
 use PhpCmplr\Util\Json;
 use PhpCmplr\Util\JsonLoadException;
 use PhpCmplr\Util\JsonDumpException;
@@ -135,13 +135,13 @@ END;
     }
 
     /**
-     * @param Location   $location
-     * @param SourceFile $file
-     * @param bool       $withPath
+     * @param Location            $location
+     * @param SourceFileInterface $file
+     * @param bool                $withPath
      *
      * @return object
      */
-    protected function makeLocation(Location $location, SourceFile $file, $withPath = false)
+    protected function makeLocation(Location $location, SourceFileInterface $file, $withPath = false)
     {
         $loc = new \stdClass();
         list($loc->line, $loc->col) = $location->getLineAndColumn($file);

@@ -2,7 +2,7 @@
 
 namespace PhpCmplr\Completer\Diagnostics;
 
-use PhpCmplr\Completer\Location;
+use PhpCmplr\Completer\SourceFile\Location;
 
 class Diagnostic
 {

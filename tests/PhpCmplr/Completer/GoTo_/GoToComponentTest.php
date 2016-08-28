@@ -7,7 +7,7 @@ use PhpLenientParser\Node\Stmt;
 use PhpLenientParser\Node\Name;
 
 use PhpCmplr\Completer\Container;
-use PhpCmplr\Completer\OffsetLocation;
+use PhpCmplr\Completer\SourceFile\OffsetLocation;
 use PhpCmplr\Completer\Parser\Parser;
 use PhpCmplr\Completer\NameResolver\NameResolver;
 use PhpCmplr\Completer\Type\Type;

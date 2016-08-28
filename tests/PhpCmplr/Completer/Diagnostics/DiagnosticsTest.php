@@ -3,7 +3,7 @@
 namespace Tests\PhpCmplr\Completer\Diagnostics;
 
 use PhpCmplr\Completer\Container;
-use PhpCmplr\Completer\SourceFile;
+use PhpCmplr\Completer\SourceFile\SourceFile;
 use PhpCmplr\Completer\Parser\Parser;
 use PhpCmplr\Completer\Diagnostics\Diagnostics;
 

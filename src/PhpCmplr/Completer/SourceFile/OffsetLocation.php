@@ -1,6 +1,6 @@
 <?php
 
-namespace PhpCmplr\Completer;
+namespace PhpCmplr\Completer\SourceFile;
 
 class OffsetLocation implements Location
 {
@@ -29,12 +29,12 @@ class OffsetLocation implements Location
         return $this->path;
     }
 
-    public function getOffset(SourceFile $file = null)
+    public function getOffset(SourceFileInterface $file = null)
     {
         return $this->offset;
     }
 
-    public function getLineAndColumn(SourceFile $file)
+    public function getLineAndColumn(SourceFileInterface $file)
     {
         return $file->getLineAndColumn($this->getOffset());
     }

@@ -1,6 +1,6 @@
 <?php
 
-namespace PhpCmplr\Completer;
+namespace PhpCmplr\Completer\SourceFile;
 
 /**
  * Source file with contents.

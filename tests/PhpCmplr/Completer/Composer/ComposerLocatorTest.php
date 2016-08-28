@@ -3,7 +3,7 @@
 namespace Tests\PhpCmplr\Completer\Composer;
 
 use PhpCmplr\Completer\Container;
-use PhpCmplr\Completer\SourceFile;
+use PhpCmplr\Completer\SourceFile\SourceFile;
 use PhpCmplr\Completer\Composer\ComposerLocator;
 use PhpCmplr\Util\FileIO;
 

@@ -4,7 +4,7 @@ namespace PhpCmplr\Completer\GoTo_;
 
 use PhpLenientParser\Node;
 
-use PhpCmplr\Completer\Location;
+use PhpCmplr\Completer\SourceFile\Location;
 
 interface GoToComponentInterface
 {

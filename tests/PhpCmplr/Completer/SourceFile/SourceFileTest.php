@@ -1,9 +1,9 @@
 <?php
 
-namespace Tests\PhpCmplr\Completer;
+namespace Tests\PhpCmplr\Completer\SourceFile;
 
 use PhpCmplr\Completer\Container;
-use PhpCmplr\Completer\SourceFile;
+use PhpCmplr\Completer\SourceFile\SourceFile;
 
 class SourceFileTest extends \PHPUnit_Framework_TestCase
 {

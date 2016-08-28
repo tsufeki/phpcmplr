@@ -11,7 +11,7 @@ use PhpLenientParser\Comment;
 
 use PhpCmplr\Completer\Container;
 use PhpCmplr\Completer\Component;
-use PhpCmplr\Completer\OffsetLocation;
+use PhpCmplr\Completer\SourceFile\OffsetLocation;
 use PhpCmplr\Completer\Diagnostics\DiagnosticsInterface;
 use PhpCmplr\Completer\Diagnostics\Diagnostic;
 

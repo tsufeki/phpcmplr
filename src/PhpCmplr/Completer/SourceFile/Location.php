@@ -1,6 +1,6 @@
 <?php
 
-namespace PhpCmplr\Completer;
+namespace PhpCmplr\Completer\SourceFile;
 
 interface Location
 {
@@ -14,12 +14,12 @@ interface Location
      *
      * @return int
      */
-    public function getOffset(SourceFile $file);
+    public function getOffset(SourceFileInterface $file);
 
     /**
      * @param SourceFile $file Must be the file at getPath().
      *
      * @return int[] [line, column]
      */
-    public function getLineAndColumn(SourceFile $file);
+    public function getLineAndColumn(SourceFileInterface $file);
 }

@@ -2,7 +2,7 @@
 
 namespace PhpCmplr\Completer\Reflection;
 
-use PhpCmplr\Completer\Location;
+use PhpCmplr\Completer\SourceFile\Location;
 
 abstract class Element
 {

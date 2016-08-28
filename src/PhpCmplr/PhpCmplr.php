@@ -7,7 +7,7 @@ use Psr\Log\LogLevel;
 use PhpCmplr\Completer\Container;
 use PhpCmplr\Completer\ContainerFactoryInterface;
 use PhpCmplr\Completer\Project;
-use PhpCmplr\Completer\SourceFile;
+use PhpCmplr\Completer\SourceFile\SourceFile;
 use PhpCmplr\Completer\Parser\Parser;
 use PhpCmplr\Completer\NameResolver\NameResolver;
 use PhpCmplr\Completer\DocComment\DocCommentParser;

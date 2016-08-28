@@ -1,6 +1,9 @@
 <?php
 
-namespace PhpCmplr\Completer;
+namespace PhpCmplr\Completer\SourceFile;
+
+use PhpCmplr\Completer\Component;
+use PhpCmplr\Completer\Container;
 
 class SourceFile extends Component implements SourceFileInterface
 {

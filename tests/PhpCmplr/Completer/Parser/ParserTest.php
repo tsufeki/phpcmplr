@@ -9,7 +9,7 @@ use PhpLenientParser\Node\Identifier;
 use PhpLenientParser\Comment;
 
 use PhpCmplr\Completer\Container;
-use PhpCmplr\Completer\SourceFile;
+use PhpCmplr\Completer\SourceFile\SourceFile;
 use PhpCmplr\Completer\Parser\Parser;
 
 class ParserTest extends \PHPUnit_Framework_TestCase

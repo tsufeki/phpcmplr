@@ -2,7 +2,7 @@
 
 namespace PhpCmplr\Completer\Completer;
 
-interface CompleterComponentInterface
+interface CompleterInterface
 {
     /**
      * Find completions at offset.

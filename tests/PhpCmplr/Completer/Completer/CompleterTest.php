@@ -15,9 +15,9 @@ use PhpCmplr\Completer\Reflection\Element\Method;
 use PhpCmplr\Completer\Reflection\Element\Property;
 use PhpCmplr\Completer\Reflection\Element\ClassConst;
 use PhpCmplr\Completer\TypeInferrer\TypeInferrer;
-use PhpCmplr\Completer\Completer\CompleterComponent;
+use PhpCmplr\Completer\Completer\Completer;
 
-class CompleterComponentTest extends \PHPUnit_Framework_TestCase
+class CompleterTest extends \PHPUnit_Framework_TestCase
 {
     public function test_MethodCall()
     {
@@ -49,7 +49,7 @@ class CompleterComponentTest extends \PHPUnit_Framework_TestCase
             ->willReturn([]);
         $container->set('reflection', $reflection);
 
-        $completer = new CompleterComponent($container);
+        $completer = new Completer($container);
         $completions = $completer->complete(5);
 
         $this->assertCount(1, $completions);
@@ -96,7 +96,7 @@ class CompleterComponentTest extends \PHPUnit_Framework_TestCase
             ->willReturn([$const]);
         $container->set('reflection', $reflection);
 
-        $completer = new CompleterComponent($container);
+        $completer = new Completer($container);
         $completions = $completer->complete(5);
 
         $this->assertCount(3, $completions);

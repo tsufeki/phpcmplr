@@ -21,7 +21,7 @@ use PhpCmplr\Completer\Reflection\Element\Property;
 use PhpCmplr\Completer\Reflection\Element\Const_;
 use PhpCmplr\Completer\Reflection\Element\ClassConst;
 
-class CompleterComponent extends Component implements CompleterComponentInterface
+class Completer extends Component implements CompleterInterface
 {
     /**
      * @var Parser

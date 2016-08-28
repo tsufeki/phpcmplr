@@ -22,7 +22,7 @@ use PhpCmplr\Completer\TypeInferrer\ReflectionInferrer;
 use PhpCmplr\Completer\GoTo_\GoToComponent;
 use PhpCmplr\Completer\GoTo_\GoToMemberDefinitionComponent;
 use PhpCmplr\Completer\GoTo_\GoToClassDefinitionComponent;
-use PhpCmplr\Completer\Completer\CompleterComponent;
+use PhpCmplr\Completer\Completer\Completer;
 use PhpCmplr\Server\Server;
 use PhpCmplr\Server\Action;
 use PhpCmplr\Util\FileIO;
@@ -132,7 +132,7 @@ class PhpCmplr extends Plugin implements ContainerFactoryInterface
         $container->set('goto', new GoToComponent($container));
         $container->set('goto.member_definition', new GoToMemberDefinitionComponent($container), ['goto']);
         $container->set('goto.class_definition', new GoToClassDefinitionComponent($container), ['goto']);
-        $container->set('completer', new CompleterComponent($container));
+        $container->set('completer', new Completer($container));
     }
 
     /**

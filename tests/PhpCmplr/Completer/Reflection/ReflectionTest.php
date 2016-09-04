@@ -160,4 +160,20 @@ class ReflectionTest extends \PHPUnit_Framework_TestCase
         $this->assertSame(['f', 'g', 'h'], $names);
         $this->assertTrue($methods['f']->isPrivate());
     }
+
+    public function test_isSubclass()
+    {
+        $base = (new Class_())
+            ->setName('\\B');
+
+        $class = (new Class_())
+            ->setName('\\C')
+            ->setExtends('\\B');
+
+        $refl = $this->prepare($class, $base);
+        $this->assertTrue($refl->isSubclass('\\C', '\\B'));
+        $this->assertTrue($refl->isSubclass('\\X', '\\X'));
+        $this->assertFalse($refl->isSubclass('\\B', '\\C'));
+        $this->assertFalse($refl->isSubclass('\\C', '\\D'));
+    }
 }

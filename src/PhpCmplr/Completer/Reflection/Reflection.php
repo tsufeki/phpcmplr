@@ -109,6 +109,26 @@ class Reflection extends Component
     }
 
     /**
+     * @param string $subclassName
+     * @param string $superclassName
+     *
+     * @return bool
+     */
+    public function isSubclass($subclassName, $superclassName)
+    {
+        if ($subclassName === $superclassName) {
+            return true;
+        }
+
+        $subclasses = $this->findClass($subclassName);
+        if (count($subclasses) === 0 || $subclasses[0]->getExtends() === null) {
+            return false;
+        }
+
+        return $this->isSubclass($subclasses[0]->getExtends(), $superclassName);
+    }
+
+    /**
      * @param Method[] $methods
      * @param Method   $method
      */

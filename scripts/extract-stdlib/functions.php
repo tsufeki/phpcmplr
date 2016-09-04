@@ -104,7 +104,7 @@ function handle_func_def($xpath, $nodes, $file) {
                 $p['by_ref'] = true;
             }
             if (0 === substr_compare($p['name'], '...', -3, 3)) {
-                $p['name'] = substr_replace($p['name'], "", -3);
+                $p['name'] = substr_replace($p['name'], '', -3);
                 $p['variadic'] = true;
             }
             if ($p['name'] === '$') {
@@ -116,6 +116,7 @@ function handle_func_def($xpath, $nodes, $file) {
     return array(
         'kind' => 'function',
         'return_type' => $return_type,
+        'return_by_ref' => false,
         'name' => trim($methodname->item(0)->textContent),
         'params' => $params
     );
@@ -126,6 +127,9 @@ function handle_func_alias($xpath, $nodes, $file) {
     $refname = $xpath->query('//*[contains(@class, "description")]/p[@class="simpara"]/*[@class="methodname" or @class="function"]');
     $name = trim(str_replace("\n", '', $methodname->item(0)->textContent));
     $aliased_name = trim(str_replace("\n", '', $refname->item(0)->textContent));
+    if (0 === substr_compare($aliased_name, '()', -2, 2)) {
+        $aliased_name = substr_replace($aliased_name, '', -2);
+    }
     return array(
         'kind' => 'alias',
         'name' => $name,

@@ -1,5 +1,6 @@
 <?php
 
+// TODO: extends/implements
 // TODO: class modifiers: final, abstract
 // TODO: return by ref
 
@@ -30,6 +31,7 @@ function extract_class_signatures($files, $extensions) {
                 }
                 $interface_signatures[$extension_name][$classname] = array(
                     'name'              => $classname,
+                    'extends'           => [],
                     'constants'         => $fields['constants'],
                     'properties'        => $fields['properties'],
                     'methods'           => $methods['methods'],
@@ -40,6 +42,9 @@ function extract_class_signatures($files, $extensions) {
                 }
                 $class_signatures[$extension_name][$classname] = array(
                     'name'              => $classname,
+                    'extends'           => null,
+                    'implements'        => [],
+                    'modifiers'         => [],
                     'constants'         => $fields['constants'],
                     'properties'        => $fields['properties'],
                     'methods'           => $methods['methods'],
@@ -95,10 +100,11 @@ function extract_class_methods($xpath, $classname, $file) {
 
 function handle_method_def($xpath, $classname, $node, $file) {
     $re = array(
-        'name'        => '',
-        'return_type' => '',
-        'modifiers'   => array(),
-        'params'      => array(),
+        'name'          => '',
+        'return_type'   => '',
+        'return_by_ref' => false,
+        'modifiers'     => array(),
+        'params'        => array(),
     );
 
     $type = $xpath->query('*[@class="type"]', $node);

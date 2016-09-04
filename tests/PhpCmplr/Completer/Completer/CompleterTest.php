@@ -11,6 +11,8 @@ use PhpCmplr\Completer\Container;
 use PhpCmplr\Completer\Parser\Parser;
 use PhpCmplr\Completer\Type\Type;
 use PhpCmplr\Completer\Reflection\Reflection;
+use PhpCmplr\Completer\Reflection\Element\ClassLike;
+use PhpCmplr\Completer\Reflection\Element\Class_;
 use PhpCmplr\Completer\Reflection\Element\Method;
 use PhpCmplr\Completer\Reflection\Element\Property;
 use PhpCmplr\Completer\Reflection\Element\ClassConst;
@@ -19,38 +21,59 @@ use PhpCmplr\Completer\Completer\Completer;
 
 class CompleterTest extends \PHPUnit_Framework_TestCase
 {
-    public function test_MethodCall()
+    public function complete(array $nodes, array $methods = [], array $props = [], array $consts = [])
     {
-        $method = (new Method())->setName('qaz')->setDocReturnType(Type::int_());
-        $var1 = new Expr\Variable('a', ['type' => Type::object_('\\C')]);
-        $id = new Identifier('q');
-        $expr = new Expr\MethodCall($var1, $id, []);
-
         $container = new Container();
-        $parser = $this->getMockBuilder(Parser::class)->disableOriginalConstructor()->getMock();
+        $parser = $this->getMockBuilder(Parser::class)
+            ->disableOriginalConstructor()
+            ->getMock();
         $parser
             ->method('getNodesAtOffset')
             ->with($this->equalTo(5), $this->equalTo(true))
-            ->willReturn([$id, $expr]);
+            ->willReturn($nodes);
         $container->set('parser', $parser);
-        $typeinfer = $this->getMockBuilder(TypeInferrer::class)->disableOriginalConstructor()->getMock();
+        $typeinfer = $this->getMockBuilder(TypeInferrer::class)
+            ->disableOriginalConstructor()
+            ->getMock();
         $typeinfer
             ->method('run')
             ->willReturn(null);
         $container->set('typeinfer', $typeinfer);
-        $reflection = $this->getMockBuilder(Reflection::class)->disableOriginalConstructor()->getMock();
+        $reflection = $this->getMockBuilder(Reflection::class)
+            ->setMethods(['findAllMethods', 'findAllProperties', 'findAllClassConsts'])
+            ->disableOriginalConstructor()
+            ->getMock();
         $reflection
             ->method('findAllMethods')
             ->with($this->equalTo('\\C'))
-            ->willReturn([$method]);
+            ->willReturn($methods);
         $reflection
             ->method('findAllProperties')
             ->with($this->equalTo('\\C'))
-            ->willReturn([]);
+            ->willReturn($props);
+        $reflection
+            ->method('findAllClassConsts')
+            ->with($this->equalTo('\\C'))
+            ->willReturn($consts);
         $container->set('reflection', $reflection);
 
         $completer = new Completer($container);
-        $completions = $completer->complete(5);
+        return $completer->complete(5);
+    }
+
+    public function test_MethodCall()
+    {
+        $class = (new Class_())
+            ->setName('\\C');
+        $method = (new Method())
+            ->setName('qaz')
+            ->setClass($class)
+            ->setDocReturnType(Type::int_());
+        $var1 = new Expr\Variable('a', ['type' => Type::object_('\\C')]);
+        $id = new Identifier('q');
+        $expr = new Expr\MethodCall($var1, $id, []);
+
+        $completions = $this->complete([$id, $expr], [$method]);
 
         $this->assertCount(1, $completions);
         $this->assertSame('qaz', $completions[0]->getInsertion());
@@ -59,45 +82,89 @@ class CompleterTest extends \PHPUnit_Framework_TestCase
         $this->assertSame('int', $completions[0]->getType());
     }
 
+    public function test_MethodCall_private()
+    {
+        $class = (new Class_())
+            ->setName('\\C');
+        $method = (new Method())
+            ->setName('qaz')
+            ->setClass($class)
+            ->setDocReturnType(Type::int_())
+            ->setAccessibility(ClassLike::M_PRIVATE);
+        $var1 = new Expr\Variable('a', ['type' => Type::object_('\\C')]);
+        $id = new Identifier('q');
+        $expr = new Expr\MethodCall($var1, $id, []);
+
+        $completions = $this->complete([$id, $expr], [$method]);
+
+        $this->assertCount(0, $completions);
+    }
+
+    public function test_MethodCall_private_insideClass()
+    {
+        $class = (new Class_())
+            ->setName('\\C');
+        $method = (new Method())
+            ->setName('qaz')
+            ->setClass($class)
+            ->setDocReturnType(Type::int_())
+            ->setAccessibility(ClassLike::M_PRIVATE);
+        $var1 = new Expr\Variable('a', ['type' => Type::object_('\\C')]);
+        $id = new Identifier('q');
+        $expr = new Expr\MethodCall($var1, $id, []);
+        $ctxcls = new Stmt\Class_('C');
+        $ctxcls->setAttribute('namespacedName', '\\C');
+
+        $completions = $this->complete([$id, $expr, $ctxcls], [$method]);
+
+        $this->assertCount(1, $completions);
+    }
+
+    public function test_MethodCall_self()
+    {
+        $class = (new Class_())
+            ->setName('\\C');
+        $method = (new Method())
+            ->setName('qaz')
+            ->setClass($class)
+            ->setDocReturnType(Type::int_());
+        $cls = new Name('self');
+        $cls->setAttribute('resolved', new Name\FullyQualified('C'));
+        $id = new Identifier('q');
+        $expr = new Expr\StaticCall($cls, $id, []);
+        $ctxmeth = new Stmt\ClassMethod('mm');
+        $ctxcls = new Stmt\Class_('C');
+        $ctxcls->setAttribute('namespacedName', '\\C');
+
+        $completions = $this->complete([$id, $expr, $ctxmeth, $ctxcls], [$method]);
+
+        $this->assertCount(1, $completions);
+    }
+
+
     public function test_StaticCall()
     {
-        $method = (new Method())->setName('qaz')->setStatic(true)->setDocReturnType(Type::object_('\\X\\Y'));
-        $prop = (new Property())->setName('$wsx')->setStatic(true)->setType(Type::string_());
-        $const = (new ClassConst())->setName('EDC');
+        $class = (new Class_())
+            ->setName('\\C');
+        $method = (new Method())
+            ->setName('qaz')
+            ->setClass($class)
+            ->setStatic(true)
+            ->setDocReturnType(Type::object_('\\X\\Y'));
+        $prop = (new Property())
+            ->setName('$wsx')
+            ->setClass($class)
+            ->setStatic(true)
+            ->setType(Type::string_());
+        $const = (new ClassConst())
+            ->setName('EDC')
+            ->setClass($class);
 
         $cls = new Name\FullyQualified('C');
         $id = new Identifier('q');
         $expr = new Expr\StaticCall($cls, $id, []);
 
-        $container = new Container();
-        $parser = $this->getMockBuilder(Parser::class)->disableOriginalConstructor()->getMock();
-        $parser
-            ->method('getNodesAtOffset')
-            ->with($this->equalTo(5), $this->equalTo(true))
-            ->willReturn([$id, $expr]);
-        $container->set('parser', $parser);
-        $typeinfer = $this->getMockBuilder(TypeInferrer::class)->disableOriginalConstructor()->getMock();
-        $typeinfer
-            ->method('run')
-            ->willReturn(null);
-        $container->set('typeinfer', $typeinfer);
-        $reflection = $this->getMockBuilder(Reflection::class)->disableOriginalConstructor()->getMock();
-        $reflection
-            ->method('findAllMethods')
-            ->with($this->equalTo('\\C'))
-            ->willReturn([$method]);
-        $reflection
-            ->method('findAllProperties')
-            ->with($this->equalTo('\\C'))
-            ->willReturn([$prop]);
-        $reflection
-            ->method('findAllClassConsts')
-            ->with($this->equalTo('\\C'))
-            ->willReturn([$const]);
-        $container->set('reflection', $reflection);
-
-        $completer = new Completer($container);
-        $completions = $completer->complete(5);
+        $completions = $this->complete([$id, $expr], [$method], [$prop], [$const]);
 
         $this->assertCount(3, $completions);
 

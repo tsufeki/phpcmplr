@@ -3,6 +3,7 @@
 namespace PhpCmplr\Completer\Completer;
 
 use PhpLenientParser\Node\Expr;
+use PhpLenientParser\Node\Stmt;
 use PhpLenientParser\Node\Name;
 use PhpLenientParser\Node\Identifier;
 use PhpLenientParser\Node\ErrorNode;
@@ -179,10 +180,22 @@ class Completer extends Component implements CompleterInterface
         }
 
         $completions = [];
+        $ctxClass = null;
+        foreach ($nodes as $ctxNode) {
+            if ($ctxNode instanceof Stmt\ClassLike) {
+                $ctxClass = $ctxNode->hasAttribute('namespacedName')
+                    ? Type::nameToString($ctxNode->getAttribute('namespacedName'))
+                    : $node->name;
+                break;
+            }
+        }
 
         if ($node instanceof Expr\MethodCall || $node instanceof Expr\PropertyFetch) {
             $methods = $this->findMethods($node->var->getAttribute('type'));
             $properties = $this->findProperties($node->var->getAttribute('type'));
+
+            $methods = $this->reflection->filterAvailableMembers($methods, $ctxClass);
+            $properties = $this->reflection->filterAvailableMembers($properties, $ctxClass);
 
             $completions = array_merge(
                 $this->formatMethods($methods),
@@ -190,9 +203,24 @@ class Completer extends Component implements CompleterInterface
 
         } elseif ($node instanceof Expr\StaticCall || $node instanceof Expr\StaticPropertyFetch ||
                 $node instanceof Expr\ClassConstFetch) {
-            $methods = $this->findMethods(Type::object_(Type::nameToString($node->class)), true);
-            $properties = $this->findProperties(Type::object_(Type::nameToString($node->class)), true);
+            // TODO: Support static call on an object: $object::staticMethod() etc.
+            // TODO: Filter out non-static members outside the inheritance
+            //       chain - while static calls to them are allowed in PHP, they
+            //       are pretty useless.
+            $staticOnly = true;
+            foreach ($nodes as $ctxNode) {
+                if ($ctxNode instanceof Stmt\ClassMethod) {
+                    $staticOnly = $ctxNode->isStatic();
+                    break;
+                }
+            }
+
+            $methods = $this->findMethods(Type::object_(Type::nameToString($node->class)), $staticOnly);
+            $properties = $this->findProperties(Type::object_(Type::nameToString($node->class)), $staticOnly);
             $consts = $this->findClassConsts(Type::object_(Type::nameToString($node->class)));
+
+            $methods = $this->reflection->filterAvailableMembers($methods, $ctxClass);
+            $properties = $this->reflection->filterAvailableMembers($properties, $ctxClass);
 
             $completions = array_merge(
                 $this->formatMethods($methods),

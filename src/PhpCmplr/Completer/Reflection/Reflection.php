@@ -525,6 +525,43 @@ class Reflection extends Component
         return null;
     }
 
+    /**
+     * @param Method[]|Property[] $members
+     * @param string|null         $contextClassName
+     *
+     * @return Method[]|Property[]
+     */
+    public function filterAvailableMembers(array $members, $contextClassName = null)
+    {
+        // TODO: Take used traits into account
+        $result = [];
+        /** @var Method|Property $member */
+        foreach ($members as $member) {
+            switch ($member->getAccessibility()) {
+                case ClassLike::M_PUBLIC:
+                    $result[] = $member;
+                    break;
+
+                case ClassLike::M_PROTECTED:
+                    if ($contextClassName !== null && (
+                        $this->isSubclass($contextClassName, $member->getClass()->getName()) ||
+                        $this->isSubclass($member->getClass()->getName(), $contextClassName)
+                    )) {
+                        $result[] = $member;
+                    }
+                    break;
+
+                case ClassLike::M_PRIVATE:
+                    if ($contextClassName === $member->getClass()->getName()) {
+                        $result[] = $member;
+                    }
+                    break;
+            }
+        }
+
+        return $result;
+    }
+
     protected function doRun()
     {
         $this->reflectionComponents = $this->container->getByTag('reflection');

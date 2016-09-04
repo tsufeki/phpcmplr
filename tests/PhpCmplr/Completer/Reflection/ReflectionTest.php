@@ -176,4 +176,59 @@ class ReflectionTest extends \PHPUnit_Framework_TestCase
         $this->assertFalse($refl->isSubclass('\\B', '\\C'));
         $this->assertFalse($refl->isSubclass('\\C', '\\D'));
     }
+
+    public function test_filterAvailableMembers()
+    {
+        $base = (new Class_())
+            ->setName('\\B');
+
+        $class = (new Class_())
+            ->setName('\\C')
+            ->setExtends('\\B');
+
+        $sub = (new Class_())
+            ->setName('\\D')
+            ->setExtends('\\C');
+
+        $other = (new Class_())
+            ->setName('\\X');
+
+        $members = [
+            (new Method())
+                ->setName('a')
+                ->setClass($other),
+            (new Method())
+                ->setAccessibility(ClassLike::M_PRIVATE)
+                ->setName('b')
+                ->setClass($class),
+            (new Method())
+                ->setAccessibility(ClassLike::M_PRIVATE)
+                ->setName('c')
+                ->setClass($other),
+            (new Method())
+                ->setAccessibility(ClassLike::M_PROTECTED)
+                ->setName('d')
+                ->setClass($class),
+            (new Method())
+                ->setAccessibility(ClassLike::M_PROTECTED)
+                ->setName('e')
+                ->setClass($base),
+            (new Method())
+                ->setAccessibility(ClassLike::M_PROTECTED)
+                ->setName('f')
+                ->setClass($other),
+            (new Method())
+                ->setAccessibility(ClassLike::M_PROTECTED)
+                ->setName('g')
+                ->setClass($sub),
+        ];
+
+        $refl = $this->prepare($class, $base, $sub, $other);
+        $names = [];
+        foreach ($refl->filterAvailableMembers($members, '\\C') as $member) {
+            $names[] = $member->getName();
+        }
+
+        $this->assertSame(['a', 'b', 'd', 'e', 'g'], $names);
+    }
 }

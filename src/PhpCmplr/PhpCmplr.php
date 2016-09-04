@@ -15,6 +15,7 @@ use PhpCmplr\Completer\Diagnostics\Diagnostics;
 use PhpCmplr\Completer\Reflection\Reflection;
 use PhpCmplr\Completer\Reflection\FileReflection;
 use PhpCmplr\Completer\Reflection\LocatorReflection;
+use PhpCmplr\Completer\Reflection\JsonReflection;
 use PhpCmplr\Completer\Composer\ComposerLocator;
 use PhpCmplr\Completer\TypeInferrer\TypeInferrer;
 use PhpCmplr\Completer\TypeInferrer\BasicInferrer;
@@ -125,6 +126,8 @@ class PhpCmplr extends Plugin implements ContainerFactoryInterface
         $container->set('reflection', new Reflection($container));
         $container->set('reflection.file', new FileReflection($container), ['reflection']);
         $container->set('reflection.locator', new LocatorReflection($container), ['reflection']);
+        $stdlibPath = __DIR__ . '/../../data/stdlib.json';
+        $container->set('reflection.stdlib', new JsonReflection($container, $stdlibPath), ['reflection']);
         $container->set('composer.locator', new ComposerLocator($container), ['reflection.locator']);
         $container->set('typeinfer', new TypeInferrer($container));
         $container->set('typeinfer.basic', new BasicInferrer($container), ['typeinfer.visitor']);

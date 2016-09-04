@@ -5,6 +5,7 @@ namespace PhpCmplr\Completer\NameResolver;
 use PhpLenientParser\Node;
 use PhpLenientParser\Node\Name;
 use PhpLenientParser\Node\Name\FullyQualified;
+use PhpLenientParser\Node\Stmt;
 use PhpLenientParser\NodeVisitor\NameResolver as PhpParserNameResolver;
 
 use PhpCmplr\Completer\Type\Type;
@@ -13,10 +14,34 @@ use PhpCmplr\Completer\DocComment\Tag\TypedTag;
 
 class NameResolverNodeVisitor extends PhpParserNameResolver
 {
+    /**
+     * @var Name
+     */
+    private $currentClass;
+
+    /**
+     * @var Name
+     */
+    private $parentClass;
+
+    public function beforeTraverse(array $nodes) {
+        parent::beforeTraverse($nodes);
+        $this->currentClass = null;
+        $this->parentClass = null;
+    }
+
     protected function resolveClassName(Name $name)
     {
         $resolved = parent::resolveClassName($name);
+
+        if ($this->currentClass !== null && in_array(strtolower($name->toString()), array('self', 'static'))) {
+            $resolved = $this->currentClass;
+        } elseif ($this->parentClass !== null && strtolower($name->toString()) === 'parent') {
+            $resolved = $this->parentClass;
+        }
+
         $name->setAttribute('resolved', $resolved);
+
         return $name;
     }
 
@@ -28,6 +53,7 @@ class NameResolverNodeVisitor extends PhpParserNameResolver
             $resolved = new FullyQualified($name->parts, $name->getAttributes());
         }
         $name->setAttribute('resolved', $resolved);
+
         return $name;
     }
 
@@ -65,7 +91,8 @@ class NameResolverNodeVisitor extends PhpParserNameResolver
         });
     }
 
-    public function enterNode(Node $node) {
+    public function enterNode(Node $node)
+    {
         if ($node->hasAttribute('annotations')) {
             foreach ($node->getAttribute('annotations') as $annotations) {
                 foreach ($annotations as $docTag) {
@@ -75,6 +102,32 @@ class NameResolverNodeVisitor extends PhpParserNameResolver
                 }
             }
         }
-        return parent::enterNode($node);
+
+        $result = parent::enterNode($node);
+
+        if ($node instanceof Stmt\Class_) {
+            $this->currentClass = $node->getAttribute('namespacedName');
+            $this->parentClass = null;
+            if ($node->extends !== null) {
+                $this->parentClass = $node->extends->getAttribute('resolved');
+            }
+        } elseif ($node instanceof Stmt\Interface_) {
+            $this->currentClass = $node->getAttribute('namespacedName');
+            $this->parentClass = null;
+        }
+
+        return $result;
+    }
+
+    public function leaveNode(Node $node)
+    {
+        $result = parent::leaveNode($node);
+
+        if ($node instanceof Stmt\Class_) {
+            $this->currentClass = null;
+            $this->parentClass = null;
+        }
+
+        return $result;
     }
 }

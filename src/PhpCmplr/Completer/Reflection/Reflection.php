@@ -141,8 +141,10 @@ class Reflection extends Component
     protected function addMethodsFromBaseClass(array &$methods, Class_ $class)
     {
         if ($class->getExtends() && $this->isClass($class->getExtends())) {
-            foreach ($this->findAllMethods($class->getExtends(), false) as $method) {
-                $this->mergeMethod($methods, clone $method);
+            foreach ($this->findAllMethods($class->getExtends()) as $method) {
+                if ($method->getAccessibility() !== ClassLike::M_PRIVATE) {
+                    $this->mergeMethod($methods, clone $method);
+                }
             }
         }
     }
@@ -155,7 +157,7 @@ class Reflection extends Component
     {
         foreach ($class->getImplements() as $interfaceName) {
             if ($this->isInterface($interfaceName)) {
-                foreach($this->findAllMethods($interfaceName, false) as $method) {
+                foreach($this->findAllMethods($interfaceName) as $method) {
                     $method = clone $method;
                     $method->setAbstract(true);
                     $this->mergeMethod($methods, $method);
@@ -172,7 +174,7 @@ class Reflection extends Component
     {
         foreach ($class->getExtends() as $interfaceName) {
             if ($this->isInterface($interfaceName)) {
-                foreach($this->findAllMethods($interfaceName, false) as $method) {
+                foreach($this->findAllMethods($interfaceName) as $method) {
                     $this->mergeMethod($methods, clone $method);
                 }
             }
@@ -189,7 +191,7 @@ class Reflection extends Component
 
         foreach ($class->getTraits() as $traitName) {
             if ($this->isTrait($traitName)) {
-                foreach ($this->findAllMethods($traitName, false) as $method) {
+                foreach ($this->findAllMethods($traitName) as $method) {
                     $traitMethods[strtolower($traitName)][strtolower($method->getName())] = $method;
                 }
             }
@@ -232,61 +234,13 @@ class Reflection extends Component
     }
 
     /**
-     * @internal
-     *
-     * @param Type   $type
-     * @param string $class      Current class name.
-     * @param string $parent
-     * @param bool   $withStatic Whether to resolve `static` as $class.
-     *
-     * @return Type
-     */
-    public function resolveType(Type $type, $class, $parent, $withStatic) {
-        if ($type instanceof ObjectType) {
-            if ($type->getClass() === 'self') {
-                return Type::object_($class);
-            } elseif ($type->getClass() === 'parent' && $parent !== null) {
-                return Type::object_($parent);
-            } elseif ($type->getClass() === 'static' && $withStatic) {
-                return Type::object_($class);
-            }
-        }
-        return $type;
-    }
-
-    /**
-     * Resolve `self`, `parent` and optionally `static` types.
-     *
-     * @param Method[]  $methods
-     * @param ClassLike $class
-     * @param bool      $withStatic Whether to resolve `static` as $class.
-     */
-    protected function resolveMethodTypes(array &$methods, ClassLike $class, $withStatic)
-    {
-        $parent = ($class instanceof Class_ && $class->getExtends()) ? $class->getExtends() : null;
-        $transformer = function (Type $type) use ($class, $parent, $withStatic) {
-            return $this->resolveType($type, $class->getName(), $parent, $withStatic);
-        };
-
-        foreach ($methods as $method) {
-            $method->setReturnType($method->getReturnType()->walk($transformer));
-            $method->setDocReturnType($method->getDocReturnType()->walk($transformer));
-            foreach ($method->getParams() as $param) {
-                $param->setTypeHint($param->getTypeHint()->walk($transformer));
-                $param->setDocType($param->getDocType()->walk($transformer));
-            }
-        }
-    }
-
-    /**
      * Find all methods of a class, including base classes, used traits and implemented interfaces.
      *
      * @param string $className
-     * @param bool   $bottom    Internal. Whether at the bottom of inheritance tree.
      *
      * @return Method[]
      */
-    public function findAllMethods($className, $bottom = true)
+    public function findAllMethods($className)
     {
         if (array_key_exists(strtolower($className), $this->classMethodsCache)) {
             return $this->classMethodsCache[strtolower($className)];
@@ -315,8 +269,6 @@ class Reflection extends Component
         }
 
         $this->addOwnMethods($methods, $class);
-
-        $this->resolveMethodTypes($methods, $class, $bottom);
 
         return $this->classMethodsCache[strtolower($className)] = $methods;
     }
@@ -353,8 +305,10 @@ class Reflection extends Component
     protected function addPropertiesFromBaseClass(array &$properties, Class_ $class)
     {
         if ($class->getExtends() && $this->isClass($class->getExtends())) {
-            foreach ($this->findAllProperties($class->getExtends(), false) as $property) {
-                $this->mergeProperty($properties, clone $property);
+            foreach ($this->findAllProperties($class->getExtends()) as $property) {
+                if ($property->getAccessibility() !== ClassLike::M_PRIVATE) {
+                    $this->mergeProperty($properties, clone $property);
+                }
             }
         }
     }
@@ -367,7 +321,7 @@ class Reflection extends Component
     {
         foreach ($class->getTraits() as $traitName) {
             if ($this->isTrait($traitName)) {
-                foreach ($this->findAllProperties($traitName, false) as $property) {
+                foreach ($this->findAllProperties($traitName) as $property) {
                     $this->mergeProperty($properties, clone $property);
                 }
             }
@@ -386,33 +340,13 @@ class Reflection extends Component
     }
 
     /**
-     * Resolve `self`, `parent` and optionally `static` types.
-     *
-     * @param Property[] $properties
-     * @param ClassLike  $class
-     * @param bool       $withStatic Whether to resolve `static` as $class.
-     */
-    protected function resolvePropertyTypes(array &$properties, ClassLike $class, $withStatic)
-    {
-        $parent = ($class instanceof Class_ && $class->getExtends()) ? $class->getExtends() : null;
-        $transformer = function (Type $type) use ($class, $parent, $withStatic) {
-            return $this->resolveType($type, $class->getName(), $parent, $withStatic);
-        };
-
-        foreach ($properties as $property) {
-            $property->setType($property->getType()->walk($transformer));
-        }
-    }
-
-    /**
      * Find all properties of a class, including base classes and used traits.
      *
      * @param string $className
-     * @param bool   $bottom    Internal. Whether at the bottom of inheritance tree.
      *
      * @return Property[]
      */
-    public function findAllProperties($className, $bottom = true)
+    public function findAllProperties($className)
     {
         if (array_key_exists(strtolower($className), $this->classPropertiesCache)) {
             return $this->classPropertiesCache[strtolower($className)];
@@ -436,8 +370,6 @@ class Reflection extends Component
         }
 
         $this->addOwnProperties($properties, $class);
-
-        $this->resolvePropertyTypes($properties, $class, $bottom);
 
         return $this->classPropertiesCache[strtolower($className)] = $properties;
     }
@@ -474,7 +406,7 @@ class Reflection extends Component
     protected function addConstsFromBaseClass(array &$consts, Class_ $class)
     {
         if ($class->getExtends() && $this->isClass($class->getExtends())) {
-            foreach ($this->findAllClassConsts($class->getExtends(), false) as $const) {
+            foreach ($this->findAllClassConsts($class->getExtends()) as $const) {
                 $this->mergeConst($consts, clone $const);
             }
         }
@@ -488,7 +420,7 @@ class Reflection extends Component
     {
         foreach ($class->getImplements() as $interfaceName) {
             if ($this->isInterface($interfaceName)) {
-                foreach($this->findAllClassConsts($interfaceName, false) as $const) {
+                foreach($this->findAllClassConsts($interfaceName) as $const) {
                     $this->mergeConst($consts, clone $const);
                 }
             }
@@ -503,7 +435,7 @@ class Reflection extends Component
     {
         foreach ($class->getExtends() as $interfaceName) {
             if ($this->isInterface($interfaceName)) {
-                foreach($this->findAllClassConsts($interfaceName, false) as $const) {
+                foreach($this->findAllClassConsts($interfaceName) as $const) {
                     $this->mergeConst($consts, clone $const);
                 }
             }

@@ -54,6 +54,69 @@ END;
         $this->assertSame('Z', $params[3]->type->getAttribute('resolved')->toString());
     }
 
+    public function test_run_self()
+    {
+        $source = <<<'END'
+<?php
+namespace A\B;
+
+class C {
+    public function f(self $a) {}
+}
+END;
+        list($parser, $resolver) = $this->loadFile($source);
+        $resolver->run();
+        $nodes = $parser->getNodes();
+
+        $class = $nodes[0]->stmts[0];
+
+        $params = $class->stmts[0]->params;
+        $this->assertInstanceOf(FullyQualified::class, $params[0]->type->getAttribute('resolved'));
+        $this->assertSame('A\\B\\C', $params[0]->type->getAttribute('resolved')->toString());
+    }
+
+    public function test_run_static()
+    {
+        $source = <<<'END'
+<?php
+namespace A\B;
+
+class C {
+    public function f() { static::g(); }
+}
+END;
+        list($parser, $resolver) = $this->loadFile($source);
+        $resolver->run();
+        $nodes = $parser->getNodes();
+
+        $class = $nodes[0]->stmts[0];
+
+        $call = $class->stmts[0]->stmts[0];
+        $this->assertInstanceOf(FullyQualified::class, $call->class->getAttribute('resolved'));
+        $this->assertSame('A\\B\\C', $call->class->getAttribute('resolved')->toString());
+    }
+
+    public function test_run_parent()
+    {
+        $source = <<<'END'
+<?php
+namespace A\B;
+
+class C extends D {
+    public function f(parent $a) {}
+}
+END;
+        list($parser, $resolver) = $this->loadFile($source);
+        $resolver->run();
+        $nodes = $parser->getNodes();
+
+        $class = $nodes[0]->stmts[0];
+
+        $params = $class->stmts[0]->params;
+        $this->assertInstanceOf(FullyQualified::class, $params[0]->type->getAttribute('resolved'));
+        $this->assertSame('A\\B\\D', $params[0]->type->getAttribute('resolved')->toString());
+    }
+
     public function test_run_docComment()
     {
         $source = <<<'END'

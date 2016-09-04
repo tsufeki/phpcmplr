@@ -31,12 +31,13 @@ class ReflectionTest extends \PHPUnit_Framework_TestCase
         return new Reflection($container);
     }
 
-    protected function makeMethod($name)
+    protected function makeMethod($name, $visibility = ClassLike::M_PUBLIC)
     {
         return (new Method())
             ->setName($name)
             ->setReturnType(Type::mixed_())
-            ->setDocReturnType(Type::mixed_());
+            ->setDocReturnType(Type::mixed_())
+            ->setAccessibility($visibility);
     }
 
     public function test_findAllMethods_baseClass()
@@ -57,6 +58,25 @@ class ReflectionTest extends \PHPUnit_Framework_TestCase
         $this->assertCount(3, $methods);
         $names = [$methods['f']->getName(), $methods['g']->getName(), $methods['h']->getName()];
         $this->assertSame(['f', 'g', 'h'], $names);
+    }
+
+    public function test_findAllMethods_baseClass_private()
+    {
+        $base = (new Class_())
+            ->setName('\\B')
+            ->addMethod($this->makeMethod('f', ClassLike::M_PRIVATE))
+            ->addMethod($this->makeMethod('g'));
+
+        $class = (new Class_())
+            ->setName('\\C')
+            ->setExtends('\\B')
+            ->addMethod($this->makeMethod('h'));
+
+        $refl = $this->prepare($class, $base);
+        $methods = $refl->findAllMethods('\\C');
+        $this->assertCount(2, $methods);
+        $names = [$methods['g']->getName(), $methods['h']->getName()];
+        $this->assertSame(['g', 'h'], $names);
     }
 
     public function test_findAllMethods_implementedInterface()

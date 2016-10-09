@@ -6,7 +6,9 @@ use Psr\Log\LogLevel;
 use React\EventLoop\Factory as EventLoopFactory;
 
 use PhpCmplr\Completer\Container;
+use PhpCmplr\Completer\ContainerFactoryInterface;
 use PhpCmplr\Completer\FileStoreInterface;
+use PhpCmplr\Completer\FileStore;
 use PhpCmplr\Completer\Project;
 use PhpCmplr\Completer\ProjectRootDirectoryGuesser;
 use PhpCmplr\Completer\SourceFile\SourceFile;
@@ -31,7 +33,7 @@ use PhpCmplr\Server\Action;
 use PhpCmplr\Util\FileIO;
 use PhpCmplr\Util\Logger;
 
-class PhpCmplr extends Plugin implements FileStoreInterface
+class PhpCmplr extends Plugin implements ContainerFactoryInterface, FileStoreInterface
 {
     /**
      * @var array
@@ -47,16 +49,6 @@ class PhpCmplr extends Plugin implements FileStoreInterface
      * @var Server
      */
     private $server;
-
-    /**
-     * @var string[] file path => project root dir
-     */
-    private $projectRootDirCache;
-
-    /**
-     * @var Project[]
-     */
-    private $projects;
 
     /**
      * @var Plugin[]
@@ -81,8 +73,6 @@ class PhpCmplr extends Plugin implements FileStoreInterface
         ], $options);
 
         $this->options = $options;
-        $this->projects = [];
-        $this->projectRootDirCache = [];
         $this->plugins = array_merge([$this], $plugins);
         $this->globalContainer = $this->createGlobalContainer();
         $this->server = $this->createServer();
@@ -105,6 +95,14 @@ class PhpCmplr extends Plugin implements FileStoreInterface
         }
 
         return $server;
+    }
+
+    /**
+     * @return Server
+     */
+    public function getServer()
+    {
+        return $this->server;
     }
 
     public function addActions(Server $server, array $options)
@@ -132,13 +130,18 @@ class PhpCmplr extends Plugin implements FileStoreInterface
         return $container;
     }
 
+    public function getGlobalContainer()
+    {
+        return $this->globalContainer;
+    }
+
     public function addGlobalComponents(Container $container, array $options)
     {
-        $container->set('file_store', $this);
         $container->set('logger', new Logger($options['log']['dir'], $options['log']['level'], [
             'logFormat' => "[{date}] [{level}] [pid:{pid}] {message}\n{exception}",
             'appendContext' => false,
         ]));
+        $container->set('file_store', new FileStore($this));
         $container->set('io', new FileIO());
         $container->set('eventloop', EventLoopFactory::create());
         $container->set('project_root_dir', new ProjectRootDirectoryGuesser($container->get('io')));
@@ -146,7 +149,7 @@ class PhpCmplr extends Plugin implements FileStoreInterface
         $container->set('reflection.stdlib', new JsonReflection($container, $stdlibPath), ['reflection']);
     }
 
-    private function createProject($rootPath)
+    public function createProject($rootPath)
     {
         $container = new Container($this->globalContainer);
         $project = new Project($rootPath, $container);
@@ -163,7 +166,7 @@ class PhpCmplr extends Plugin implements FileStoreInterface
     {
     }
 
-    private function createFileContainer(Project $project, $path, $contents)
+    public function createFileContainer(Project $project, $path, $contents)
     {
         $container = new Container($project->getProjectContainer());
         $container->set('file', new SourceFile($container, $path, $contents));
@@ -194,59 +197,14 @@ class PhpCmplr extends Plugin implements FileStoreInterface
         $container->set('completer', new Completer($container));
     }
 
-    /**
-     * @param string $path
-     *
-     * @return string
-     */
-    private function getProjectRootPath($path)
-    {
-        if (array_key_exists($path, $this->projectRootDirCache)) {
-            return $this->projectRootDirCache[$path];
-        }
-
-        $rootPath = $this->globalContainer->get('project_root_dir')->getProjectRootDir($path);
-        if (empty($rootPath)) {
-            $rootPath = '/';
-        }
-        $this->projectRootDirCache[$path] = $rootPath;
-
-        return $rootPath;
-    }
-
     public function getFile($path)
     {
-        $path = $this->globalContainer->get('io')->canonicalPath($path);
-        $projectRootPath = $this->getProjectRootPath($path);
-
-        if (array_key_exists($projectRootPath, $this->projects)) {
-            return $this->projects[$projectRootPath]->getFile($path);
-        }
-
-        return null;
+        return $this->globalContainer->get('file_store')->getFile($path);
     }
 
     public function addFile($path, $contents)
     {
-        $path = $this->globalContainer->get('io')->canonicalPath($path);
-        $projectRootPath = $this->getProjectRootPath($path);
-
-        if (!array_key_exists($projectRootPath, $this->projects)) {
-            $this->projects[$projectRootPath] = $this->createProject($projectRootPath);
-        }
-        $project = $this->projects[$projectRootPath];
-        $fileContainer = $this->createFileContainer($project, $path, $contents);
-        $project->addFile($path, $fileContainer);
-
-        return $fileContainer;
-    }
-
-    /**
-     * @return Server
-     */
-    public function getServer()
-    {
-        return $this->server;
+        return $this->globalContainer->get('file_store')->addFile($path, $contents);
     }
 
     public function run()

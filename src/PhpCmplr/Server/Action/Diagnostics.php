@@ -2,7 +2,7 @@
 
 namespace PhpCmplr\Server\Action;
 
-use PhpCmplr\Completer\Project;
+use PhpCmplr\PhpCmplr;
 
 /**
  * Get diagnostics for one file.
@@ -41,11 +41,11 @@ END;
         return $this->combineSchemas(parent::getSchema(), self::SCHEMA);
     }
 
-    protected function handle($data, Project $project)
+    protected function handle($data, PhpCmplr $phpcmplr)
     {
-        parent::handle($data, $project);
+        parent::handle($data, $phpcmplr);
 
-        $container = $project->getFile($data->path);
+        $container = $phpcmplr->getFile($data->path);
         $diagsData = [];
 
         if ($container !== null) {

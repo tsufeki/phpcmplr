@@ -2,7 +2,7 @@
 
 namespace PhpCmplr\Server;
 
-use PhpCmplr\Completer\Project;
+use PhpCmplr\PhpCmplr;
 use PhpCmplr\Completer\SourceFile\Location;
 use PhpCmplr\Completer\SourceFile\SourceFileInterface;
 use PhpCmplr\Util\Json;
@@ -91,11 +91,11 @@ END;
         return '{"allOf": [' . implode(', ', $schemas) . ']}';
     }
 
-    public function handleRequest($body, Project $project)
+    public function handleRequest($body, PhpCmplr $phpcmplr)
     {
         try {
             $data = Json::load($body, $this->schema);
-            $responseData = $this->handle($data, $project);
+            $responseData = $this->handle($data, $phpcmplr);
             $response = Json::dump($responseData);
             return $response;
         } catch (JsonLoadException $e) {
@@ -108,13 +108,13 @@ END;
     /**
      * Override this.
      *
-     * @param mixed   $data
-     * @param Project $project
+     * @param mixed    $data
+     * @param PhpCmplr $phpcmplr
      *
      * @return object Response object which must be serializable to JSON.
      * @throws HttpException
      */
-    protected function handle($data, Project $project)
+    protected function handle($data, PhpCmplr $phpcmplr)
     {
         return new \stdClass();
     }

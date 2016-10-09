@@ -3,10 +3,12 @@
 namespace PhpCmplr;
 
 use Psr\Log\LogLevel;
+use React\EventLoop\Factory as EventLoopFactory;
 
 use PhpCmplr\Completer\Container;
-use PhpCmplr\Completer\ContainerFactoryInterface;
+use PhpCmplr\Completer\FileStoreInterface;
 use PhpCmplr\Completer\Project;
+use PhpCmplr\Completer\ProjectRootDirectoryGuesser;
 use PhpCmplr\Completer\SourceFile\SourceFile;
 use PhpCmplr\Completer\Parser\Parser;
 use PhpCmplr\Completer\NameResolver\NameResolver;
@@ -29,9 +31,17 @@ use PhpCmplr\Server\Action;
 use PhpCmplr\Util\FileIO;
 use PhpCmplr\Util\Logger;
 
-class PhpCmplr extends Plugin implements ContainerFactoryInterface
+class PhpCmplr extends Plugin implements FileStoreInterface
 {
-    private $logger;
+    /**
+     * @var array
+     */
+    private $options;
+
+    /**
+     * @var Container
+     */
+    private $globalContainer;
 
     /**
      * @var Server
@@ -39,14 +49,14 @@ class PhpCmplr extends Plugin implements ContainerFactoryInterface
     private $server;
 
     /**
-     * @var Project
+     * @var string[] file path => project root dir
      */
-    private $project;
+    private $projectRootDirCache;
 
     /**
-     * @var FileIO
+     * @var Project[]
      */
-    private $io;
+    private $projects;
 
     /**
      * @var Plugin[]
@@ -54,56 +64,50 @@ class PhpCmplr extends Plugin implements ContainerFactoryInterface
     private $plugins;
 
     /**
-     * @param int    $port
-     * @param string $host
-     * @param string $logLevel
-     * @param string $logDir
+     * @param array    $options
+     * @param Plugin[] $plugins
      */
-    public function __construct($port, $host = '127.0.0.1', $logLevel = LogLevel::DEBUG, $logDir = 'php://stderr')
+    public function __construct(array $options = [], array $plugins = [])
     {
-        $this->logger = new Logger($logDir, $logLevel, [
-            'logFormat' => "[{date}] [{level}] [pid:{pid}] {message}\n{exception}",
-            'appendContext' => false,
-        ]);
-        $this->io = new FileIO();
-        $this->project = new Project($this);
-        $this->server = new Server($this->project, $this->logger, $port, $host);
+        $options = array_replace_recursive([
+            'server' => [
+                'port' => 41749,
+                'host' => '127.0.0.1',
+            ],
+            'log' => [
+                'level' => LogLevel::DEBUG,
+                'dir' => 'php://stderr',
+            ],
+        ], $options);
 
-        $this->plugins = [];
-        $this->addPlugin($this);
+        $this->options = $options;
+        $this->projects = [];
+        $this->projectRootDirCache = [];
+        $this->plugins = array_merge([$this], $plugins);
+        $this->globalContainer = $this->createGlobalContainer();
+        $this->server = $this->createServer();
     }
 
     /**
-     * @param Plugin $plugin
-     *
-     * @return $this
+     * @return Server
      */
-    public function addPlugin(Plugin $plugin)
+    private function createServer()
     {
-        $plugin->addActions($this->server);
-        $this->plugins[] = $plugin;
-
-        return $this;
-    }
-
-    public function run()
-    {
-        $this->server->run();
-    }
-
-    public function createContainer($path, $contents, array $options = [])
-    {
-        $container = new Container();
-        $container->set('file', new SourceFile($container, $path, $contents));
+        $server = new Server(
+            $this,
+            $this->globalContainer->get('logger'),
+            $this->globalContainer->get('eventloop'),
+            $this->options['server']
+        );
 
         foreach ($this->plugins as $plugin) {
-            $plugin->addComponents($container, $options);
+            $plugin->addActions($server, $this->options);
         }
 
-        return $container;
+        return $server;
     }
 
-    public function addActions(Server $server)
+    public function addActions(Server $server, array $options)
     {
         $server->addAction(new Action\Ping());
         $server->addAction(new Action\Load());
@@ -114,11 +118,65 @@ class PhpCmplr extends Plugin implements ContainerFactoryInterface
         $server->addAction(new Action\Quit($server));
     }
 
-    public function addComponents(Container $container, array $options)
+    /**
+     * @return Container
+     */
+    private function createGlobalContainer()
     {
-        $container->set('logger', $this->logger);
-        $container->set('io', $this->io);
-        $container->set('project', $this->project);
+        $container = new Container();
+
+        foreach ($this->plugins as $plugin) {
+            $plugin->addGlobalComponents($container, $this->options);
+        }
+
+        return $container;
+    }
+
+    public function addGlobalComponents(Container $container, array $options)
+    {
+        $container->set('file_store', $this);
+        $container->set('logger', new Logger($options['log']['dir'], $options['log']['level'], [
+            'logFormat' => "[{date}] [{level}] [pid:{pid}] {message}\n{exception}",
+            'appendContext' => false,
+        ]));
+        $container->set('io', new FileIO());
+        $container->set('eventloop', EventLoopFactory::create());
+        $container->set('project_root_dir', new ProjectRootDirectoryGuesser($container->get('io')));
+        $stdlibPath = __DIR__ . '/../../data/stdlib.json';
+        $container->set('reflection.stdlib', new JsonReflection($container, $stdlibPath), ['reflection']);
+    }
+
+    private function createProject($rootPath)
+    {
+        $container = new Container($this->globalContainer);
+        $project = new Project($rootPath, $container);
+        //$container->set('project', $project);
+
+        foreach ($this->plugins as $plugin) {
+            $plugin->addProjectComponents($container, $this->options);
+        }
+
+        return $project;
+    }
+
+    public function addProjectComponents(Container $container, array $options)
+    {
+    }
+
+    private function createFileContainer(Project $project, $path, $contents)
+    {
+        $container = new Container($project->getProjectContainer());
+        $container->set('file', new SourceFile($container, $path, $contents));
+
+        foreach ($this->plugins as $plugin) {
+            $plugin->addFileComponents($container, $this->options);
+        }
+
+        return $container;
+    }
+
+    public function addFileComponents(Container $container, array $options)
+    {
         $container->set('diagnostics', new Diagnostics($container));
         $container->set('parser', new Parser($container), ['diagnostics']);
         $container->set('name_resolver', new NameResolver($container));
@@ -126,8 +184,6 @@ class PhpCmplr extends Plugin implements ContainerFactoryInterface
         $container->set('reflection', new Reflection($container));
         $container->set('reflection.file', new FileReflection($container), ['reflection']);
         $container->set('reflection.locator', new LocatorReflection($container), ['reflection']);
-        $stdlibPath = __DIR__ . '/../../data/stdlib.json';
-        $container->set('reflection.stdlib', new JsonReflection($container, $stdlibPath), ['reflection']);
         $container->set('composer.locator', new ComposerLocator($container), ['reflection.locator']);
         $container->set('typeinfer', new TypeInferrer($container));
         $container->set('typeinfer.basic', new BasicInferrer($container), ['typeinfer.visitor']);
@@ -139,6 +195,53 @@ class PhpCmplr extends Plugin implements ContainerFactoryInterface
     }
 
     /**
+     * @param string $path
+     *
+     * @return string
+     */
+    private function getProjectRootPath($path)
+    {
+        if (array_key_exists($path, $this->projectRootDirCache)) {
+            return $this->projectRootDirCache[$path];
+        }
+
+        $rootPath = $this->globalContainer->get('project_root_dir')->getProjectRootDir($path);
+        if (empty($rootPath)) {
+            $rootPath = '/';
+        }
+        $this->projectRootDirCache[$path] = $rootPath;
+
+        return $rootPath;
+    }
+
+    public function getFile($path)
+    {
+        $path = $this->globalContainer->get('io')->canonicalPath($path);
+        $projectRootPath = $this->getProjectRootPath($path);
+
+        if (array_key_exists($projectRootPath, $this->projects)) {
+            return $this->projects[$projectRootPath]->getFile($path);
+        }
+
+        return null;
+    }
+
+    public function addFile($path, $contents)
+    {
+        $path = $this->globalContainer->get('io')->canonicalPath($path);
+        $projectRootPath = $this->getProjectRootPath($path);
+
+        if (!array_key_exists($projectRootPath, $this->projects)) {
+            $this->projects[$projectRootPath] = $this->createProject($projectRootPath);
+        }
+        $project = $this->projects[$projectRootPath];
+        $fileContainer = $this->createFileContainer($project, $path, $contents);
+        $project->addFile($path, $fileContainer);
+
+        return $fileContainer;
+    }
+
+    /**
      * @return Server
      */
     public function getServer()
@@ -146,11 +249,8 @@ class PhpCmplr extends Plugin implements ContainerFactoryInterface
         return $this->server;
     }
 
-    /**
-     * @return Project
-     */
-    public function getProject()
+    public function run()
     {
-        return $this->project;
+        $this->server->run();
     }
 }

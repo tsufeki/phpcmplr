@@ -10,7 +10,7 @@ use React\Http\Request;
 use React\Http\Response;
 use React\Http\ResponseCodes;
 
-use PhpCmplr\Completer\Project;
+use PhpCmplr\PhpCmplr;
 
 /**
  * HTTP server.
@@ -43,9 +43,9 @@ class Server
     private $http;
 
     /**
-     * @var Project
+     * @var PhpCmplr
      */
-    private $project;
+    private $phpcmplr;
 
     /**
      * @var mixed
@@ -58,17 +58,18 @@ class Server
     private $actions;
 
     /**
-     * @param Project $project
-     * @param mixed   $logger
-     * @param int     $port
-     * @param string  $host
+     * @param PhpCmplr      $phpcmplr
+     * @param mixed         $logger
+     * @param LoopInterface $loop
+     * @param array         $options
      */
-    public function __construct(Project $project, $logger, $port, $host = '127.0.0.1')
+    public function __construct(PhpCmplr $phpcmplr, $logger, LoopInterface $loop, array $options)
     {
-        $this->host = $host;
-        $this->port = $port;
-        $this->project = $project;
+        $this->host = $options['host'];
+        $this->port = $options['port'];
+        $this->phpcmplr = $phpcmplr;
         $this->logger = $logger;
+        $this->loop = $loop;
         $this->actions = [];
     }
 
@@ -91,7 +92,6 @@ class Server
     public function run()
     {
         $this->logger->info("Starting server on $this->host:$this->port");
-        $this->loop = EventLoopFactory::create();
         $this->socket = new ServerSocket($this->loop);
         $this->http = new HttpServer($this->socket);
 
@@ -125,7 +125,7 @@ class Server
 
             $responseBody = $this->actions[$request->getPath()]->handleRequest(
                 $request->getBody(),
-                $this->project);
+                $this->phpcmplr);
 
         } catch (HttpException $e) {
             $this->logger->notice($e->getMessage(), ['exception' => $e]);

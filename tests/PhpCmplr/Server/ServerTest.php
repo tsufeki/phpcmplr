@@ -43,7 +43,13 @@ class ServerTest extends \PHPUnit_Framework_TestCase
 
     public function setUp()
     {
-        $this->phpcmplr = new PhpCmplr(7373, '127.0.0.1', LogLevel::ERROR);
+        $this->phpcmplr = new PhpCmplr([
+            'server' => [
+                'port' => 7373,
+                'host' => '127.0.0.1',
+            ],
+            'log' => ['level' => LogLevel::ERROR],
+        ]);
         $this->server = $this->phpcmplr->getServer();
     }
 
@@ -105,7 +111,7 @@ class ServerTest extends \PHPUnit_Framework_TestCase
 
         $result = new \stdClass();
         $goto = new \stdClass();
-        $goto->path = 'qaz.php';
+        $goto->path = '/qaz.php';
         $goto->line = 1;
         $goto->col = 7;
         $result->goto = [$goto];
@@ -129,7 +135,7 @@ class ServerTest extends \PHPUnit_Framework_TestCase
 
         $result = new \stdClass();
         $goto = new \stdClass();
-        $goto->path = 'qaz.php';
+        $goto->path = '/qaz.php';
         $goto->line = 1;
         $goto->col = 7;
         $result->goto = [$goto];

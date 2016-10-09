@@ -2,7 +2,7 @@
 
 namespace PhpCmplr\Server\Action;
 
-use PhpCmplr\Completer\Project;
+use PhpCmplr\PhpCmplr;
 use PhpCmplr\Server\Action;
 
 /**
@@ -40,11 +40,11 @@ END;
         return self::SCHEMA;
     }
 
-    protected function handle($data, Project $project)
+    protected function handle($data, PhpCmplr $phpcmplr)
     {
         if (isset($data->files)) {
             foreach ($data->files as $fileData) {
-                $project->addFile($fileData->path, $fileData->contents);
+                $phpcmplr->addFile($fileData->path, $fileData->contents);
             }
         }
 

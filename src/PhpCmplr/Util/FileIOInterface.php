@@ -21,4 +21,11 @@ interface FileIOInterface
      * @return bool
      */
     public function exists($path);
+
+    /**
+     * @param string $path Absolute path.
+     *
+     * @return string
+     */
+    public function canonicalPath($path);
 }

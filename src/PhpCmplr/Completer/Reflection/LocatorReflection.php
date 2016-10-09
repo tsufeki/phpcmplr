@@ -4,7 +4,7 @@ namespace PhpCmplr\Completer\Reflection;
 
 use PhpCmplr\Completer\Component;
 use PhpCmplr\Completer\Container;
-use PhpCmplr\Completer\Project;
+use PhpCmplr\Completer\FileStoreInterface;
 use PhpCmplr\Util\FileIOInterface;
 use PhpCmplr\Util\IOException;
 
@@ -15,9 +15,9 @@ use PhpCmplr\Completer\Reflection\Element\Function_;
 class LocatorReflection extends Component implements ReflectionInterface
 {
     /**
-     * @var Project
+     * @var FileIOInterface
      */
-    private $project;
+    private $fileStore;
 
     /**
      * @var FileIOInterface
@@ -57,9 +57,9 @@ class LocatorReflection extends Component implements ReflectionInterface
             foreach ($locator->getPathsForClass($fullyQualifiedName) as $path) {
                 try {
                     /** @var Container $cont */
-                    $cont = $this->project->getFile($path);
+                    $cont = $this->fileStore->getFile($path);
                     if ($cont === null) {
-                        $cont = $this->project->addFile($path, $this->io->read($path));
+                        $cont = $this->fileStore->addFile($path, $this->io->read($path));
                     }
                     $file = $cont->get('reflection.file');
                     if ($file !== null) {
@@ -86,9 +86,9 @@ class LocatorReflection extends Component implements ReflectionInterface
             foreach ($locator->getPathsForFunction($fullyQualifiedName) as $path) {
                 try {
                     /** @var Container $cont */
-                    $cont = $this->project->getFile($path);
+                    $cont = $this->fileStore->getFile($path);
                     if ($cont === null) {
-                        $cont = $this->project->addFile($path, $this->io->read($path));
+                        $cont = $this->fileStore->addFile($path, $this->io->read($path));
                     }
                     $file = $cont->get('reflection.file');
                     if ($file !== null) {
@@ -115,9 +115,9 @@ class LocatorReflection extends Component implements ReflectionInterface
             foreach ($locator->getPathsForConst($fullyQualifiedName) as $path) {
                 try {
                     /** @var Container $cont */
-                    $cont = $this->project->getFile($path);
+                    $cont = $this->fileStore->getFile($path);
                     if ($cont === null) {
-                        $cont = $this->project->addFile($path, $this->io->read($path));
+                        $cont = $this->fileStore->addFile($path, $this->io->read($path));
                     }
                     $file = $cont->get('reflection.file');
                     if ($file !== null) {
@@ -134,7 +134,7 @@ class LocatorReflection extends Component implements ReflectionInterface
     protected function doRun()
     {
         $this->io = $this->container->get('io');
-        $this->project = $this->container->get('project');
+        $this->fileStore = $this->container->get('file_store');
         $this->locators = $this->container->getByTag('reflection.locator');
     }
 }

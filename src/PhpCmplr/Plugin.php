@@ -13,7 +13,7 @@ abstract class Plugin
     /**
      * @param Server $server
      */
-    public function addActions(Server $server)
+    public function addActions(Server $server, array $options)
     {
     }
 
@@ -21,7 +21,23 @@ abstract class Plugin
      * @param Container $container
      * @param array     $options
      */
-    public function addComponents(Container $container, array $options)
+    public function addGlobalComponents(Container $container, array $options)
+    {
+    }
+
+    /**
+     * @param Container $container
+     * @param array     $options
+     */
+    public function addProjectComponents(Container $container, array $options)
+    {
+    }
+
+    /**
+     * @param Container $container
+     * @param array     $options
+     */
+    public function addFileComponents(Container $container, array $options)
     {
     }
 }

@@ -2,7 +2,7 @@
 
 namespace PhpCmplr\Server\Action;
 
-use PhpCmplr\Completer\Project;
+use PhpCmplr\PhpCmplr;
 use PhpCmplr\Server\Action;
 use PhpCmplr\Server\Server;
 
@@ -22,7 +22,7 @@ class Quit extends Action
         $this->server = $server;
     }
 
-    protected function handle($data, Project $project)
+    protected function handle($data, PhpCmplr $phpcmplr)
     {
         $this->server->quit();
 

@@ -3,8 +3,7 @@
 namespace Tests\PhpCmplr\Completer\Reflection;
 
 use PhpCmplr\Completer\Container;
-use PhpCmplr\Completer\ContainerFactoryInterface;
-use PhpCmplr\Completer\Project;
+use PhpCmplr\Completer\FileStoreInterface;
 use PhpCmplr\Completer\SourceFile\SourceFile;
 use PhpCmplr\Completer\Parser\Parser;
 use PhpCmplr\Completer\DocComment\DocCommentParser;
@@ -38,10 +37,12 @@ class LocatorReflectionTest extends \PHPUnit_Framework_TestCase
         $cont1 = $this->loadFile('<?php class CC { public function f() {} }', '/qaz.php');
         $cont2 = $this->loadFile('<?php ;', '/wsx.php');
 
-        $factory = $this->getMockForAbstractClass(ContainerFactoryInterface::class);
-        $factory->expects($this->exactly(2))
-            ->method('createContainer')
-            ->will($this->onConsecutiveCalls($cont1, $cont2));
+        $fileStore = $this->getMockForAbstractClass(FileStoreInterface::class);
+        $fileStore->expects($this->exactly(1))
+            ->method('getFile')
+            ->with($this->equalTo('/qaz.php'))
+            ->willReturn($cont1);
+        $cont2->set('file_store', $fileStore);
 
         $locator = $this->getMockForAbstractClass(LocatorInterface::class);
         $locator->expects($this->once())
@@ -52,11 +53,6 @@ class LocatorReflectionTest extends \PHPUnit_Framework_TestCase
 
         $io = $this->getMockForAbstractClass(FileIOInterface::class);
         $cont2->set('io', $io);
-
-        $project = new Project($factory);
-        $project->addFile('/qaz.php', '');
-        $project->addFile('/wsx.php', '');
-        $cont2->set('project', $project);
 
         $refl = new LocatorReflection($cont2);
 
@@ -74,10 +70,12 @@ class LocatorReflectionTest extends \PHPUnit_Framework_TestCase
         $cont1 = $this->loadFile('<?php function fff() {}', '/qaz.php');
         $cont2 = $this->loadFile('<?php ;', '/wsx.php');
 
-        $factory = $this->getMockForAbstractClass(ContainerFactoryInterface::class);
-        $factory->expects($this->exactly(2))
-            ->method('createContainer')
-            ->will($this->onConsecutiveCalls($cont1, $cont2));
+        $fileStore = $this->getMockForAbstractClass(FileStoreInterface::class);
+        $fileStore->expects($this->exactly(1))
+            ->method('getFile')
+            ->with($this->equalTo('/qaz.php'))
+            ->willReturn($cont1);
+        $cont2->set('file_store', $fileStore);
 
         $locator = $this->getMockForAbstractClass(LocatorInterface::class);
         $locator->expects($this->once())
@@ -88,11 +86,6 @@ class LocatorReflectionTest extends \PHPUnit_Framework_TestCase
 
         $io = $this->getMockForAbstractClass(FileIOInterface::class);
         $cont2->set('io', $io);
-
-        $project = new Project($factory);
-        $project->addFile('/qaz.php', '');
-        $project->addFile('/wsx.php', '');
-        $cont2->set('project', $project);
 
         $refl = new LocatorReflection($cont2);
 
@@ -109,10 +102,12 @@ class LocatorReflectionTest extends \PHPUnit_Framework_TestCase
         $cont1 = $this->loadFile('<?php const ZZ = 7;', '/qaz.php');
         $cont2 = $this->loadFile('<?php ;', '/wsx.php');
 
-        $factory = $this->getMockForAbstractClass(ContainerFactoryInterface::class);
-        $factory->expects($this->exactly(2))
-            ->method('createContainer')
-            ->will($this->onConsecutiveCalls($cont1, $cont2));
+        $fileStore = $this->getMockForAbstractClass(FileStoreInterface::class);
+        $fileStore->expects($this->exactly(1))
+            ->method('getFile')
+            ->with($this->equalTo('/qaz.php'))
+            ->willReturn($cont1);
+        $cont2->set('file_store', $fileStore);
 
         $locator = $this->getMockForAbstractClass(LocatorInterface::class);
         $locator->expects($this->exactly(2))
@@ -123,11 +118,6 @@ class LocatorReflectionTest extends \PHPUnit_Framework_TestCase
 
         $io = $this->getMockForAbstractClass(FileIOInterface::class);
         $cont2->set('io', $io);
-
-        $project = new Project($factory);
-        $project->addFile('/qaz.php', '');
-        $project->addFile('/wsx.php', '');
-        $cont2->set('project', $project);
 
         $refl = new LocatorReflection($cont2);
 

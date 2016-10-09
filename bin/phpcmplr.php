@@ -24,6 +24,12 @@ if (!array_key_exists('port', $opts)) {
     exit(2);
 }
 
-$phpcmplr = new PhpCmplr((int)$opts['port']);
+$options = [
+    'server' => [
+        'port' => (int)$opts['port'],
+    ],
+];
+
+$phpcmplr = new PhpCmplr($options);
 $phpcmplr->run();
 

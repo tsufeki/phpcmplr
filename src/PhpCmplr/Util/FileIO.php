@@ -17,4 +17,27 @@ class FileIO implements FileIOInterface
     {
         return @file_exists($path) === true;
     }
+
+    public function canonicalPath($path)
+    {
+        $result = [];
+        foreach (explode('/', $path) as $seg) {
+            if ($seg === '..') {
+                array_pop($result);
+                continue;
+            }
+
+            if ($seg === '.') {
+                continue;
+            }
+
+            if ($seg === '') {
+                continue;
+            }
+
+            $result[] = $seg;
+        }
+
+        return '/' . implode('/', $result);
+    }
 }

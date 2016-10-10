@@ -141,7 +141,8 @@ class PhpCmplr extends Plugin implements ContainerFactoryInterface, FileStoreInt
             'logFormat' => "[{date}] [{level}] [pid:{pid}] {message}\n{exception}",
             'appendContext' => false,
         ]));
-        $container->set('file_store', new FileStore($this));
+        $container->set('factory', $this);
+        $container->set('file_store', new FileStore($container));
         $container->set('io', new FileIO());
         $container->set('eventloop', EventLoopFactory::create());
         $container->set('project_root_dir', new ProjectRootDirectoryGuesser($container->get('io')));
@@ -153,7 +154,7 @@ class PhpCmplr extends Plugin implements ContainerFactoryInterface, FileStoreInt
     {
         $container = new Container($this->globalContainer);
         $project = new Project($rootPath, $container);
-        //$container->set('project', $project);
+        $container->set('project', $project);
 
         foreach ($this->plugins as $plugin) {
             $plugin->addProjectComponents($container, $this->options);

@@ -20,11 +20,11 @@ class FileStore
     private $projects;
 
     /**
-     * @param ContainerFactoryInterface $factory
+     * @param Container $container
      */
-    public function __construct(ContainerFactoryInterface $factory)
+    public function __construct(Container $container)
     {
-        $this->factory = $factory;
+        $this->factory = $container->get('factory');
         $this->projects = [];
         $this->projectRootDirCache = [];
     }

@@ -40,4 +40,12 @@ abstract class Plugin
     public function addFileComponents(Container $container, array $options)
     {
     }
+
+    /**
+     * @param Container $container
+     * @param array     $options
+     */
+    public function addIndexerComponents(Container $container, array $options)
+    {
+    }
 }

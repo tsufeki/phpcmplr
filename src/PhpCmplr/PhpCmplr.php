@@ -28,6 +28,7 @@ use PhpCmplr\Completer\GoTo_\GoTo_;
 use PhpCmplr\Completer\GoTo_\GoToMemberDefinition;
 use PhpCmplr\Completer\GoTo_\GoToClassDefinition;
 use PhpCmplr\Completer\Completer\Completer;
+use PhpCmplr\Completer\Indexer\Indexer;
 use PhpCmplr\Server\Server;
 use PhpCmplr\Server\Action;
 use PhpCmplr\Util\FileIO;
@@ -160,11 +161,17 @@ class PhpCmplr extends Plugin implements ContainerFactoryInterface, FileStoreInt
             $plugin->addProjectComponents($container, $this->options);
         }
 
+        $indexer = $container->get('indexer');
+        if ($indexer !== null) {
+            $indexer->run();
+        }
+
         return $project;
     }
 
     public function addProjectComponents(Container $container, array $options)
     {
+        $container->set('indexer', new Indexer($container));
     }
 
     public function createFileContainer(Project $project, $path, $contents)
@@ -196,6 +203,25 @@ class PhpCmplr extends Plugin implements ContainerFactoryInterface, FileStoreInt
         $container->set('goto.member_definition', new GoToMemberDefinition($container), ['goto']);
         $container->set('goto.class_definition', new GoToClassDefinition($container), ['goto']);
         $container->set('completer', new Completer($container));
+    }
+
+    public function createIndexerContainer(Project $project, $path, $contents = '')
+    {
+        $container = new Container($project->getProjectContainer());
+        $container->set('file', new SourceFile($container, $path, $contents));
+
+        foreach ($this->plugins as $plugin) {
+            $plugin->addIndexerComponents($container, $this->options);
+        }
+
+        return $container;
+    }
+
+    public function addIndexerComponents(Container $container, array $options)
+    {
+        $container->set('parser', new Parser($container), ['diagnostics']);
+        $container->set('name_resolver', new NameResolver($container));
+        $container->set('reflection', new FileReflection($container), ['reflection']);
     }
 
     public function getFile($path)

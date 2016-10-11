@@ -31,6 +31,17 @@ interface FileIOInterface
     public function exists($path);
 
     /**
+     * Return last modification date as Unix timestamp.
+     *
+     * @param string $path
+     *
+     * @return int
+     *
+     * @throws IOException
+     */
+    public function getMTime($path);
+
+    /**
      * @param string $path Absolute path.
      *
      * @return string

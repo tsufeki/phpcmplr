@@ -144,6 +144,12 @@ class Indexer extends Component implements IndexerInterface
                 }
                 $indexData->update($this->data['data'][$key]);
             }
+
+            if ($deleted) {
+                unset($this->data['files'][$path]);
+            } else {
+                $this->data['files'][$path] = $this->io->getMTime($path);;
+            }
             $this->logger->info("Indexed " . $path);
 
         } catch (IOException $e) {

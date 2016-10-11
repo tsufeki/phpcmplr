@@ -26,6 +26,16 @@ class FileIO implements FileIOInterface
         return @file_exists($path) === true;
     }
 
+    public function getMTime($path)
+    {
+        $mtime = @filemtime($path);
+        if ($mtime === false) {
+            throw new IOException(error_get_last()['message']);
+        }
+
+        return $mtime;
+    }
+
     public function canonicalPath($path)
     {
         $result = [];

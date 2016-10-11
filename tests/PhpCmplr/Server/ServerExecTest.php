@@ -4,12 +4,15 @@ namespace PhpCmplr\Server;
 
 class ServerExecTest extends \PHPUnit_Framework_TestCase
 {
-    public function test_ping()
+    /**
+     * @dataProvider getCmdLineOptions
+     */
+    public function test_ping($options)
     {
         $port = 7474;
         $pipes = [];
         $proc = proc_open(
-            'php "' . __DIR__ . '/../../../bin/phpcmplr.php" --port ' . $port,
+            'php "' . __DIR__ . '/../../../bin/phpcmplr.php" --port ' . $port . $options,
             [['pipe', 'r'], ['pipe', 'w'], ['pipe', 'w']],
             $pipes);
 
@@ -40,5 +43,13 @@ class ServerExecTest extends \PHPUnit_Framework_TestCase
         fclose($pipes[2]);
         proc_terminate($proc);
         proc_close($proc);
+    }
+
+    public function getCmdLineOptions()
+    {
+        return [
+            [''],
+            [' --loglevel=debug'],
+        ];
     }
 }

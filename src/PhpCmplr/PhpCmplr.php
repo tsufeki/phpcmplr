@@ -68,7 +68,7 @@ class PhpCmplr extends Plugin implements ContainerFactoryInterface, FileStoreInt
                 'host' => '127.0.0.1',
             ],
             'log' => [
-                'level' => LogLevel::DEBUG,
+                'level' => 'warning',
                 'dir' => 'php://stderr',
             ],
         ], $options);
@@ -138,10 +138,14 @@ class PhpCmplr extends Plugin implements ContainerFactoryInterface, FileStoreInt
 
     public function addGlobalComponents(Container $container, array $options)
     {
-        $container->set('logger', new Logger($options['log']['dir'], $options['log']['level'], [
-            'logFormat' => "[{date}] [{level}] [pid:{pid}] {message}\n{exception}",
-            'appendContext' => false,
-        ]));
+        $container->set('logger', new Logger(
+            $options['log']['dir'],
+            constant(LogLevel::class . '::' . strtoupper($options['log']['level'])),
+            [
+                'logFormat' => "[{date}] [{level}] [pid:{pid}] {message}\n{exception}",
+                'appendContext' => false,
+            ]
+        ));
         $container->set('factory', $this);
         $container->set('file_store', new FileStore($container));
         $container->set('io', new FileIO());

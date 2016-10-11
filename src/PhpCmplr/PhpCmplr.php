@@ -29,6 +29,8 @@ use PhpCmplr\Completer\GoTo_\GoToMemberDefinition;
 use PhpCmplr\Completer\GoTo_\GoToClassDefinition;
 use PhpCmplr\Completer\Completer\Completer;
 use PhpCmplr\Completer\Indexer\Indexer;
+use PhpCmplr\Completer\Indexer\ReflectionIndexData;
+use PhpCmplr\Completer\Indexer\IndexLocator;
 use PhpCmplr\Server\Server;
 use PhpCmplr\Server\Action;
 use PhpCmplr\Util\FileIO;
@@ -176,6 +178,7 @@ class PhpCmplr extends Plugin implements ContainerFactoryInterface, FileStoreInt
     public function addProjectComponents(Container $container, array $options)
     {
         $container->set('indexer', new Indexer($container));
+        $container->set('index.locator', new IndexLocator($container), ['reflection.locator']);
     }
 
     public function createFileContainer(Project $project, $path, $contents)
@@ -226,6 +229,7 @@ class PhpCmplr extends Plugin implements ContainerFactoryInterface, FileStoreInt
         $container->set('parser', new Parser($container), ['diagnostics']);
         $container->set('name_resolver', new NameResolver($container));
         $container->set('reflection', new FileReflection($container), ['reflection']);
+        $container->set('index_data.reflection', new ReflectionIndexData($container), ['index_data']);
     }
 
     public function getFile($path)

@@ -18,6 +18,11 @@ interface SourceFileInterface
     public function getContents();
 
     /**
+     * @return bool
+     */
+    public function isEmpty();
+
+    /**
      * Get offset (0-based) inside file of the character at given line and column (1-based).
      *
      * @param int $line

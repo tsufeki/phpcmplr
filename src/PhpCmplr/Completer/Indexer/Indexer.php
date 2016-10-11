@@ -91,7 +91,7 @@ class Indexer extends Component implements IndexerInterface
     private function saveCache()
     {
         try {
-            $this->io->write($this->cachePath, json_encode($this->data));
+            $this->io->write($this->cachePath, json_encode($this->data, JSON_PRETTY_PRINT));
         } catch (IOException $e) {
             $this->logger->error("Can't save indexed data: " . $e->getMessage(), ['exception' => $e]);
         }

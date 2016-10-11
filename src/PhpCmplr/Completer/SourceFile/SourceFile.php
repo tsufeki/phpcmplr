@@ -39,6 +39,11 @@ class SourceFile extends Component implements SourceFileInterface
         return $this->contents;
     }
 
+    public function isEmpty()
+    {
+        return strcmp('', $this->contents) === 0;
+    }
+
     public function getOffset($line, $column)
     {
         $maxOffset = max(0, strlen($this->contents) - 1);

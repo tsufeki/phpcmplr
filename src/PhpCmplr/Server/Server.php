@@ -9,6 +9,7 @@ use React\Http\Server as HttpServer;
 use React\Http\Request;
 use React\Http\Response;
 use React\Http\ResponseCodes;
+use React\Http\StreamingBodyParser\Factory as BodyParserFactory;
 
 use PhpCmplr\PhpCmplr;
 
@@ -96,7 +97,11 @@ class Server
         $this->http = new HttpServer($this->socket);
 
         $this->http->on('request', function (Request $request, Response $response) {
-            $this->handle($request, $response);
+            $bodyParser = BodyParserFactory::create($request);
+
+            $bodyParser->on('body', function ($body) use ($request, $response) {
+                $this->handle($request, $body, $response);
+            });
         });
 
         $this->socket->listen($this->port, $this->host);
@@ -107,9 +112,10 @@ class Server
      * Handle request.
      *
      * @param Request  $request
+     * @param string   $requestBody
      * @param Response $response
      */
-    public function handle(Request $request, Response $response)
+    public function handle(Request $request, $requestBody, Response $response)
     {
         $status = 200;
         $responseBody = '{}';
@@ -123,8 +129,9 @@ class Server
                 throw new HttpException(404);
             }
 
+            $this->logger->info('Request: ' . $request->getPath());
             $responseBody = $this->actions[$request->getPath()]->handleRequest(
-                $request->getBody(),
+                $requestBody,
                 $this->phpcmplr);
 
         } catch (HttpException $e) {

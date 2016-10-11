@@ -12,7 +12,7 @@ use PhpCmplr\Server\Action;
 
 class ServerTest extends \PHPUnit_Framework_TestCase
 {
-    protected function mockRequest($path, $body, $method = 'POST')
+    protected function mockRequest($path, $method = 'POST')
     {
         $request = $this->getMockBuilder(Request::class)->disableOriginalConstructor()->getMock();
         $request
@@ -21,9 +21,6 @@ class ServerTest extends \PHPUnit_Framework_TestCase
         $request
             ->method('getPath')
             ->willReturn($path);
-        $request
-            ->method('getBody')
-            ->willReturn($body);
         return $request;
     }
 
@@ -56,7 +53,8 @@ class ServerTest extends \PHPUnit_Framework_TestCase
     public function test_ping()
     {
         $this->server->handle(
-            $this->mockRequest('/ping', '{}'),
+            $this->mockRequest('/ping'),
+            '{}',
             $this->mockResponse(200, '{}'));
     }
 
@@ -69,7 +67,8 @@ class ServerTest extends \PHPUnit_Framework_TestCase
         $data->files = [$fileData];
 
         $this->server->handle(
-            $this->mockRequest('/load', json_encode($data)),
+            $this->mockRequest('/load'),
+            json_encode($data),
             $this->mockResponse(200, '{}'));
 
         $data = new \stdClass();
@@ -87,13 +86,15 @@ class ServerTest extends \PHPUnit_Framework_TestCase
         $result->diagnostics = [$diagData];
 
         $this->server->handle(
-            $this->mockRequest('/diagnostics', json_encode($data)),
+            $this->mockRequest('/diagnostics'),
+            json_encode($data),
             $this->mockResponse(200, json_encode($result)));
 
         $data->files = [$fileData];
 
         $this->server->handle(
-            $this->mockRequest('/diagnostics', json_encode($data)),
+            $this->mockRequest('/diagnostics'),
+            json_encode($data),
             $this->mockResponse(200, json_encode($result)));
     }
 
@@ -117,7 +118,8 @@ class ServerTest extends \PHPUnit_Framework_TestCase
         $result->goto = [$goto];
 
         $this->server->handle(
-            $this->mockRequest('/goto', json_encode($data)),
+            $this->mockRequest('/goto'),
+            json_encode($data),
             $this->mockResponse(200, json_encode($result)));
     }
 
@@ -141,7 +143,8 @@ class ServerTest extends \PHPUnit_Framework_TestCase
         $result->goto = [$goto];
 
         $this->server->handle(
-            $this->mockRequest('/goto', json_encode($data)),
+            $this->mockRequest('/goto'),
+            json_encode($data),
             $this->mockResponse(200, json_encode($result)));
     }
 
@@ -167,7 +170,8 @@ class ServerTest extends \PHPUnit_Framework_TestCase
         $result->completions = [$completion];
 
         $this->server->handle(
-            $this->mockRequest('/complete', json_encode($data)),
+            $this->mockRequest('/complete'),
+            json_encode($data),
             $this->mockResponse(200, json_encode($result)));
     }
 
@@ -187,7 +191,8 @@ class ServerTest extends \PHPUnit_Framework_TestCase
         $result->type = 'int';
 
         $this->server->handle(
-            $this->mockRequest('/type', json_encode($data)),
+            $this->mockRequest('/type'),
+            json_encode($data),
             $this->mockResponse(200, json_encode($result)));
     }
 
@@ -198,7 +203,8 @@ class ServerTest extends \PHPUnit_Framework_TestCase
         $result->message = 'Not Found';
 
         $this->server->handle(
-            $this->mockRequest('/notfound', '{}'),
+            $this->mockRequest('/notfound'),
+            '{}',
             $this->mockResponse(404, json_encode($result)));
     }
 
@@ -209,14 +215,16 @@ class ServerTest extends \PHPUnit_Framework_TestCase
         $result->message = 'Bad Request';
 
         $this->server->handle(
-            $this->mockRequest('/load', '-----'),
+            $this->mockRequest('/load'),
+            '-----',
             $this->mockResponse(400, json_encode($result)));
 
         $data = new \stdClass();
         $data->files = 42;
 
         $this->server->handle(
-            $this->mockRequest('/load', json_encode($data)),
+            $this->mockRequest('/load'),
+            json_encode($data),
             $this->mockResponse(400, json_encode($result)));
     }
 
@@ -227,7 +235,8 @@ class ServerTest extends \PHPUnit_Framework_TestCase
         $result->message = 'Method Not Allowed';
 
         $this->server->handle(
-            $this->mockRequest('/load', '{}', 'GET'),
+            $this->mockRequest('/load', 'GET'),
+            '{}',
             $this->mockResponse(405, json_encode($result)));
     }
 }

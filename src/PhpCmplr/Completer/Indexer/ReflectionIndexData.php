@@ -74,7 +74,7 @@ class ReflectionIndexData extends Component implements IndexDataInterface
         if (array_key_exists($this->path, $this->indexData['files'])) {
             foreach (self::KINDS as $kind) {
                 if (array_key_exists($kind, $this->indexData['files'][$this->path])) {
-                    foreach ($this->indexData['files'][$this->path][$kind] as $fqname) {
+                    foreach ($this->indexData['files'][$this->path][$kind] as $fqname => $_) {
                         if (array_key_exists($fqname, $this->indexData['fqnames'][$kind])) {
                             $this->removeElem($this->indexData['fqnames'][$kind][$fqname], $this->path);
                         }
@@ -97,14 +97,14 @@ class ReflectionIndexData extends Component implements IndexDataInterface
      */
     private function add(Element $element, $kind, $caseInsensitive = true)
     {
-        $fqname = $element->getName();
+        $fqnameOrig = $fqname = $element->getName();
         if ($caseInsensitive) {
             $fqname = strtolower($fqname);
         }
         $this->indexData['fqnames'][$kind][$fqname][] = $this->path;
         $name = $this->getShortName($fqname);
         $this->indexData['names'][$kind][$name][] = $fqname;
-        $this->indexData['files'][$this->path][$kind][] = $fqname;
+        $this->indexData['files'][$this->path][$kind][$fqname] = $fqnameOrig;
     }
 
     public function update(array &$indexData)

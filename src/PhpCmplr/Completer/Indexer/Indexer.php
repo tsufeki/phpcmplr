@@ -216,7 +216,7 @@ class Indexer extends Component implements IndexerInterface
     }
 
     public function getData($key) {
-        if (!array_key_exists($key, $this->data['data'][$key])) {
+        if (!array_key_exists($key, $this->data['data'])) {
             return [];
         }
 

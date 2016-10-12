@@ -14,6 +14,7 @@ class IndexLocator extends Component implements LocatorInterface
 
     public function getPathsForClass($fullyQualifiedName)
     {
+        $this->run();
         $data = $this->indexer->getData('reflection');
         if (isset($data['fqnames']['class'][strtolower($fullyQualifiedName)])) {
             return $data['fqnames']['class'][strtolower($fullyQualifiedName)];
@@ -24,6 +25,7 @@ class IndexLocator extends Component implements LocatorInterface
 
     public function getPathsForFunction($fullyQualifiedName)
     {
+        $this->run();
         $data = $this->indexer->getData('reflection');
         if (isset($data['fqnames']['function'][strtolower($fullyQualifiedName)])) {
             return $data['fqnames']['function'][strtolower($fullyQualifiedName)];
@@ -34,6 +36,7 @@ class IndexLocator extends Component implements LocatorInterface
 
     public function getPathsForConst($fullyQualifiedName)
     {
+        $this->run();
         $data = $this->indexer->getData('reflection');
         if (isset($data['fqnames']['const'][$fullyQualifiedName])) {
             return $data['fqnames']['const'][$fullyQualifiedName];

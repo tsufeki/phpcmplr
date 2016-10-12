@@ -2,6 +2,8 @@
 
 namespace PhpCmplr\Completer\SourceFile;
 
+use PhpLenientParser\Node;
+
 class Range
 {
     /**
@@ -38,5 +40,19 @@ class Range
     public function getEnd()
     {
         return $this->end;
+    }
+
+    /**
+     * @param Node   $node
+     * @param string $filePath
+     *
+     * @return self
+     */
+    public static function fromNode(Node $node, $filePath)
+    {
+        return new self(
+            new OffsetLocation($filePath, $node->getAttribute('startFilePos')),
+            new OffsetLocation($filePath, $node->getAttribute('endFilePos'))
+        );
     }
 }

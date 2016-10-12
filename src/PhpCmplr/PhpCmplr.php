@@ -78,6 +78,9 @@ class PhpCmplr extends Plugin implements ContainerFactoryInterface, FileStoreInt
             'indexer' => [
                 'enabled' => true,
             ],
+            'diagnostics' => [
+                'undefined' => true,
+            ],
         ], $options);
 
         $this->options = $options;
@@ -219,6 +222,10 @@ class PhpCmplr extends Plugin implements ContainerFactoryInterface, FileStoreInt
         $container->set('goto.member_definition', new GoToMemberDefinition($container), ['goto']);
         $container->set('goto.class_definition', new GoToClassDefinition($container), ['goto']);
         $container->set('completer', new Completer($container));
+
+        if ($options['diagnostics']['undefined']) {
+            $container->set('diagnostics.undefined', new Diagnostics\Undefined($container), ['diagnostics.visitor']);
+        }
     }
 
     public function createIndexerContainer(Project $project, $path, $contents = '')

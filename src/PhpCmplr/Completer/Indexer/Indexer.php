@@ -78,11 +78,13 @@ class Indexer extends Component implements IndexerInterface
     private function loadCache()
     {
         try {
-            $data = json_decode($this->io->read($this->cachePath), true);
-            if (!is_array($data) || !isset($data['files']) || !isset($data['data'])) {
-                throw new IOException("Corrupted indexer cache");
+            if (!empty($this->cachePath) && $this->io->exists($this->cachePath)) {
+                $data = json_decode($this->io->read($this->cachePath), true);
+                if (!is_array($data) || !isset($data['files']) || !isset($data['data'])) {
+                    throw new IOException("Corrupted indexer cache");
+                }
+                $this->data = $data;
             }
-            $this->data = $data;
         } catch (IOException $e) {
             $this->logger->notice("Can't load indexed data: " . $e->getMessage(), ['exception' => $e]);
         }
@@ -91,9 +93,11 @@ class Indexer extends Component implements IndexerInterface
     private function saveCache()
     {
         try {
-            $this->io->write($this->cachePath, json_encode($this->data, JSON_PRETTY_PRINT));
+            if (!empty($this->cachePath)) {
+                $this->io->write($this->cachePath, json_encode($this->data, JSON_PRETTY_PRINT));
+            }
         } catch (IOException $e) {
-            $this->logger->error("Can't save indexed data: " . $e->getMessage(), ['exception' => $e]);
+            $this->logger->notice("Can't save indexed data: " . $e->getMessage(), ['exception' => $e]);
         }
     }
 

@@ -2,19 +2,14 @@
 
 namespace PhpCmplr\Completer\Diagnostics;
 
-use PhpCmplr\Completer\SourceFile\Location;
+use PhpCmplr\Completer\SourceFile\Range;
 
 class Diagnostic
 {
     /**
-     * @var Location
+     * @var Range[]
      */
-    private $start;
-
-    /**
-     * @var Location
-     */
-    private $end;
+    private $ranges;
 
     /**
      * @var string
@@ -22,39 +17,28 @@ class Diagnostic
     private $description;
 
     /**
-     * @param Location $start
-     * @param Location $end
-     * @param string   $description
+     * @var Fix[]
      */
-    public function __construct(Location $start, Location $end, $description)
+    private $fixes;
+
+    /**
+     * @param Range[] $ranges
+     * @param string  $description
+     * @param Fix[]   $fixes
+     */
+    public function __construct(array $ranges, $description, array $fixes = [])
     {
-        $this->start = $start;
-        $this->end = $end;
+        $this->ranges = $ranges;
         $this->description = $description;
+        $this->fixes = $fixes;
     }
 
     /**
-     * @return string
+     * @return Range[]
      */
-    public function getPath()
+    public function getRanges()
     {
-        return $this->getStart()->getPath();
-    }
-
-    /**
-     * @return Location
-     */
-    public function getStart()
-    {
-        return $this->start;
-    }
-
-    /**
-     * @return Location
-     */
-    public function getEnd()
-    {
-        return $this->end;
+        return $this->ranges;
     }
 
     /**
@@ -63,5 +47,21 @@ class Diagnostic
     public function getDescription()
     {
         return $this->description;
+    }
+
+    /**
+     * @return Fix[]
+     */
+    public function getFixes()
+    {
+        return $this->fixes;
+    }
+
+    /**
+     * @return string
+     */
+    public function getPath()
+    {
+        return $this->getRanges()[0]->getStart()->getPath();
     }
 }

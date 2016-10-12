@@ -3,6 +3,9 @@
 namespace PhpCmplr\Server\Action;
 
 use PhpCmplr\PhpCmplr;
+use PhpCmplr\Completer\Diagnostics\Diagnostic;
+use PhpCmplr\Completer\Diagnostics\Fix;
+use PhpCmplr\Completer\Diagnostics\FixChunk;
 
 /**
  * Get diagnostics for one file.
@@ -50,11 +53,32 @@ END;
 
         if ($container !== null) {
             $file = $container->get('file');
+            /** @var Diagnostic $diag */
             foreach ($container->get('diagnostics')->getDiagnostics() as $diag) {
                 $diagData = new \stdClass();
-                $diagData->start = $this->makeLocation($diag->getStart(), $file);
-                $diagData->end = $this->makeLocation($diag->getEnd(), $file);
+                // TODO: not only the first range
+                $range = $diag->getRanges()[0];
+                $diagData->start = $this->makeLocation($range->getStart(), $file);
+                $diagData->end = $this->makeLocation($range->getEnd(), $file);
                 $diagData->description = $diag->getDescription();
+
+                $diagData->fixes = [];
+                /** @var Fix $fix */
+                foreach ($diag->getFixes() as $fix) {
+                    $fixData = new \stdClass();
+                    $fixData->description = $fix->getDescription();
+                    $fixData->chunks = [];
+                    /** @var FixChunk $chunk */
+                    foreach ($fix->getChunks() as $chunk) {
+                        $chunkData = new \stdClass();
+                        $chunkData->start = $this->makeLocation($chunk->getRange()->getStart(), $file);
+                        $chunkData->end = $this->makeLocation($chunk->getRange()->getEnd(), $file);
+                        $chunkData->replacement = $chunk->getReplacement();
+                        $fixData->chunks[] = $chunkData;
+                    }
+                    $diagData->fixes[] = $fixData;
+                }
+
                 $diagsData[] = $diagData;
             }
         }

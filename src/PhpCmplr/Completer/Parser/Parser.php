@@ -12,6 +12,7 @@ use PhpLenientParser\Comment;
 use PhpCmplr\Completer\Container;
 use PhpCmplr\Completer\Component;
 use PhpCmplr\Completer\SourceFile\OffsetLocation;
+use PhpCmplr\Completer\SourceFile\Range;
 use PhpCmplr\Completer\Diagnostics\DiagnosticsInterface;
 use PhpCmplr\Completer\Diagnostics\Diagnostic;
 
@@ -126,9 +127,12 @@ class Parser extends Component implements ParserInterface, DiagnosticsInterface
         $end = array_key_exists('endFilePos', $attributes) ? $attributes['endFilePos'] : $start;
 
         return new Diagnostic(
-            new OffsetLocation($path, $start),
-            new OffsetLocation($path, $end),
-            $error->getRawMessage());
+            [new Range(
+                new OffsetLocation($path, $start),
+                new OffsetLocation($path, $end)
+            )],
+            $error->getRawMessage()
+        );
     }
 
     public function getDiagnostics()

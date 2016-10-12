@@ -45,7 +45,8 @@ class ServerTest extends \PHPUnit_Framework_TestCase
                 'port' => 7373,
                 'host' => '127.0.0.1',
             ],
-            'log' => ['level' => LogLevel::ERROR],
+            'log' => ['level' => 'error'],
+            'indexer' => ['enabled' => false],
         ]);
         $this->server = $this->phpcmplr->getServer();
     }

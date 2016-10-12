@@ -20,7 +20,7 @@ use PhpCmplr\Completer\Reflection\Reflection;
 use PhpCmplr\Completer\Reflection\FileReflection;
 use PhpCmplr\Completer\Reflection\LocatorReflection;
 use PhpCmplr\Completer\Reflection\JsonReflection;
-use PhpCmplr\Completer\Composer\ComposerLocator;
+//use PhpCmplr\Completer\Composer\ComposerLocator;
 use PhpCmplr\Completer\TypeInferrer\TypeInferrer;
 use PhpCmplr\Completer\TypeInferrer\BasicInferrer;
 use PhpCmplr\Completer\TypeInferrer\ReflectionInferrer;
@@ -202,7 +202,7 @@ class PhpCmplr extends Plugin implements ContainerFactoryInterface, FileStoreInt
         $container->set('reflection', new Reflection($container));
         $container->set('reflection.file', new FileReflection($container), ['reflection']);
         $container->set('reflection.locator', new LocatorReflection($container), ['reflection']);
-        $container->set('composer.locator', new ComposerLocator($container), ['reflection.locator']);
+        //$container->set('reflection.locator.composer', new ComposerLocator($container), ['reflection.locator']);
         $container->set('typeinfer', new TypeInferrer($container));
         $container->set('typeinfer.basic', new BasicInferrer($container), ['typeinfer.visitor']);
         $container->set('typeinfer.reflection', new ReflectionInferrer($container), ['typeinfer.visitor']);

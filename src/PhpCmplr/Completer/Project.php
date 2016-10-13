@@ -89,4 +89,13 @@ class Project
     {
         return $this->fileContainers;
     }
+
+    public function quit()
+    {
+        foreach ($this->fileContainers as $fileContainer) {
+            $fileContainer->quit();
+        }
+
+        $this->projectContainer->quit();
+    }
 }

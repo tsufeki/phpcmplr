@@ -118,4 +118,13 @@ class Container
             unset($keys);
         }
     }
+
+    public function quit()
+    {
+        foreach ($this->components as $component) {
+            if ($component instanceof Quittable) {
+                $component->quit();
+            }
+        }
+    }
 }

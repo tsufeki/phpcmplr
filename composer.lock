@@ -1345,12 +1345,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/tsufeki/react-filesystem-monitor.git",
-                "reference": "c91f0784418529c704e35ed196f9ee98053863cf"
+                "reference": "f8269c17cadc003ea4b06da501ce1adbb2953dba"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/tsufeki/react-filesystem-monitor/zipball/c91f0784418529c704e35ed196f9ee98053863cf",
-                "reference": "c91f0784418529c704e35ed196f9ee98053863cf",
+                "url": "https://api.github.com/repos/tsufeki/react-filesystem-monitor/zipball/f8269c17cadc003ea4b06da501ce1adbb2953dba",
+                "reference": "f8269c17cadc003ea4b06da501ce1adbb2953dba",
                 "shasum": ""
             },
             "require": {
@@ -1377,7 +1377,7 @@
                 }
             ],
             "description": "Asynchronous filesystem monitor based on React PHP",
-            "time": "2016-10-10 21:16:17"
+            "time": "2016-10-13 21:07:15"
         },
         {
             "name": "tsufeki/react-line-stream",

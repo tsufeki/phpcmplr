@@ -2,7 +2,7 @@
 
 namespace PhpCmplr\Completer;
 
-interface FileStoreInterface
+interface FileStoreInterface extends Quittable
 {
     /**
      * @param string $path

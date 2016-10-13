@@ -38,7 +38,7 @@ use PhpCmplr\Server\Action;
 use PhpCmplr\Util\FileIO;
 use PhpCmplr\Util\Logger;
 
-class PhpCmplr extends Plugin implements ContainerFactoryInterface, FileStoreInterface
+class PhpCmplr extends Plugin implements ContainerFactoryInterface
 {
     /**
      * @var array
@@ -125,7 +125,7 @@ class PhpCmplr extends Plugin implements ContainerFactoryInterface, FileStoreInt
         $server->addAction(new Action\Type());
         $server->addAction(new Action\GoTo_());
         $server->addAction(new Action\Complete());
-        $server->addAction(new Action\Quit($server));
+        $server->addAction(new Action\Quit());
     }
 
     /**
@@ -264,5 +264,14 @@ class PhpCmplr extends Plugin implements ContainerFactoryInterface, FileStoreInt
     public function run()
     {
         $this->server->run();
+    }
+
+    public function quit()
+    {
+        $this->globalContainer->get('eventloop')->nextTick(function ($loop) {
+            $this->server->quit();
+            $this->globalContainer->quit();
+            $loop->stop();
+        });
     }
 }

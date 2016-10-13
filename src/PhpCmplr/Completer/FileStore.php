@@ -2,7 +2,7 @@
 
 namespace PhpCmplr\Completer;
 
-class FileStore
+class FileStore implements FileStoreInterface
 {
     /**
      * @var ContainerFactoryInterface
@@ -74,5 +74,12 @@ class FileStore
         $project->addFile($path, $fileContainer);
 
         return $fileContainer;
+    }
+
+    public function quit()
+    {
+        foreach ($this->projects as $project) {
+            $project->quit();
+        }
     }
 }

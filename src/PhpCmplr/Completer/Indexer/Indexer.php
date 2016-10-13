@@ -212,6 +212,7 @@ class Indexer extends Component implements IndexerInterface
 
     public function quit()
     {
+        $this->logger->debug('Quitting indexer');
         $this->monitor->close();
     }
 

@@ -40,12 +40,12 @@ class IndexNamespaceReflection extends Component implements NamespaceReflectionI
 
     public function findFullyQualifiedClasses($unqualifiedName)
     {
-        return $this->findFullyQualified($unqualifiedName, 'class');
+        return $this->findFullyQualified(strtolower($unqualifiedName), 'class');
     }
 
     public function findFullyQualifiedFunctions($unqualifiedName)
     {
-        return $this->findFullyQualified($unqualifiedName, 'function');
+        return $this->findFullyQualified(strtolower($unqualifiedName), 'function');
     }
 
     public function findFullyQualifiedConsts($unqualifiedName)

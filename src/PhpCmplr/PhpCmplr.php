@@ -121,6 +121,7 @@ class PhpCmplr extends Plugin implements ContainerFactoryInterface, FileStoreInt
         $server->addAction(new Action\Ping());
         $server->addAction(new Action\Load());
         $server->addAction(new Action\Diagnostics());
+        $server->addAction(new Action\Fix());
         $server->addAction(new Action\Type());
         $server->addAction(new Action\GoTo_());
         $server->addAction(new Action\Complete());
@@ -189,7 +190,7 @@ class PhpCmplr extends Plugin implements ContainerFactoryInterface, FileStoreInt
         if ($options['indexer']['enabled']) {
             $container->set('indexer', new Indexer($container));
             $container->set('reflection.locator.index', new IndexLocator($container), ['reflection.locator']);
-            $container->set('namespace_reflection.index', new IndexNamespaceReflection($container));
+            $container->set('namespace_reflection.index', new IndexNamespaceReflection($container), ['namespace_reflection']);
         }
     }
 

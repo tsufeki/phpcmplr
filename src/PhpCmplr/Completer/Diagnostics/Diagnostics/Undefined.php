@@ -90,9 +90,9 @@ class Undefined extends NodeVisitorComponent implements DiagnosticsNodeVisitorIn
                     $range = Range::fromNode($class, $this->file->getPath());
                     $fixes = [];
                     if ($this->namespaceReflection !== null && $class->isUnqualified()) {
-                        foreach ($this->namespaceReflection->findFullyQualifiedClasses($name) as $fqname) {
+                        foreach ($this->namespaceReflection->findFullyQualifiedClasses($class->toString()) as $fqname) {
                             // TODO
-                            //$fixes[] = new Fix([new FixChunk($range, $fqname)], $fqname);
+                            $fixes[] = new Fix([new FixChunk($range, $fqname)], $fqname);
                         }
                     }
 

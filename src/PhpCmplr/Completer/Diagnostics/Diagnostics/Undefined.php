@@ -51,6 +51,7 @@ class Undefined extends NodeVisitorComponent implements DiagnosticsNodeVisitorIn
         $this->file = $this->container->get('file');
         $this->reflection = $this->container->get('reflection');
         $this->namespaceReflection = $this->container->get('namespace_reflection');
+        $this->container->get('name_resolver')->run();
         $this->diagnostics = [];
     }
 

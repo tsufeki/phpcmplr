@@ -55,6 +55,18 @@ function extract_class_signatures($files, $extensions) {
         }
     }
 
+    if (!isset($class_signatures['Predefined Interfaces and Classes']['stdClass'])) {
+        $class_signatures['Predefined Interfaces and Classes']['stdClass'] = array(
+            'name'              => 'stdClass',
+            'extends'           => null,
+            'implements'        => [],
+            'modifiers'         => [],
+            'constants'         => [],
+            'properties'        => [],
+            'methods'           => [],
+        );
+    }
+
     return array($class_signatures, $interface_signatures);
 }
 

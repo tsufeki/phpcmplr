@@ -39546,6 +39546,15 @@
             ]
         },
         {
+            "name": "stdClass",
+            "extends": null,
+            "implements": [],
+            "modifiers": [],
+            "constants": [],
+            "properties": [],
+            "methods": []
+        },
+        {
             "name": "CURLFile",
             "extends": null,
             "implements": [],

@@ -79,4 +79,34 @@ class SourceFile extends Component implements SourceFileInterface
         }
         return [$line, 1 + max(0, $offset - $lastOffset)];
     }
+
+    public function getLines()
+    {
+        $offset = $lastOffset = 0;
+        while (true) {
+            $offset = strpos($this->contents, "\n", $lastOffset);
+            if ($offset !== false) {
+                yield substr($this->contents, $lastOffset, $offset - $lastOffset + 1);
+                $lastOffset = $offset + 1;
+            } else {
+                $line = substr($this->contents, $lastOffset);
+                if (!empty($line)) {
+                    yield $line;
+                }
+                break;
+            }
+        }
+    }
+
+    public function getLine($lineno)
+    {
+        $lineno--;
+        foreach ($this->getLines() as $i => $line) {
+            if ($i === $lineno) {
+                return $line;
+            }
+        }
+
+        return null;
+    }
 }

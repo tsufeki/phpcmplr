@@ -72,4 +72,31 @@ class SourceFileTest extends \PHPUnit_Framework_TestCase
             [4, 4, "\nqaz\n\nwsx\n", 9],
         ];
     }
+
+    /**
+     * @dataProvider getData_getLines
+     */
+    public function test_getLines(array $lines, $text)
+    {
+        $this->assertSame($lines, iterator_to_array($this->loadFile($text)->getLines()));
+    }
+
+    public function getData_getLines()
+    {
+        return [
+            [[], ""],
+            [["a"], "a"],
+            [["a\n"], "a\n"],
+            [["aa\n", "b"], "aa\nb"],
+            [["a\n", "bb\n"], "a\nbb\n"],
+            [["a\n", "\n"], "a\n\n"],
+            [["a\n", "\n", "a"], "a\n\na"],
+            [["\n", "aa"], "\naa"],
+        ];
+    }
+
+    public function test_getLine()
+    {
+        $this->assertSame("bb\n", $this->loadFile("aaa\nbb\nc\n")->getLine(2));
+    }
 }

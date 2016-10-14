@@ -40,4 +40,18 @@ interface SourceFileInterface
      * @return int[] [line, column]
      */
     public function getLineAndColumn($offset);
+
+    /**
+     * @return \Iterator of strings (lines with EOLs).
+     */
+    public function getLines();
+
+    /**
+     * Get line number $lineno (1-based).
+     *
+     * @param int $lineno
+     *
+     * @return string
+     */
+    public function getLine($lineno);
 }

@@ -2,8 +2,8 @@
 
 namespace PhpCmplr\Completer;
 
-use PhpParser\Node;
-use PhpParser\NodeVisitor;
+use PhpLenientParser\Node;
+use PhpLenientParser\NodeVisitor;
 
 /**
  * NodeTraverserComponent and NodeVisitor in one.

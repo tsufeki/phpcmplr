@@ -2,9 +2,9 @@
 
 namespace PhpCmplr\Server;
 
-use PhpCmplr\Completer\Project;
-use PhpCmplr\Completer\Location;
-use PhpCmplr\Completer\SourceFile;
+use PhpCmplr\PhpCmplr;
+use PhpCmplr\Completer\SourceFile\Location;
+use PhpCmplr\Completer\SourceFile\SourceFileInterface;
 use PhpCmplr\Util\Json;
 use PhpCmplr\Util\JsonLoadException;
 use PhpCmplr\Util\JsonDumpException;
@@ -91,30 +91,30 @@ END;
         return '{"allOf": [' . implode(', ', $schemas) . ']}';
     }
 
-    public function handleRequest($body, Project $project)
+    public function handleRequest($body, PhpCmplr $phpcmplr)
     {
         try {
             $data = Json::load($body, $this->schema);
-            $responseData = $this->handle($data, $project);
+            $responseData = $this->handle($data, $phpcmplr);
             $response = Json::dump($responseData);
             return $response;
         } catch (JsonLoadException $e) {
-            throw new HttpException(400);
+            throw new HttpException(400, $e);
         } catch (JsonDumpException $e) {
-            throw new HttpException(500);
+            throw new HttpException(500, $e);
         }
     }
 
     /**
      * Override this.
      *
-     * @param mixed   $data
-     * @param Project $project
+     * @param mixed    $data
+     * @param PhpCmplr $phpcmplr
      *
      * @return object Response object which must be serializable to JSON.
      * @throws HttpException
      */
-    protected function handle($data, Project $project)
+    protected function handle($data, PhpCmplr $phpcmplr)
     {
         return new \stdClass();
     }
@@ -135,13 +135,13 @@ END;
     }
 
     /**
-     * @param Location   $location
-     * @param SourceFile $file
-     * @param bool       $withPath
+     * @param Location            $location
+     * @param SourceFileInterface $file
+     * @param bool                $withPath
      *
      * @return object
      */
-    protected function makeLocation(Location $location, SourceFile $file, $withPath = false)
+    protected function makeLocation(Location $location, SourceFileInterface $file, $withPath = false)
     {
         $loc = new \stdClass();
         list($loc->line, $loc->col) = $location->getLineAndColumn($file);

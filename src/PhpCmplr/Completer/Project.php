@@ -8,44 +8,94 @@ namespace PhpCmplr\Completer;
 class Project
 {
     /**
-     * @var Container[]
+     * @var string
      */
-    private $containers;
+    private $rootPath;
 
     /**
-     * @var ContainerFactoryInterface
+     * @var Container
      */
-    private $factory;
+    private $projectContainer;
 
-    public function __construct(ContainerFactoryInterface $containerFactory)
+    /**
+     * @var Container[]
+     */
+    private $fileContainers;
+
+    /**
+     * @param string    $rootPath
+     * @param Container $projectContainer
+     */
+    public function __construct($rootPath, Container $projectContainer)
     {
-        $this->containers = [];
-        $this->factory = $containerFactory;
+        $this->rootPath = $rootPath;
+        $this->projectContainer = $projectContainer;
+        $this->fileContainers = [];
     }
 
-    public function addFile($path, $contents, array $options = [])
+    /**
+     * @return string
+     */
+    public function getRootPath()
     {
-        return $this->containers[$path] = $this->factory->createContainer($path, $contents, $options);
+        return $this->rootPath;
     }
 
+    /**
+     * @return Container
+     */
+    public function getProjectContainer()
+    {
+        return $this->projectContainer;
+    }
+
+    /**
+     * @param string    $path
+     * @param Container $container
+     */
+    public function addFile($path, Container $container)
+    {
+        $this->fileContainers[$path] = $container;
+    }
+
+    /**
+     * @param string $path
+     */
     public function removeFile($path)
     {
-        if (array_key_exists($path, $this->containers)) {
-            unset($this->containers[$path]);
+        if (array_key_exists($path, $this->fileContainers)) {
+            unset($this->fileContainers[$path]);
         }
     }
 
+    /**
+     * @param string $path
+     *
+     * @return Container|null
+     */
     public function getFile($path)
     {
-        if (array_key_exists($path, $this->containers)) {
-            return $this->containers[$path];
+        if (array_key_exists($path, $this->fileContainers)) {
+            return $this->fileContainers[$path];
         }
 
         return null;
     }
 
+    /**
+     * @return Container[]
+     */
     public function getFiles()
     {
-        return $this->containers;
+        return $this->fileContainers;
+    }
+
+    public function quit()
+    {
+        foreach ($this->fileContainers as $fileContainer) {
+            $fileContainer->quit();
+        }
+
+        $this->projectContainer->quit();
     }
 }

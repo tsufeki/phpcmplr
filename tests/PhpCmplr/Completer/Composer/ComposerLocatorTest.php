@@ -3,7 +3,7 @@
 namespace Tests\PhpCmplr\Completer\Composer;
 
 use PhpCmplr\Completer\Container;
-use PhpCmplr\Completer\SourceFile;
+use PhpCmplr\Completer\SourceFile\SourceFile;
 use PhpCmplr\Completer\Composer\ComposerLocator;
 use PhpCmplr\Util\FileIO;
 
@@ -26,8 +26,8 @@ class ComposerLocatorTest extends \PHPUnit_Framework_TestCase
             __DIR__ . '/../../../../vendor/composer/composer/qaz.php', ''));
         $locator = new ComposerLocator($container);
         $this->assertSame(
-            [realpath(__DIR__ . '/../../../../vendor/nikic/php-parser/lib/PhpParser/Node/Expr/Assign.php')],
-            $locator->getPathsForClass('PhpParser\\Node\\Expr\\Assign'));
+            [realpath(__DIR__ . '/../../../../vendor/tsufeki/php-lenient-parser/lib/PhpLenientParser/Node/Expr/Assign.php')],
+            $locator->getPathsForClass('PhpLenientParser\\Node\\Expr\\Assign'));
     }
 
     public function test_getPathsForClass_notFound()

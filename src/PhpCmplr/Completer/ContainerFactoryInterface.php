@@ -5,11 +5,32 @@ namespace PhpCmplr\Completer;
 interface ContainerFactoryInterface
 {
     /**
-     * @param string $path
-     * @param string $contents
-     * @param array  $options
+     * @return Container
+     */
+    public function getGlobalContainer();
+
+    /**
+     * @param string $rootPath
+     *
+     * @return Project
+     */
+    public function createProject($rootPath);
+
+    /**
+     * @param Project $project
+     * @param string  $path
+     * @param string  $contents
      *
      * @return Container
      */
-    public function createContainer($path, $contents, array $options = []);
+    public function createFileContainer(Project $project, $path, $contents);
+
+    /**
+     * @param Project $project
+     * @param string  $path
+     * @param string  $contents
+     *
+     * @return Container
+     */
+    public function createIndexerContainer(Project $project, $path, $contents = '');
 }

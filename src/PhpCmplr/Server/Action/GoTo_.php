@@ -2,10 +2,10 @@
 
 namespace PhpCmplr\Server\Action;
 
-use PhpCmplr\Completer\Project;
+use PhpCmplr\PhpCmplr;
 
 /**
- * Get diagnostics for one file.
+ * Go to definition of the object at location.
  *
  * Returns:
  * {
@@ -41,27 +41,25 @@ END;
         return $this->combineSchemas(parent::getSchema(), self::SCHEMA);
     }
 
-    protected function handle($data, Project $project)
+    protected function handle($data, PhpCmplr $phpcmplr)
     {
-        parent::handle($data, $project);
+        parent::handle($data, $phpcmplr);
 
-        $container = $project->getFile($data->location->path);
-
-        if ($container === null) {
-            return new \stdClass();
-        }
-
+        $container = $phpcmplr->getFile($data->location->path);
         $gotoData = [];
-        $file = $container->get('file');
-        $offset = $file->getOffset($data->location->line, $data->location->col);
-        foreach ($container->get('goto')->getGoToLocations($offset) as $location) {
-            $gotoContainer = $project->getFile($location->getPath());
-            if ($gotoContainer === null) {
-                $gotoContainer = $project->addFile(
-                    $location->getPath(), 
-                    $container->get('io')->read($location->getPath()));
+
+        if ($container !== null) {
+            $file = $container->get('file');
+            $offset = $file->getOffset($data->location->line, $data->location->col);
+            foreach ($container->get('goto')->getGoToLocations($offset) as $location) {
+                $gotoContainer = $phpcmplr->getFile($location->getPath());
+                if ($gotoContainer === null) {
+                    $gotoContainer = $phpcmplr->addFile(
+                        $location->getPath(), 
+                        $container->get('io')->read($location->getPath()));
+                }
+                $gotoData[] = $this->makeLocation($location, $gotoContainer->get('file'), true);
             }
-            $gotoData[] = $this->makeLocation($location, $gotoContainer->get('file'), true);
         }
 
         $result = new \stdClass();

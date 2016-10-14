@@ -9,11 +9,20 @@
             "email": "tsufeki@ymail.com"
         }
     ],
+    "repositories": [
+        {
+            "type": "vcs",
+            "url": "https://github.com/tsufeki/http.git"
+        }
+    ],
     "require": {
-        "nikic/php-parser": "^2.1",
-        "react/http": "@dev",
-        "composer/composer": "dev-master",
-        "justinrainbow/json-schema": "^2.0"
+        "react/http": "dev-master",
+        "tsufeki/react-line-stream": "dev-master",
+        "tsufeki/react-filesystem-monitor": "dev-master",
+        "tsufeki/php-lenient-parser": "dev-master",
+        "justinrainbow/json-schema": "^2.0",
+        "katzgrau/klogger": "^1.2",
+        "composer/composer": "^1.2"
     },
     "autoload": {
         "psr-4": {

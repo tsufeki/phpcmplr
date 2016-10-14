@@ -46,14 +46,18 @@ class Json
     {
         $object = json_decode($string);
         if ($object === null) {
-            throw new JsonLoadException();
+            throw new JsonLoadException(json_last_error_msg());
         }
 
         if ($schema !== null) {
             $validator = new Validator();
             $validator->check($object, $schema);
             if (!$validator->isValid()) {
-                throw new JsonLoadException();
+                throw new JsonLoadException(sprintf(
+                    "Schema error at %s: %s",
+                    $validator->getErrors()[0]['property'],
+                    $validator->getErrors()[0]['message']
+                ));
             }
         }
 
@@ -70,7 +74,7 @@ class Json
     {
         $string = json_encode($object);
         if ($string === false) {
-            throw new JsonDumpException();
+            throw new JsonDumpException(json_last_error_msg());
         }
 
         return $string;

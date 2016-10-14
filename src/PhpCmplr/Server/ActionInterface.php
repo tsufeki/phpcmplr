@@ -2,7 +2,7 @@
 
 namespace PhpCmplr\Server;
 
-use PhpCmplr\Completer\Project;
+use PhpCmplr\PhpCmplr;
 
 interface ActionInterface
 {
@@ -16,13 +16,13 @@ interface ActionInterface
     /**
      * Handle request.
      *
-     * @param string  $body
-     * @param Project $project
+     * @param string   $body
+     * @param PhpCmplr $phpcmplr
      *
      * @return string
      * @throws HttpException
      */
-    public function handleRequest($body, Project $project);
+    public function handleRequest($body, PhpCmplr $phpcmplr);
 
     /**
      * @param mixed $logger

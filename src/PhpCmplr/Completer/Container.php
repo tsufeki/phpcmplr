@@ -5,25 +5,31 @@ namespace PhpCmplr\Completer;
 class Container
 {
     /**
+     * @var Container
+     */
+    private $parent;
+
+    /**
      * @var object[]
      */
     private $components;
 
     /**
-     * @var object[]
+     * @var string[][]
      */
-    private $componentsByTag;
+    private $componentKeysByTag;
 
-    public function __construct()
+    public function __construct(Container $parent = null)
     {
+        $this->parent = $parent;
         $this->components = [];
-        $this->componentsByTag = [];
+        $this->componentKeysByTag = [];
     }
 
     /**
      * @param string $componentKey
      *
-     * @return object
+     * @return object|null
      */
     public function get($componentKey)
     {
@@ -31,7 +37,34 @@ class Container
             return $this->components[$componentKey];
         }
 
+        if ($this->parent !== null) {
+            return $this->parent->get($componentKey);
+        }
+
         return null;
+    }
+
+    /**
+     * @param string $tag
+     *
+     * @return string[]
+     */
+    protected function getKeysByTag($tag)
+    {
+        $keys = [];
+        if (array_key_exists($tag, $this->componentKeysByTag)) {
+            $keys = $this->componentKeysByTag[$tag];
+        }
+
+        if ($this->parent !== null) {
+            foreach ($this->parent->getKeysByTag($tag) as $key) {
+                if (!array_key_exists($key, $this->components)) {
+                    $keys[] = $key;
+                }
+            }
+        }
+
+        return $keys;
     }
 
     /**
@@ -41,11 +74,12 @@ class Container
      */
     public function getByTag($tag)
     {
-        if (array_key_exists($tag, $this->componentsByTag)) {
-            return $this->componentsByTag[$tag];
+        $components = [];
+        foreach ($this->getKeysByTag($tag) as $key) {
+            $components[] = $this->get($key);
         }
 
-        return [];
+        return $components;
     }
 
     /**
@@ -55,13 +89,42 @@ class Container
      *
      * @return $this
      */
-    public function set($componentKey, $component, $tags = [])
+    public function set($componentKey, $component = null, $tags = [])
     {
+        if (array_key_exists($componentKey, $this->components)) {
+            $this->remove($componentKey);
+        }
+
         $this->components[$componentKey] = $component;
         foreach ($tags as $tag) {
-            $this->componentsByTag[$tag][] = $component;
+            $this->componentKeysByTag[$tag][] = $componentKey;
         }
 
         return $this;
+    }
+
+    /**
+     * @param string $componentKey
+     */
+    public function remove($componentKey)
+    {
+        unset($this->components[$componentKey]);
+        foreach ($this->componentKeysByTag as &$keys) {
+            foreach ($keys as $i => $key) {
+                if ($key === $componentKey) {
+                    unset($keys[$i]);
+                }
+            }
+            unset($keys);
+        }
+    }
+
+    public function quit()
+    {
+        foreach ($this->components as $component) {
+            if ($component instanceof Quittable) {
+                $component->quit();
+            }
+        }
     }
 }

@@ -2,22 +2,17 @@
 
 namespace Tests\PhpCmplr\Server;
 
+use Psr\Log\LogLevel;
 use React\Http\Request;
 use React\Http\Response;
 
 use PhpCmplr\PhpCmplr;
-use PhpCmplr\Completer\ContainerFactoryInterface;
-use PhpCmplr\Completer\Container;
-use PhpCmplr\Completer\Project;
-use PhpCmplr\Completer\SourceFile;
-use PhpCmplr\Completer\Parser\ParserComponent;
-use PhpCmplr\Completer\Diagnostics\DiagnosticsComponent;
 use PhpCmplr\Server\Server;
 use PhpCmplr\Server\Action;
 
 class ServerTest extends \PHPUnit_Framework_TestCase
 {
-    protected function mockRequest($path, $body, $method = 'POST')
+    protected function mockRequest($path, $method = 'POST')
     {
         $request = $this->getMockBuilder(Request::class)->disableOriginalConstructor()->getMock();
         $request
@@ -26,9 +21,6 @@ class ServerTest extends \PHPUnit_Framework_TestCase
         $request
             ->method('getPath')
             ->willReturn($path);
-        $request
-            ->method('getBody')
-            ->willReturn($body);
         return $request;
     }
 
@@ -48,14 +40,22 @@ class ServerTest extends \PHPUnit_Framework_TestCase
 
     public function setUp()
     {
-        $this->phpcmplr = new PhpCmplr(7373);
+        $this->phpcmplr = new PhpCmplr([
+            'server' => [
+                'port' => 7373,
+                'host' => '127.0.0.1',
+            ],
+            'log' => ['level' => 'error'],
+            'indexer' => ['enabled' => false],
+        ]);
         $this->server = $this->phpcmplr->getServer();
     }
 
     public function test_ping()
     {
         $this->server->handle(
-            $this->mockRequest('/ping', '{}'),
+            $this->mockRequest('/ping'),
+            '{}',
             $this->mockResponse(200, '{}'));
     }
 
@@ -68,7 +68,8 @@ class ServerTest extends \PHPUnit_Framework_TestCase
         $data->files = [$fileData];
 
         $this->server->handle(
-            $this->mockRequest('/load', json_encode($data)),
+            $this->mockRequest('/load'),
+            json_encode($data),
             $this->mockResponse(200, '{}'));
 
         $data = new \stdClass();
@@ -86,17 +87,19 @@ class ServerTest extends \PHPUnit_Framework_TestCase
         $result->diagnostics = [$diagData];
 
         $this->server->handle(
-            $this->mockRequest('/diagnostics', json_encode($data)),
+            $this->mockRequest('/diagnostics'),
+            json_encode($data),
             $this->mockResponse(200, json_encode($result)));
 
         $data->files = [$fileData];
 
         $this->server->handle(
-            $this->mockRequest('/diagnostics', json_encode($data)),
+            $this->mockRequest('/diagnostics'),
+            json_encode($data),
             $this->mockResponse(200, json_encode($result)));
     }
 
-    public function test_goto()
+    public function test_goto_function()
     {
         $data = new \stdClass();
         $fileData = new \stdClass();
@@ -110,13 +113,87 @@ class ServerTest extends \PHPUnit_Framework_TestCase
 
         $result = new \stdClass();
         $goto = new \stdClass();
-        $goto->path = 'qaz.php';
+        $goto->path = '/qaz.php';
         $goto->line = 1;
         $goto->col = 7;
         $result->goto = [$goto];
 
         $this->server->handle(
-            $this->mockRequest('/goto', json_encode($data)),
+            $this->mockRequest('/goto'),
+            json_encode($data),
+            $this->mockResponse(200, json_encode($result)));
+    }
+
+    public function test_goto_class()
+    {
+        $data = new \stdClass();
+        $fileData = new \stdClass();
+        $fileData->path = 'qaz.php';
+        $fileData->contents = '<?php class C {} new C();';
+        $data->files = [$fileData];
+        $data->location = new \stdClass();
+        $data->location->path = 'qaz.php';
+        $data->location->line = 1;
+        $data->location->col = 22;
+
+        $result = new \stdClass();
+        $goto = new \stdClass();
+        $goto->path = '/qaz.php';
+        $goto->line = 1;
+        $goto->col = 7;
+        $result->goto = [$goto];
+
+        $this->server->handle(
+            $this->mockRequest('/goto'),
+            json_encode($data),
+            $this->mockResponse(200, json_encode($result)));
+    }
+
+    public function test_complete()
+    {
+        $data = new \stdClass();
+        $fileData = new \stdClass();
+        $fileData->path = 'qaz.php';
+        $fileData->contents = '<?php class C { public $qaz; } (new C())->;';
+        $data->files = [$fileData];
+        $data->location = new \stdClass();
+        $data->location->path = 'qaz.php';
+        $data->location->line = 1;
+        $data->location->col = 42;
+
+        $result = new \stdClass();
+        $completion = new \stdClass();
+        $completion->insertion = 'qaz';
+        $completion->display = '$qaz';
+        $completion->kind = 'property';
+        $completion->type = 'mixed';
+        $completion->description = null;
+        $result->completions = [$completion];
+
+        $this->server->handle(
+            $this->mockRequest('/complete'),
+            json_encode($data),
+            $this->mockResponse(200, json_encode($result)));
+    }
+
+    public function test_type()
+    {
+        $data = new \stdClass();
+        $fileData = new \stdClass();
+        $fileData->path = 'qaz.php';
+        $fileData->contents = '<?php /** @var int */ $x;  $y + @$x;';
+        $data->files = [$fileData];
+        $data->location = new \stdClass();
+        $data->location->path = 'qaz.php';
+        $data->location->line = 1;
+        $data->location->col = 34;
+
+        $result = new \stdClass();
+        $result->type = 'int';
+
+        $this->server->handle(
+            $this->mockRequest('/type'),
+            json_encode($data),
             $this->mockResponse(200, json_encode($result)));
     }
 
@@ -127,7 +204,8 @@ class ServerTest extends \PHPUnit_Framework_TestCase
         $result->message = 'Not Found';
 
         $this->server->handle(
-            $this->mockRequest('/notfound', '{}'),
+            $this->mockRequest('/notfound'),
+            '{}',
             $this->mockResponse(404, json_encode($result)));
     }
 
@@ -138,14 +216,16 @@ class ServerTest extends \PHPUnit_Framework_TestCase
         $result->message = 'Bad Request';
 
         $this->server->handle(
-            $this->mockRequest('/load', '-----'),
+            $this->mockRequest('/load'),
+            '-----',
             $this->mockResponse(400, json_encode($result)));
 
         $data = new \stdClass();
         $data->files = 42;
 
         $this->server->handle(
-            $this->mockRequest('/load', json_encode($data)),
+            $this->mockRequest('/load'),
+            json_encode($data),
             $this->mockResponse(400, json_encode($result)));
     }
 
@@ -156,7 +236,8 @@ class ServerTest extends \PHPUnit_Framework_TestCase
         $result->message = 'Method Not Allowed';
 
         $this->server->handle(
-            $this->mockRequest('/load', '{}', 'GET'),
+            $this->mockRequest('/load', 'GET'),
+            '{}',
             $this->mockResponse(405, json_encode($result)));
     }
 }

@@ -2,7 +2,10 @@
 
 namespace PhpCmplr\Server\Action;
 
-use PhpCmplr\Completer\Project;
+use PhpCmplr\PhpCmplr;
+use PhpCmplr\Completer\Diagnostics\Diagnostic;
+use PhpCmplr\Completer\Diagnostics\Fix;
+use PhpCmplr\Completer\Diagnostics\FixChunk;
 
 /**
  * Get diagnostics for one file.
@@ -11,8 +14,8 @@ use PhpCmplr\Completer\Project;
  * {
  *   "diagnostics": [
  *     {
- *       "start": start offset,
- *       "end": end offset,
+ *       "start": start location,
+ *       "end": end location,
  *       "description": description
  *     },
  *     ...
@@ -41,24 +44,25 @@ END;
         return $this->combineSchemas(parent::getSchema(), self::SCHEMA);
     }
 
-    protected function handle($data, Project $project)
+    protected function handle($data, PhpCmplr $phpcmplr)
     {
-        parent::handle($data, $project);
+        parent::handle($data, $phpcmplr);
 
-        $container = $project->getFile($data->path);
-
-        if ($container === null) {
-            return new \stdClass();
-        }
-
+        $container = $phpcmplr->getFile($data->path);
         $diagsData = [];
-        $file = $container->get('file');
-        foreach ($container->get('diagnostics')->getDiagnostics() as $diag) {
-            $diagData = new \stdClass();
-            $diagData->start = $this->makeLocation($diag->getStart(), $file);
-            $diagData->end = $this->makeLocation($diag->getEnd(), $file);
-            $diagData->description = $diag->getDescription();
-            $diagsData[] = $diagData;
+
+        if ($container !== null) {
+            $file = $container->get('file');
+            /** @var Diagnostic $diag */
+            foreach ($container->get('diagnostics')->getDiagnostics() as $diag) {
+                $diagData = new \stdClass();
+                // TODO: not only the first range
+                $range = $diag->getRanges()[0];
+                $diagData->start = $this->makeLocation($range->getStart(), $file);
+                $diagData->end = $this->makeLocation($range->getEnd(), $file);
+                $diagData->description = $diag->getDescription();
+                $diagsData[] = $diagData;
+            }
         }
 
         $result = new \stdClass();

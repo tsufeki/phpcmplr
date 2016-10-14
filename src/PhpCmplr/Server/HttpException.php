@@ -10,11 +10,12 @@ class HttpException extends \Exception
     private $status;
 
     /**
-     * @param int $status
+     * @param int               $status
+     * @param \Exception|\Error $exception Exception which caused this HttpException.
      */
-    public function __construct($status)
+    public function __construct($status, $exception = null)
     {
-        parent::__construct('HTTP ' . $status);
+        parent::__construct('HTTP ' . $status, 0, $exception);
         $this->status = $status;
     }
 

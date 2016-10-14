@@ -9,8 +9,9 @@ use React\Http\Server as HttpServer;
 use React\Http\Request;
 use React\Http\Response;
 use React\Http\ResponseCodes;
+use React\Http\StreamingBodyParser\Factory as BodyParserFactory;
 
-use PhpCmplr\Completer\Project;
+use PhpCmplr\PhpCmplr;
 
 /**
  * HTTP server.
@@ -43,9 +44,9 @@ class Server
     private $http;
 
     /**
-     * @var Project
+     * @var PhpCmplr
      */
-    private $project;
+    private $phpcmplr;
 
     /**
      * @var mixed
@@ -58,17 +59,18 @@ class Server
     private $actions;
 
     /**
-     * @param Project $project
-     * @param mixed   $logger
-     * @param int     $port
-     * @param string  $host
+     * @param PhpCmplr      $phpcmplr
+     * @param mixed         $logger
+     * @param LoopInterface $loop
+     * @param array         $options
      */
-    public function __construct(Project $project, $logger, $port, $host = '127.0.0.1')
+    public function __construct(PhpCmplr $phpcmplr, $logger, LoopInterface $loop, array $options)
     {
-        $this->host = $host;
-        $this->port = $port;
-        $this->project = $project;
+        $this->host = $options['host'];
+        $this->port = $options['port'];
+        $this->phpcmplr = $phpcmplr;
         $this->logger = $logger;
+        $this->loop = $loop;
         $this->actions = [];
     }
 
@@ -90,12 +92,16 @@ class Server
      */
     public function run()
     {
-        $this->loop = EventLoopFactory::create();
+        $this->logger->info("Starting server on $this->host:$this->port");
         $this->socket = new ServerSocket($this->loop);
         $this->http = new HttpServer($this->socket);
 
         $this->http->on('request', function (Request $request, Response $response) {
-            $this->handle($request, $response);
+            $bodyParser = BodyParserFactory::create($request);
+
+            $bodyParser->on('body', function ($body) use ($request, $response) {
+                $this->handle($request, $body, $response);
+            });
         });
 
         $this->socket->listen($this->port, $this->host);
@@ -106,9 +112,10 @@ class Server
      * Handle request.
      *
      * @param Request  $request
+     * @param string   $requestBody
      * @param Response $response
      */
-    public function handle(Request $request, Response $response)
+    public function handle(Request $request, $requestBody, Response $response)
     {
         $status = 200;
         $responseBody = '{}';
@@ -122,23 +129,27 @@ class Server
                 throw new HttpException(404);
             }
 
+            $this->logger->info('Request: ' . $request->getPath());
             $responseBody = $this->actions[$request->getPath()]->handleRequest(
-                $request->getBody(),
-                $this->project);
+                $requestBody,
+                $this->phpcmplr);
 
         } catch (HttpException $e) {
+            $this->logger->notice($e->getMessage(), ['exception' => $e]);
             $status = $e->getStatus();
             $responseBody = json_encode([
                 'error' => $e->getStatus(),
                 'message' => ResponseCodes::$statusTexts[$e->getStatus()],
             ]);
         } catch (\Exception $e) {
+            $this->logger->error($e->getMessage(), ['exception' => $e]);
             $status = 500;
             $responseBody = json_encode([
                 'error' => 500,
                 'message' => ResponseCodes::$statusTexts[500] . ': ' . $e->getMessage(),
             ]);
         } catch (\Error $e) { // PHP7
+            $this->logger->error($e->getMessage(), ['exception' => $e]);
             $status = 500;
             $responseBody = json_encode([
                 'error' => 500,
@@ -158,6 +169,7 @@ class Server
      */
     public function quit()
     {
+        $this->logger->info("Quitting server");
         $this->socket->shutdown();
     }
 }

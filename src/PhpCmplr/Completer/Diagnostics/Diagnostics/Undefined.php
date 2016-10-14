@@ -94,7 +94,11 @@ class Undefined extends NodeVisitorComponent implements DiagnosticsNodeVisitorIn
         array_push($this->nodePathFromTop, $node);
         $classes = [];
 
-        if ($node instanceof Expr\Instanceof_ || $node instanceof Expr\New_) {
+        if ($node instanceof Expr\Instanceof_ ||
+                $node instanceof Expr\New_ ||
+                $node instanceof Expr\ClassConstFetch ||
+                $node instanceof Expr\StaticPropertyFetch ||
+                $node instanceof Expr\StaticCall) {
             $classes[] = $node->class;
 
         } elseif ($node instanceof Stmt\Catch_ || $node instanceof Param) {

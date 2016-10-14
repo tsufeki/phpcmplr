@@ -16,6 +16,7 @@ use PhpCmplr\Completer\Parser\Parser;
 use PhpCmplr\Completer\NameResolver\NameResolver;
 use PhpCmplr\Completer\DocComment\DocCommentParser;
 use PhpCmplr\Completer\Diagnostics\Diagnostics;
+use PhpCmplr\Completer\Diagnostics\FixHelper;
 use PhpCmplr\Completer\Reflection\Reflection;
 use PhpCmplr\Completer\Reflection\FileReflection;
 use PhpCmplr\Completer\Reflection\LocatorReflection;
@@ -209,6 +210,7 @@ class PhpCmplr extends Plugin implements ContainerFactoryInterface
     public function addFileComponents(Container $container, array $options)
     {
         $container->set('diagnostics', new Diagnostics($container));
+        $container->set('fix_helper', new FixHelper($container));
         $container->set('parser', new Parser($container), ['diagnostics']);
         $container->set('name_resolver', new NameResolver($container));
         $container->set('doc_comment', new DocCommentParser($container));

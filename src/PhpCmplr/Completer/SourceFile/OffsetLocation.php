@@ -38,4 +38,9 @@ class OffsetLocation implements Location
     {
         return $file->getLineAndColumn($this->getOffset());
     }
+
+    public static function move(SourceFileInterface $file, Location $location, $distance = 1)
+    {
+        return new OffsetLocation($location->getPath(), $location->getOffset($file) + $distance);
+    }
 }

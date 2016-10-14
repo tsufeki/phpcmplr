@@ -12,44 +12,64 @@ class SourceFileTest extends \PHPUnit_Framework_TestCase
         return new SourceFile(new Container(), $path, $contents);
     }
 
-    public function test_getOffset()
+    /**
+     * @dataProvider getData_getOffset
+     */
+    public function test_getOffset($offset, $text, $line, $col)
     {
-        $this->assertSame(0, $this->loadFile("")->getOffset(1, 1));
-        $this->assertSame(0, $this->loadFile("")->getOffset(2, 1));
-        $this->assertSame(0, $this->loadFile("")->getOffset(1, 3));
-
-        $this->assertSame(1, $this->loadFile("qaz")->getOffset(1, 2));
-        $this->assertSame(2, $this->loadFile("qaz\nwsx")->getOffset(1, 3));
-        $this->assertSame(4, $this->loadFile("qaz\nwsx")->getOffset(2, 1));
-        $this->assertSame(3, $this->loadFile("qaz\nwsx")->getOffset(1, 4));
-        $this->assertSame(6, $this->loadFile("qaz\nwsx")->getOffset(2, 3));
-
-        $this->assertSame(0, $this->loadFile("\nqaz\n\nwsx\n")->getOffset(1, 1));
-        $this->assertSame(2, $this->loadFile("\nqaz\n\nwsx\n")->getOffset(2, 2));
-        $this->assertSame(8, $this->loadFile("\nqaz\n\nwsx\n")->getOffset(4, 3));
-        $this->assertSame(9, $this->loadFile("\nqaz\n\nwsx\n")->getOffset(5, 1));
+        $this->assertSame($offset, $this->loadFile($text)->getOffset($line, $col));
     }
 
-    public function test_getLineAndColumn()
+    public function getData_getOffset()
     {
-        $this->assertSame([1, 1], $this->loadFile("")->getLineAndColumn(0));
-        $this->assertSame([1, 1], $this->loadFile("")->getLineAndColumn(1));
-        $this->assertSame([1, 1], $this->loadFile("")->getLineAndColumn(2));
+        return [
+            [0, "", 1, 1],
+            [0, "", 2, 1],
+            [0, "", 1, 3],
 
-        $this->assertSame([1, 2], $this->loadFile("qaz")->getLineAndColumn(1));
-        $this->assertSame([1, 3], $this->loadFile("qaz")->getLineAndColumn(2));
-        $this->assertSame([1, 2], $this->loadFile("qaz\n")->getLineAndColumn(1));
-        $this->assertSame([1, 3], $this->loadFile("qaz\n")->getLineAndColumn(2));
-        $this->assertSame([1, 4], $this->loadFile("qaz\n")->getLineAndColumn(3));
+            [1, "qaz", 1, 2],
+            [2, "qaz\nwsx", 1, 3],
+            [4, "qaz\nwsx", 2, 1],
+            [3, "qaz\nwsx", 1, 4],
+            [6, "qaz\nwsx", 2, 3],
 
-        $this->assertSame([1, 2], $this->loadFile("qaz\nwsx")->getLineAndColumn(1));
-        $this->assertSame([1, 4], $this->loadFile("qaz\nwsx")->getLineAndColumn(3));
-        $this->assertSame([2, 2], $this->loadFile("qaz\nwsx")->getLineAndColumn(5));
-        $this->assertSame([2, 3], $this->loadFile("qaz\nwsx")->getLineAndColumn(6));
+            [0, "\nqaz\n\nwsx\n", 1, 1],
+            [2, "\nqaz\n\nwsx\n", 2, 2],
+            [8, "\nqaz\n\nwsx\n", 4, 3],
+            [9, "\nqaz\n\nwsx\n", 5, 1],
+        ];
+    }
 
-        $this->assertSame([1, 1], $this->loadFile("\nqaz\n\nwsx\n")->getLineAndColumn(0));
-        $this->assertSame([2, 2], $this->loadFile("\nqaz\n\nwsx\n")->getLineAndColumn(2));
-        $this->assertSame([4, 3], $this->loadFile("\nqaz\n\nwsx\n")->getLineAndColumn(8));
-        $this->assertSame([4, 4], $this->loadFile("\nqaz\n\nwsx\n")->getLineAndColumn(9));
+    /**
+     * @dataProvider getData_getLineAndColumn
+     */
+    public function test_getLineAndColumn($line, $col, $text, $offset)
+    {
+        $this->assertSame([$line, $col], $this->loadFile($text)->getLineAndColumn($offset));
+    }
+
+    public function getData_getLineAndColumn()
+    {
+        return [
+            [1, 1, "", 0],
+            [1, 1, "", 1],
+            [1, 1, "", 2],
+
+            [1, 2, "qaz", 1],
+            [1, 3, "qaz", 2],
+            [1, 2, "qaz\n", 1],
+            [1, 3, "qaz\n", 2],
+            [1, 4, "qaz\n", 3],
+
+            [1, 2, "qaz\nwsx", 1],
+            [1, 4, "qaz\nwsx", 3],
+            [2, 2, "qaz\nwsx", 5],
+            [2, 3, "qaz\nwsx", 6],
+
+            [1, 1, "\nqaz\n\nwsx\n", 0],
+            [2, 2, "\nqaz\n\nwsx\n", 2],
+            [4, 3, "\nqaz\n\nwsx\n", 8],
+            [4, 4, "\nqaz\n\nwsx\n", 9],
+        ];
     }
 }

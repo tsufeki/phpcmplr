@@ -84,7 +84,6 @@ class ServerTest extends \PHPUnit_Framework_TestCase
         $diagData->end->line = 3;
         $diagData->end->col = 10;
         $diagData->description = "Syntax error, unexpected '*'";
-        $diagData->fixes = [];
         $result->diagnostics = [$diagData];
 
         $this->server->handle(

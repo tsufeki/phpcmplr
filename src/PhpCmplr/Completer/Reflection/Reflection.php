@@ -234,7 +234,11 @@ class Reflection extends Component
             foreach ($baseMethod->getParams() as $baseParam) {
                 if (array_key_exists($baseParam->getName(), $params)) {
                     $param = $params[$baseParam->getName()];
-                    $param->setDocType(Type::alternatives([$param->getDocType(), $baseParam->getDocType()]));
+                    $newType = $baseParam->getDocType();
+                    if (!$param->getDocType()->equals(Type::mixed_())) {
+                        $newType = Type::alternatives([$param->getDocType(), $newType]);
+                    }
+                    $param->setDocType($newType);
                 }
             }
         }

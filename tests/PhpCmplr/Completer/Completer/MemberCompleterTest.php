@@ -19,6 +19,7 @@ use PhpCmplr\Completer\Reflection\Element\ClassConst;
 use PhpCmplr\Completer\TypeInferrer\TypeInferrer;
 use PhpCmplr\Completer\Completer\Completer;
 use PhpCmplr\Completer\Completer\MemberCompleter;
+use PhpCmplr\Completer\Reflection\Element\Param;
 
 class MemberCompleterTest extends \PHPUnit_Framework_TestCase
 {
@@ -69,7 +70,10 @@ class MemberCompleterTest extends \PHPUnit_Framework_TestCase
         $method = (new Method())
             ->setName('qaz')
             ->setClass($class)
-            ->setDocReturnType(Type::int_());
+            ->setDocReturnType(Type::int_())
+            ->addParam((new Param())
+                ->setName('$a')
+                ->setDocType(Type::string_()));
         $var1 = new Expr\Variable('a', ['type' => Type::object_('\\C')]);
         $id = new Identifier('q');
         $expr = new Expr\MethodCall($var1, $id, []);
@@ -77,10 +81,10 @@ class MemberCompleterTest extends \PHPUnit_Framework_TestCase
         $completions = $this->complete([$id, $expr], [$method]);
 
         $this->assertCount(1, $completions);
-        $this->assertSame('qaz', $completions[0]->getInsertion());
-        $this->assertSame('qaz()', $completions[0]->getDisplay());
+        $this->assertSame('qaz(', $completions[0]->getInsertion());
+        $this->assertSame('qaz(', $completions[0]->getDisplay());
         $this->assertSame('method', $completions[0]->getKind());
-        $this->assertSame('int', $completions[0]->getType());
+        $this->assertSame('string $a) : int', $completions[0]->getExtendedDisplay());
     }
 
     public function test_MethodCall_private()
@@ -169,10 +173,10 @@ class MemberCompleterTest extends \PHPUnit_Framework_TestCase
 
         $this->assertCount(3, $completions);
 
-        $this->assertSame('qaz', $completions[0]->getInsertion());
+        $this->assertSame('qaz()', $completions[0]->getInsertion());
         $this->assertSame('qaz()', $completions[0]->getDisplay());
         $this->assertSame('static_method', $completions[0]->getKind());
-        $this->assertSame('Y', $completions[0]->getType());
+        $this->assertSame(' : Y', $completions[0]->getExtendedDisplay());
 
         $this->assertSame('EDC', $completions[1]->getInsertion());
         $this->assertSame('EDC', $completions[1]->getDisplay());
@@ -181,6 +185,6 @@ class MemberCompleterTest extends \PHPUnit_Framework_TestCase
         $this->assertSame('$wsx', $completions[2]->getInsertion());
         $this->assertSame('$wsx', $completions[2]->getDisplay());
         $this->assertSame('static_property', $completions[2]->getKind());
-        $this->assertSame('string', $completions[2]->getType());
+        $this->assertSame('string', $completions[2]->getExtendedDisplay());
     }
 }

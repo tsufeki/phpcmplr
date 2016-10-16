@@ -164,9 +164,9 @@ class ServerTest extends \PHPUnit_Framework_TestCase
         $result = new \stdClass();
         $completion = new \stdClass();
         $completion->insertion = 'qaz';
-        $completion->display = '$qaz';
+        $completion->display = 'qaz';
         $completion->kind = 'property';
-        $completion->type = 'mixed';
+        $completion->extended_display = 'mixed';
         $completion->description = null;
         $result->completions = [$completion];
 

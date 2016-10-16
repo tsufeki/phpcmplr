@@ -117,12 +117,17 @@ class MemberCompleter extends Component implements CompleterInterface
     public function formatMethods(array $methods)
     {
         $completions = [];
+        /** @var Method $method */
         foreach ($methods as $method) {
             $completion = new Completion();
-            $completion->setInsertion($method->getName());
-            $completion->setDisplay($method->getName() . $method->getParamsAsString(true));
+            $zeroParams = count($method->getParams()) === 0;
+            $completion->setInsertion($method->getName() . ($zeroParams ? '()' : '('));
+            $completion->setDisplay($completion->getInsertion());
             $completion->setKind($method->isStatic() ? Completion::KIND_STATIC_METHOD : Completion::KIND_METHOD);
-            $completion->setType($method->getDocReturnType()->toString(true));
+            $completion->setExtendedDisplay(
+                $method->getParamsAsString(true) . ($zeroParams ? '' : ')') .
+                ' : ' . $method->getDocReturnType()->toString(true)
+            );
             $completions[] = $completion;
         }
         return $completions;
@@ -140,9 +145,9 @@ class MemberCompleter extends Component implements CompleterInterface
         foreach ($properties as $property) {
             $completion = new Completion();
             $completion->setInsertion($staticContext ? $property->getName() : ltrim($property->getName(), '$'));
-            $completion->setDisplay($property->getName());
+            $completion->setDisplay($completion->getInsertion());
             $completion->setKind($property->isStatic() ? Completion::KIND_STATIC_PROPERTY : Completion::KIND_PROPERTY);
-            $completion->setType($property->getType()->toString(true));
+            $completion->setExtendedDisplay($property->getType()->toString(true));
             $completions[] = $completion;
         }
         return $completions;
@@ -159,7 +164,7 @@ class MemberCompleter extends Component implements CompleterInterface
         foreach ($consts as $const) {
             $completion = new Completion();
             $completion->setInsertion($const->getName());
-            $completion->setDisplay($const->getName());
+            $completion->setDisplay($completion->getInsertion());
             $completion->setKind(Completion::KIND_CLASS_CONST);
             $completions[] = $completion;
         }

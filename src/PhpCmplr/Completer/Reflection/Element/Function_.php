@@ -127,6 +127,6 @@ class Function_ extends Element
         foreach ($this->getParams() as $param) {
             $params[] = $param->toString($short);
         }
-        return '(' . implode(', ', $params) . ')';
+        return implode(', ', $params);
     }
 }

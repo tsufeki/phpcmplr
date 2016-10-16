@@ -35,9 +35,9 @@ class Completion
     private $kind;
 
     /**
-     * @var string Type or return type.
+     * @var string
      */
-    private $type;
+    private $extendedDisplay;
 
     /**
      * @var string Long info.
@@ -107,19 +107,19 @@ class Completion
     /**
      * @return string
      */
-    public function getType()
+    public function getExtendedDisplay()
     {
-        return $this->type;
+        return $this->extendedDisplay;
     }
 
     /**
-     * @param string $type
+     * @param string $extendedDisplay
      *
      * @return $this
      */
-    public function setType($type)
+    public function setExtendedDisplay($extendedDisplay)
     {
-        $this->type = $type;
+        $this->extendedDisplay = $extendedDisplay;
 
         return $this;
     }

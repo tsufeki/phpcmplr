@@ -16,7 +16,7 @@ use PhpCmplr\PhpCmplr;
  *             "kind": string, // variable, function, const, property, static_property,
  *                             // method, static_method, class_const, class, interface,
  *                             // trait, namespace.
- *             "type": string|null,
+ *             "extended_display": string|null,
  *             "description": string|null
  *         },
  *         ...
@@ -60,7 +60,7 @@ END;
                 $data->insertion = $completion->getInsertion();
                 $data->display = $completion->getDisplay();
                 $data->kind = $completion->getKind();
-                $data->type = $completion->getType();
+                $data->extended_display = $completion->getExtendedDisplay();
                 $data->description = $completion->getDescription();
                 $completionsData[] = $data;
             }

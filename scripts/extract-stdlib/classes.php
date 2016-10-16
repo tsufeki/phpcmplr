@@ -13,7 +13,7 @@ function extract_class_signatures($files, $extensions) {
         $doc->loadHTMLFile($file);
         $xpath = new DOMXpath($doc);
 
-        list($classname, $is_interface) = extract_class_name($xpath, $file);
+        list($classname, $is_interface, $extends, $implements) = extract_class_name($xpath, $file);
         if (empty($classname)) {
             // no usual class synopsis found inside the file, just skip this class
             continue;
@@ -31,7 +31,7 @@ function extract_class_signatures($files, $extensions) {
                 }
                 $interface_signatures[$extension_name][$classname] = array(
                     'name'              => $classname,
-                    'extends'           => [],
+                    'extends'           => $extends,
                     'constants'         => $fields['constants'],
                     'properties'        => $fields['properties'],
                     'methods'           => $methods['methods'],
@@ -42,8 +42,8 @@ function extract_class_signatures($files, $extensions) {
                 }
                 $class_signatures[$extension_name][$classname] = array(
                     'name'              => $classname,
-                    'extends'           => null,
-                    'implements'        => [],
+                    'extends'           => $extends,
+                    'implements'        => $implements,
                     'modifiers'         => [],
                     'constants'         => $fields['constants'],
                     'properties'        => $fields['properties'],
@@ -211,7 +211,25 @@ function extract_class_name($xpath) {
     if ($title2 && preg_match('/interface$/i', trim($title2->textContent))) {
         $is_interface = true;
     }
-    return array($classname, $is_interface);
+
+    $extends = [];
+    $extends_nodes = $xpath->query('//div[@class="classsynopsis"]/div[@class="classsynopsisinfo"]/*[@class="ooclass"]/*[@class="classname"]');
+    for ($i = 1; $i < $extends_nodes->length; $i++) {
+        $extends[] = trim($extends_nodes->item($i)->textContent);
+    }
+    $implements = [];
+    $implements_nodes = $xpath->query('//div[@class="classsynopsis"]/div[@class="classsynopsisinfo"]/*[@class="oointerface"]/*[@class="interfacename"]');
+    for ($i = 0; $i < $implements_nodes->length; $i++) {
+        $implements[] = trim($implements_nodes->item($i)->textContent);
+    }
+
+    if ($is_interface) {
+        $implements = null;
+    } else {
+        $extends = empty($extends) ? null : $extends[0];
+    }
+
+    return array($classname, $is_interface, $extends, $implements);
 }
 
 function handle_class_property($xpath, $node, $file) {

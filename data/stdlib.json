@@ -28339,8 +28339,10 @@
     "classes": [
         {
             "name": "AppendIterator",
-            "extends": null,
-            "implements": [],
+            "extends": "IteratorIterator",
+            "implements": [
+                "OuterIterator"
+            ],
             "modifiers": [],
             "constants": [],
             "properties": [],
@@ -28456,7 +28458,12 @@
         {
             "name": "ArrayIterator",
             "extends": null,
-            "implements": [],
+            "implements": [
+                "ArrayAccess",
+                "SeekableIterator",
+                "Countable",
+                "Serializable"
+            ],
             "modifiers": [],
             "constants": [],
             "properties": [],
@@ -28786,7 +28793,12 @@
         {
             "name": "ArrayObject",
             "extends": null,
-            "implements": [],
+            "implements": [
+                "IteratorAggregate",
+                "ArrayAccess",
+                "Serializable",
+                "Countable"
+            ],
             "modifiers": [],
             "constants": [
                 {
@@ -29122,7 +29134,7 @@
         },
         {
             "name": "BadFunctionCallException",
-            "extends": null,
+            "extends": "LogicException",
             "implements": [],
             "modifiers": [],
             "constants": [],
@@ -29254,7 +29266,7 @@
         },
         {
             "name": "BadMethodCallException",
-            "extends": null,
+            "extends": "BadFunctionCallException",
             "implements": [],
             "modifiers": [],
             "constants": [],
@@ -29386,8 +29398,12 @@
         },
         {
             "name": "CachingIterator",
-            "extends": null,
-            "implements": [],
+            "extends": "IteratorIterator",
+            "implements": [
+                "OuterIterator",
+                "ArrayAccess",
+                "Countable"
+            ],
             "modifiers": [],
             "constants": [
                 {
@@ -29637,8 +29653,10 @@
         },
         {
             "name": "CallbackFilterIterator",
-            "extends": null,
-            "implements": [],
+            "extends": "FilterIterator",
+            "implements": [
+                "OuterIterator"
+            ],
             "modifiers": [],
             "constants": [],
             "properties": [],
@@ -29728,8 +29746,10 @@
         },
         {
             "name": "DirectoryIterator",
-            "extends": null,
-            "implements": [],
+            "extends": "SplFileInfo",
+            "implements": [
+                "SeekableIterator"
+            ],
             "modifiers": [],
             "constants": [],
             "properties": [],
@@ -30023,7 +30043,7 @@
         },
         {
             "name": "DomainException",
-            "extends": null,
+            "extends": "LogicException",
             "implements": [],
             "modifiers": [],
             "constants": [],
@@ -30156,7 +30176,9 @@
         {
             "name": "EmptyIterator",
             "extends": null,
-            "implements": [],
+            "implements": [
+                "Iterator"
+            ],
             "modifiers": [],
             "constants": [],
             "properties": [],
@@ -30210,8 +30232,10 @@
         },
         {
             "name": "FilesystemIterator",
-            "extends": null,
-            "implements": [],
+            "extends": "DirectoryIterator",
+            "implements": [
+                "SeekableIterator"
+            ],
             "modifiers": [],
             "constants": [
                 {
@@ -30584,8 +30608,10 @@
         },
         {
             "name": "FilterIterator",
-            "extends": null,
-            "implements": [],
+            "extends": "IteratorIterator",
+            "implements": [
+                "OuterIterator"
+            ],
             "modifiers": [],
             "constants": [],
             "properties": [],
@@ -30675,8 +30701,11 @@
         },
         {
             "name": "GlobIterator",
-            "extends": null,
-            "implements": [],
+            "extends": "FilesystemIterator",
+            "implements": [
+                "SeekableIterator",
+                "Countable"
+            ],
             "modifiers": [],
             "constants": [],
             "properties": [],
@@ -30781,8 +30810,10 @@
         },
         {
             "name": "InfiniteIterator",
-            "extends": null,
-            "implements": [],
+            "extends": "IteratorIterator",
+            "implements": [
+                "OuterIterator"
+            ],
             "modifiers": [],
             "constants": [],
             "properties": [],
@@ -30862,7 +30893,7 @@
         },
         {
             "name": "InvalidArgumentException",
-            "extends": null,
+            "extends": "LogicException",
             "implements": [],
             "modifiers": [],
             "constants": [],
@@ -30995,7 +31026,9 @@
         {
             "name": "IteratorIterator",
             "extends": null,
-            "implements": [],
+            "implements": [
+                "OuterIterator"
+            ],
             "modifiers": [],
             "constants": [],
             "properties": [],
@@ -31075,7 +31108,7 @@
         },
         {
             "name": "LengthException",
-            "extends": null,
+            "extends": "LogicException",
             "implements": [],
             "modifiers": [],
             "constants": [],
@@ -31207,8 +31240,10 @@
         },
         {
             "name": "LimitIterator",
-            "extends": null,
-            "implements": [],
+            "extends": "IteratorIterator",
+            "implements": [
+                "OuterIterator"
+            ],
             "modifiers": [],
             "constants": [],
             "properties": [],
@@ -31330,7 +31365,7 @@
         },
         {
             "name": "LogicException",
-            "extends": null,
+            "extends": "Exception",
             "implements": [],
             "modifiers": [],
             "constants": [],
@@ -31463,7 +31498,9 @@
         {
             "name": "MultipleIterator",
             "extends": null,
-            "implements": [],
+            "implements": [
+                "Iterator"
+            ],
             "modifiers": [],
             "constants": [
                 {
@@ -31645,7 +31682,7 @@
         },
         {
             "name": "NoRewindIterator",
-            "extends": null,
+            "extends": "IteratorIterator",
             "implements": [],
             "modifiers": [],
             "constants": [],
@@ -31726,7 +31763,7 @@
         },
         {
             "name": "OutOfBoundsException",
-            "extends": null,
+            "extends": "RuntimeException",
             "implements": [],
             "modifiers": [],
             "constants": [],
@@ -31858,7 +31895,7 @@
         },
         {
             "name": "OutOfRangeException",
-            "extends": null,
+            "extends": "LogicException",
             "implements": [],
             "modifiers": [],
             "constants": [],
@@ -31990,7 +32027,7 @@
         },
         {
             "name": "OverflowException",
-            "extends": null,
+            "extends": "RuntimeException",
             "implements": [],
             "modifiers": [],
             "constants": [],
@@ -32122,8 +32159,11 @@
         },
         {
             "name": "ParentIterator",
-            "extends": null,
-            "implements": [],
+            "extends": "RecursiveFilterIterator",
+            "implements": [
+                "RecursiveIterator",
+                "OuterIterator"
+            ],
             "modifiers": [],
             "constants": [],
             "properties": [],
@@ -32194,7 +32234,7 @@
         },
         {
             "name": "RangeException",
-            "extends": null,
+            "extends": "RuntimeException",
             "implements": [],
             "modifiers": [],
             "constants": [],
@@ -32326,8 +32366,10 @@
         },
         {
             "name": "RecursiveArrayIterator",
-            "extends": null,
-            "implements": [],
+            "extends": "ArrayIterator",
+            "implements": [
+                "RecursiveIterator"
+            ],
             "modifiers": [],
             "constants": [],
             "properties": [],
@@ -32674,8 +32716,13 @@
         },
         {
             "name": "RecursiveCachingIterator",
-            "extends": null,
-            "implements": [],
+            "extends": "CachingIterator",
+            "implements": [
+                "Countable",
+                "ArrayAccess",
+                "OuterIterator",
+                "RecursiveIterator"
+            ],
             "modifiers": [],
             "constants": [],
             "properties": [],
@@ -32918,8 +32965,11 @@
         },
         {
             "name": "RecursiveCallbackFilterIterator",
-            "extends": null,
-            "implements": [],
+            "extends": "CallbackFilterIterator",
+            "implements": [
+                "OuterIterator",
+                "RecursiveIterator"
+            ],
             "modifiers": [],
             "constants": [],
             "properties": [],
@@ -32979,8 +33029,11 @@
         },
         {
             "name": "RecursiveDirectoryIterator",
-            "extends": null,
-            "implements": [],
+            "extends": "FilesystemIterator",
+            "implements": [
+                "SeekableIterator",
+                "RecursiveIterator"
+            ],
             "modifiers": [],
             "constants": [],
             "properties": [],
@@ -33121,8 +33174,11 @@
         },
         {
             "name": "RecursiveFilterIterator",
-            "extends": null,
-            "implements": [],
+            "extends": "FilterIterator",
+            "implements": [
+                "OuterIterator",
+                "RecursiveIterator"
+            ],
             "modifiers": [],
             "constants": [],
             "properties": [],
@@ -33231,7 +33287,9 @@
         {
             "name": "RecursiveIteratorIterator",
             "extends": null,
-            "implements": [],
+            "implements": [
+                "OuterIterator"
+            ],
             "modifiers": [],
             "constants": [
                 {
@@ -33460,8 +33518,10 @@
         },
         {
             "name": "RecursiveRegexIterator",
-            "extends": null,
-            "implements": [],
+            "extends": "RegexIterator",
+            "implements": [
+                "RecursiveIterator"
+            ],
             "modifiers": [],
             "constants": [],
             "properties": [],
@@ -33632,8 +33692,10 @@
         },
         {
             "name": "RecursiveTreeIterator",
-            "extends": null,
-            "implements": [],
+            "extends": "RecursiveIteratorIterator",
+            "implements": [
+                "OuterIterator"
+            ],
             "modifiers": [],
             "constants": [
                 {
@@ -33929,7 +33991,7 @@
         },
         {
             "name": "RegexIterator",
-            "extends": null,
+            "extends": "FilterIterator",
             "implements": [],
             "modifiers": [],
             "constants": [
@@ -34132,7 +34194,7 @@
         },
         {
             "name": "RuntimeException",
-            "extends": null,
+            "extends": "Exception",
             "implements": [],
             "modifiers": [],
             "constants": [],
@@ -34265,7 +34327,11 @@
         {
             "name": "SplDoublyLinkedList",
             "extends": null,
-            "implements": [],
+            "implements": [
+                "Iterator",
+                "ArrayAccess",
+                "Countable"
+            ],
             "modifiers": [],
             "constants": [],
             "properties": [],
@@ -34922,8 +34988,11 @@
         },
         {
             "name": "SplFileObject",
-            "extends": null,
-            "implements": [],
+            "extends": "SplFileInfo",
+            "implements": [
+                "RecursiveIterator",
+                "SeekableIterator"
+            ],
             "modifiers": [],
             "constants": [
                 {
@@ -35747,7 +35816,11 @@
         {
             "name": "SplFixedArray",
             "extends": null,
-            "implements": [],
+            "implements": [
+                "Iterator",
+                "ArrayAccess",
+                "Countable"
+            ],
             "modifiers": [],
             "constants": [],
             "properties": [],
@@ -35974,7 +36047,10 @@
         {
             "name": "SplHeap",
             "extends": null,
-            "implements": [],
+            "implements": [
+                "Iterator",
+                "Countable"
+            ],
             "modifiers": [],
             "constants": [],
             "properties": [],
@@ -36124,8 +36200,11 @@
         },
         {
             "name": "SplMaxHeap",
-            "extends": null,
-            "implements": [],
+            "extends": "SplHeap",
+            "implements": [
+                "Iterator",
+                "Countable"
+            ],
             "modifiers": [],
             "constants": [],
             "properties": [],
@@ -36266,8 +36345,11 @@
         },
         {
             "name": "SplMinHeap",
-            "extends": null,
-            "implements": [],
+            "extends": "SplHeap",
+            "implements": [
+                "Iterator",
+                "Countable"
+            ],
             "modifiers": [],
             "constants": [],
             "properties": [],
@@ -36409,7 +36491,12 @@
         {
             "name": "SplObjectStorage",
             "extends": null,
-            "implements": [],
+            "implements": [
+                "Countable",
+                "Iterator",
+                "Serializable",
+                "ArrayAccess"
+            ],
             "modifiers": [],
             "constants": [],
             "properties": [],
@@ -36728,7 +36815,10 @@
         {
             "name": "SplPriorityQueue",
             "extends": null,
-            "implements": [],
+            "implements": [
+                "Iterator",
+                "Countable"
+            ],
             "modifiers": [],
             "constants": [],
             "properties": [],
@@ -36901,8 +36991,12 @@
         },
         {
             "name": "SplQueue",
-            "extends": null,
-            "implements": [],
+            "extends": "SplDoublyLinkedList",
+            "implements": [
+                "Iterator",
+                "ArrayAccess",
+                "Countable"
+            ],
             "modifiers": [],
             "constants": [],
             "properties": [],
@@ -37233,8 +37327,12 @@
         },
         {
             "name": "SplStack",
-            "extends": null,
-            "implements": [],
+            "extends": "SplDoublyLinkedList",
+            "implements": [
+                "Iterator",
+                "ArrayAccess",
+                "Countable"
+            ],
             "modifiers": [],
             "constants": [],
             "properties": [],
@@ -37543,8 +37641,11 @@
         },
         {
             "name": "SplTempFileObject",
-            "extends": null,
-            "implements": [],
+            "extends": "SplFileObject",
+            "implements": [
+                "SeekableIterator",
+                "RecursiveIterator"
+            ],
             "modifiers": [],
             "constants": [],
             "properties": [],
@@ -38040,7 +38141,7 @@
         },
         {
             "name": "UnderflowException",
-            "extends": null,
+            "extends": "RuntimeException",
             "implements": [],
             "modifiers": [],
             "constants": [],
@@ -38172,7 +38273,7 @@
         },
         {
             "name": "UnexpectedValueException",
-            "extends": null,
+            "extends": "RuntimeException",
             "implements": [],
             "modifiers": [],
             "constants": [],
@@ -38304,7 +38405,7 @@
         },
         {
             "name": "ArithmeticError",
-            "extends": null,
+            "extends": "Error",
             "implements": [],
             "modifiers": [],
             "constants": [],
@@ -38403,7 +38504,7 @@
         },
         {
             "name": "AssertionError",
-            "extends": null,
+            "extends": "Error",
             "implements": [],
             "modifiers": [],
             "constants": [],
@@ -38502,7 +38603,7 @@
         },
         {
             "name": "DivisionByZeroError",
-            "extends": null,
+            "extends": "ArithmeticError",
             "implements": [],
             "modifiers": [],
             "constants": [],
@@ -38601,7 +38702,7 @@
         },
         {
             "name": "Error",
-            "extends": null,
+            "extends": "Throwable",
             "implements": [],
             "modifiers": [],
             "constants": [],
@@ -38767,7 +38868,7 @@
         },
         {
             "name": "ErrorException",
-            "extends": null,
+            "extends": "Exception",
             "implements": [],
             "modifiers": [],
             "constants": [],
@@ -39141,7 +39242,7 @@
         },
         {
             "name": "ParseError",
-            "extends": null,
+            "extends": "Error",
             "implements": [],
             "modifiers": [],
             "constants": [],
@@ -39240,7 +39341,7 @@
         },
         {
             "name": "TypeError",
-            "extends": null,
+            "extends": "Error",
             "implements": [],
             "modifiers": [],
             "constants": [],
@@ -39441,7 +39542,9 @@
         {
             "name": "Generator",
             "extends": null,
-            "implements": [],
+            "implements": [
+                "Iterator"
+            ],
             "modifiers": [],
             "constants": [],
             "properties": [],
@@ -39820,7 +39923,9 @@
         {
             "name": "DatePeriod",
             "extends": null,
-            "implements": [],
+            "implements": [
+                "Traversable"
+            ],
             "modifiers": [],
             "constants": [
                 {
@@ -39886,7 +39991,9 @@
         {
             "name": "DateTime",
             "extends": null,
-            "implements": [],
+            "implements": [
+                "DateTimeInterface"
+            ],
             "modifiers": [],
             "constants": [
                 {
@@ -40286,7 +40393,9 @@
         {
             "name": "DateTimeImmutable",
             "extends": null,
-            "implements": [],
+            "implements": [
+                "DateTimeInterface"
+            ],
             "modifiers": [],
             "constants": [],
             "properties": [],
@@ -40915,7 +41024,7 @@
         },
         {
             "name": "DOMAttr",
-            "extends": null,
+            "extends": "DOMNode",
             "implements": [],
             "modifiers": [],
             "constants": [],
@@ -41322,7 +41431,7 @@
         },
         {
             "name": "DOMCdataSection",
-            "extends": null,
+            "extends": "DOMText",
             "implements": [],
             "modifiers": [],
             "constants": [],
@@ -41375,7 +41484,7 @@
         },
         {
             "name": "DOMCharacterData",
-            "extends": null,
+            "extends": "DOMNode",
             "implements": [],
             "modifiers": [],
             "constants": [],
@@ -41832,7 +41941,7 @@
         },
         {
             "name": "DOMComment",
-            "extends": null,
+            "extends": "DOMCharacterData",
             "implements": [],
             "modifiers": [],
             "constants": [],
@@ -42288,7 +42397,7 @@
         },
         {
             "name": "DOMDocument",
-            "extends": null,
+            "extends": "DOMNode",
             "implements": [],
             "modifiers": [],
             "constants": [],
@@ -43403,7 +43512,7 @@
         },
         {
             "name": "DOMDocumentFragment",
-            "extends": null,
+            "extends": "DOMNode",
             "implements": [],
             "modifiers": [],
             "constants": [],
@@ -43749,7 +43858,7 @@
         },
         {
             "name": "DOMDocumentType",
-            "extends": null,
+            "extends": "DOMNode",
             "implements": [],
             "modifiers": [],
             "constants": [],
@@ -44133,7 +44242,7 @@
         },
         {
             "name": "DOMElement",
-            "extends": null,
+            "extends": "DOMNode",
             "implements": [],
             "modifiers": [],
             "constants": [],
@@ -44902,7 +45011,7 @@
         },
         {
             "name": "DOMEntity",
-            "extends": null,
+            "extends": "DOMNode",
             "implements": [],
             "modifiers": [],
             "constants": [],
@@ -45285,7 +45394,7 @@
         },
         {
             "name": "DOMEntityReference",
-            "extends": null,
+            "extends": "DOMNode",
             "implements": [],
             "modifiers": [],
             "constants": [],
@@ -45631,7 +45740,7 @@
         },
         {
             "name": "DOMException",
-            "extends": null,
+            "extends": "Exception",
             "implements": [],
             "modifiers": [],
             "constants": [],
@@ -45850,7 +45959,9 @@
         {
             "name": "DOMNamedNodeMap",
             "extends": null,
-            "implements": [],
+            "implements": [
+                "Traversable"
+            ],
             "modifiers": [],
             "constants": [],
             "properties": [
@@ -46393,7 +46504,9 @@
         {
             "name": "DOMNodeList",
             "extends": null,
-            "implements": [],
+            "implements": [
+                "Traversable"
+            ],
             "modifiers": [],
             "constants": [],
             "properties": [
@@ -46427,7 +46540,7 @@
         },
         {
             "name": "DOMNotation",
-            "extends": null,
+            "extends": "DOMNode",
             "implements": [],
             "modifiers": [],
             "constants": [],
@@ -46775,7 +46888,7 @@
         },
         {
             "name": "DOMProcessingInstruction",
-            "extends": null,
+            "extends": "DOMNode",
             "implements": [],
             "modifiers": [],
             "constants": [],
@@ -47146,7 +47259,7 @@
         },
         {
             "name": "DOMText",
-            "extends": null,
+            "extends": "DOMCharacterData",
             "implements": [],
             "modifiers": [],
             "constants": [],
@@ -47827,7 +47940,9 @@
         {
             "name": "mysqli_result",
             "extends": null,
-            "implements": [],
+            "implements": [
+                "Traversable"
+            ],
             "modifiers": [],
             "constants": [],
             "properties": [
@@ -47996,7 +48111,7 @@
         },
         {
             "name": "mysqli_sql_exception",
-            "extends": null,
+            "extends": "RuntimeException",
             "implements": [],
             "modifiers": [],
             "constants": [],
@@ -49834,7 +49949,7 @@
         },
         {
             "name": "PDOException",
-            "extends": null,
+            "extends": "RuntimeException",
             "implements": [],
             "modifiers": [],
             "constants": [],
@@ -49975,7 +50090,9 @@
         {
             "name": "PDOStatement",
             "extends": null,
-            "implements": [],
+            "implements": [
+                "Traversable"
+            ],
             "modifiers": [],
             "constants": [],
             "properties": [
@@ -50379,8 +50496,11 @@
         },
         {
             "name": "Phar",
-            "extends": null,
-            "implements": [],
+            "extends": "RecursiveDirectoryIterator",
+            "implements": [
+                "Countable",
+                "ArrayAccess"
+            ],
             "modifiers": [],
             "constants": [],
             "properties": [],
@@ -51395,7 +51515,7 @@
         },
         {
             "name": "PharData",
-            "extends": null,
+            "extends": "Phar",
             "implements": [],
             "modifiers": [],
             "constants": [],
@@ -52411,7 +52531,7 @@
         },
         {
             "name": "PharException",
-            "extends": null,
+            "extends": "Exception",
             "implements": [],
             "modifiers": [],
             "constants": [],
@@ -52543,7 +52663,7 @@
         },
         {
             "name": "PharFileInfo",
-            "extends": null,
+            "extends": "SplFileInfo",
             "implements": [],
             "modifiers": [],
             "constants": [],
@@ -52840,7 +52960,9 @@
         {
             "name": "SessionHandler",
             "extends": null,
-            "implements": [],
+            "implements": [
+                "SessionHandlerInterface"
+            ],
             "modifiers": [],
             "constants": [],
             "properties": [],
@@ -53091,7 +53213,9 @@
         {
             "name": "SimpleXMLElement",
             "extends": null,
-            "implements": [],
+            "implements": [
+                "Traversable"
+            ],
             "modifiers": [],
             "constants": [],
             "properties": [],
@@ -53392,8 +53516,11 @@
         },
         {
             "name": "SimpleXMLIterator",
-            "extends": null,
-            "implements": [],
+            "extends": "SimpleXMLElement",
+            "implements": [
+                "RecursiveIterator",
+                "Countable"
+            ],
             "modifiers": [],
             "constants": [],
             "properties": [],
@@ -53757,7 +53884,7 @@
         },
         {
             "name": "SplBool",
-            "extends": null,
+            "extends": "SplEnum",
             "implements": [],
             "modifiers": [],
             "constants": [
@@ -53798,7 +53925,7 @@
         },
         {
             "name": "SplEnum",
-            "extends": null,
+            "extends": "SplType",
             "implements": [],
             "modifiers": [],
             "constants": [
@@ -53853,7 +53980,7 @@
         },
         {
             "name": "SplFloat",
-            "extends": null,
+            "extends": "SplType",
             "implements": [],
             "modifiers": [],
             "constants": [
@@ -53890,7 +54017,7 @@
         },
         {
             "name": "SplInt",
-            "extends": null,
+            "extends": "SplType",
             "implements": [],
             "modifiers": [],
             "constants": [
@@ -53927,7 +54054,7 @@
         },
         {
             "name": "SplString",
-            "extends": null,
+            "extends": "SplType",
             "implements": [],
             "modifiers": [],
             "constants": [
@@ -55577,7 +55704,9 @@
         },
         {
             "name": "Iterator",
-            "extends": [],
+            "extends": [
+                "Traversable"
+            ],
             "constants": [],
             "properties": [],
             "methods": [
@@ -55635,7 +55764,9 @@
         },
         {
             "name": "IteratorAggregate",
-            "extends": [],
+            "extends": [
+                "Traversable"
+            ],
             "constants": [],
             "properties": [],
             "methods": [
@@ -55802,7 +55933,9 @@
         },
         {
             "name": "OuterIterator",
-            "extends": [],
+            "extends": [
+                "Iterator"
+            ],
             "constants": [],
             "properties": [],
             "methods": [
@@ -55869,7 +56002,9 @@
         },
         {
             "name": "RecursiveIterator",
-            "extends": [],
+            "extends": [
+                "Iterator"
+            ],
             "constants": [],
             "properties": [],
             "methods": [
@@ -55945,7 +56080,9 @@
         },
         {
             "name": "SeekableIterator",
-            "extends": [],
+            "extends": [
+                "Iterator"
+            ],
             "constants": [],
             "properties": [],
             "methods": [

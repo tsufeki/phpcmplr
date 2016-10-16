@@ -255,11 +255,22 @@ class PhpCmplr extends Plugin implements ContainerFactoryInterface
         }
     }
 
+    /**
+     * @param string $path
+     *
+     * @return Container
+     */
     public function getFile($path)
     {
         return $this->globalContainer->get('file_store')->getFile($path);
     }
 
+    /**
+     * @param string $path
+     * @param string $contents
+     *
+     * @return Container
+     */
     public function addFile($path, $contents)
     {
         return $this->globalContainer->get('file_store')->addFile($path, $contents);

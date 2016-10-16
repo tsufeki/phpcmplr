@@ -144,21 +144,93 @@ class Reflection extends Component
     }
 
     /**
+     * @param Type $type1
+     * @param Type $type2
+     *
+     * @return Type|null
+     */
+    protected function getCommonTypeStrict(Type $type1, Type $type2)
+    {
+        if ($type1->equals(Type::mixed_()) ) {
+            return $type2;
+        }
+        if ($type2->equals(Type::mixed_()) ) {
+            return $type1;
+        }
+        if ($type1->equals($type2)) {
+            return $type1;
+        }
+
+        if ($type1->getName() === 'array' && $type2->getName() === 'array') {
+            $valueType = $this->getCommonTypeStrict($type1->getValueType(), $type2->getValueType());
+            $keyType = $this->getCommonTypeStrict($type1->getKeyType(), $type2->getKeyType());
+            if ($valueType !== null && $keyType !== null) {
+                return Type::array_($valueType, $keyType);
+            }
+        }
+
+        if ($type1->getName() === 'object' && $type2->getName() === 'object') {
+            if ($type1->getClass() === null || ($type2->getClass() !== null &&
+                    $this->isSubclass($type2->getClass(), $type1->getClass()))) {
+                return $type2;
+            }
+            if ($type2->getClass() === null || ($type1->getClass() !== null &&
+                    $this->isSubclass($type1->getClass(), $type2->getClass()))) {
+                return $type1;
+            }
+        }
+
+        if ($type1->getName() === 'alternatives' || $type2->getName() === 'alternatives') {
+            $alts1 = $type1->getName() === 'alternatives' ? $type1->getAlternatives() : [$type1];
+            $alts2 = $type2->getName() === 'alternatives' ? $type2->getAlternatives() : [$type2];
+            $result = [];
+            foreach ($alts1 as $alt1) {
+                foreach ($alts2 as $alt2) {
+                    $common = $this->getCommonTypeStrict($alt1, $alt2);
+                    if ($common !== null) {
+                        $result[] = $common;
+                    }
+                }
+            }
+            if (!empty($result)) {
+                return Type::alternatives($result);
+            }
+        }
+
+        return null;
+    }
+
+    /**
+     * @param Type $type1
+     * @param Type $type2
+     *
+     * @return Type|null
+     */
+    protected function getCommonType(Type $type1, Type $type2)
+    {
+        $common = $this->getCommonTypeStrict($type1, $type2);
+        if ($common === null) {
+            $common = Type::alternatives([$type1, $type2]);
+        }
+
+        return $common;
+    }
+
+    /**
      * @param Method[] $methods
      * @param Method   $method
      */
     protected function mergeMethod(array &$methods, Method $method)
     {
-        // TODO: Do a better job here?
-        $method->setDocReturnType(Type::alternatives([$method->getDocReturnType(), $method->getReturnType()]));
+        $method->setDocReturnType($this->getCommonType($method->getDocReturnType(), $method->getReturnType()));
         $params = [];
         foreach ($method->getParams() as $param) {
-            $param->setDocType(Type::alternatives([$param->getDocType(), $param->getTypeHint()]));
+            $param->setDocType($this->getCommonType($param->getDocType(), $param->getTypeHint()));
             $params[$param->getName()] = $param;
         }
         if (isset($methods[strtolower($method->getName())])) {
             $baseMethod = $methods[strtolower($method->getName())];
-            $method->setDocReturnType(Type::alternatives([$method->getDocReturnType(), $baseMethod->getDocReturnType()]));
+            $method->setDocReturnType($this->getCommonType($method->getDocReturnType(), $baseMethod->getDocReturnType()));
             foreach ($baseMethod->getParams() as $baseParam) {
                 if (array_key_exists($baseParam->getName(), $params)) {
                     $param = $params[$baseParam->getName()];

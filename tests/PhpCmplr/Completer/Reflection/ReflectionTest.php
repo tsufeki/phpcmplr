@@ -177,6 +177,22 @@ class ReflectionTest extends \PHPUnit_Framework_TestCase
         $this->assertFalse($refl->isSubclass('\\C', '\\D'));
     }
 
+    public function test_getCommonType()
+    {
+        $base = (new Class_())
+            ->setName('\\B');
+
+        $class = (new Class_())
+            ->setName('\\C')
+            ->setExtends('\\B')
+            ->addMethod($this->makeMethod('f')
+                ->setReturnType(Type::fromString('int|int[]|\\C|\\B[]'))
+                ->setDocReturnType(Type::fromString('int|string|\\C[]|\\B')));
+
+        $refl = $this->prepare($class, $base);
+        $this->assertSame('\\C[]|int|\\C', $refl->findMethod('\\C', 'f')->getDocReturnType()->toString());
+    }
+
     public function test_filterAvailableMembers()
     {
         $base = (new Class_())

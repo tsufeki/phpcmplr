@@ -52,7 +52,7 @@ class Reflection extends Component
             $classes = array_merge($classes, $component->findClass($fullyQualifiedName));
         }
 
-        return $classes;
+        return $this->unique($classes);
     }
 
     public function findFunction($fullyQualifiedName)
@@ -64,7 +64,7 @@ class Reflection extends Component
         }
 
         // TODO: merge returnType and docReturnType, and param types
-        return $functions;
+        return $this->unique($functions);
     }
 
     public function findConst($fullyQualifiedName)
@@ -75,7 +75,22 @@ class Reflection extends Component
             $consts = array_merge($consts, $component->findConst($fullyQualifiedName));
         }
 
-        return $consts;
+        return $this->unique($consts);
+    }
+
+    /**
+     * @param Element[] $elements
+     *
+     * @return Element[]
+     */
+    private function unique(array $elements)
+    {
+        $uniq = [];
+        foreach ($elements as $element) {
+            $uniq[$element->getName()] = $element;
+        }
+
+        return array_values($uniq);
     }
 
     /**

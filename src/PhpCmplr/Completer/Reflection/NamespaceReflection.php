@@ -20,7 +20,7 @@ class NamespaceReflection extends Component
             $fqnames = array_merge($fqnames, $component->findFullyQualifiedClasses($unqualifiedName));
         }
 
-        return $fqnames;
+        return array_unique($fqnames);
     }
 
     public function findFullyQualifiedFunctions($unqualifiedName)
@@ -31,7 +31,7 @@ class NamespaceReflection extends Component
             $fqnames = array_merge($fqnames, $component->findFullyQualifiedFunctions($unqualifiedName));
         }
 
-        return $fqnames;
+        return array_unique($fqnames);
     }
 
     public function findFullyQualifiedConsts($unqualifiedName)
@@ -42,7 +42,7 @@ class NamespaceReflection extends Component
             $fqnames = array_merge($fqnames, $component->findFullyQualifiedConsts($unqualifiedName));
         }
 
-        return $fqnames;
+        return array_unique($fqnames);
     }
 
     protected function doRun()

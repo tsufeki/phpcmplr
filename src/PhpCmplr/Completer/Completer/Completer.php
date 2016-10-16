@@ -19,7 +19,12 @@ class Completer extends Component
             $completions = array_merge($completions, $component->complete($offset));
         }
 
-        return $completions;
+        $uniq = [];
+        foreach ($completions as $completion) {
+            $uniq[$completion->getInsertion()] = $completion;
+        }
+
+        return array_values($uniq);
     }
 
     protected function doRun()

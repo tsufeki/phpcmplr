@@ -18,8 +18,9 @@ use PhpCmplr\Completer\Reflection\Element\Property;
 use PhpCmplr\Completer\Reflection\Element\ClassConst;
 use PhpCmplr\Completer\TypeInferrer\TypeInferrer;
 use PhpCmplr\Completer\Completer\Completer;
+use PhpCmplr\Completer\Completer\MemberCompleter;
 
-class CompleterTest extends \PHPUnit_Framework_TestCase
+class MemberCompleterTest extends \PHPUnit_Framework_TestCase
 {
     public function complete(array $nodes, array $methods = [], array $props = [], array $consts = [])
     {
@@ -57,7 +58,7 @@ class CompleterTest extends \PHPUnit_Framework_TestCase
             ->willReturn($consts);
         $container->set('reflection', $reflection);
 
-        $completer = new Completer($container);
+        $completer = new MemberCompleter($container);
         return $completer->complete(5);
     }
 

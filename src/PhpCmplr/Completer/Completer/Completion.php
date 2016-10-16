@@ -6,6 +6,19 @@ use PhpCmplr\Completer\Type\Type;
 
 class Completion
 {
+    const KIND_VARIABLE = 'variable';
+    const KIND_FUNCTION = 'function';
+    const KIND_CONST = 'const';
+    const KIND_PROPERTY = 'property';
+    const KIND_STATIC_PROPERTY = 'static_property';
+    const KIND_METHOD = 'method';
+    const KIND_STATIC_METHOD = 'static_method';
+    const KIND_CLASS_CONST = 'class_const';
+    const KIND_CLASS = 'class';
+    const KIND_INTERFACE = 'interface';
+    const KIND_TRAIT = 'trait';
+    const KIND_NAMESPACE = 'namespace';
+
     /**
      * @var string Inserted string.
      */
@@ -17,9 +30,7 @@ class Completion
     private $display;
 
     /**
-     * @var string variable, function, const, property, static_property,
-     *             method, static_method, class_const, class, interface, trait,
-     *             namespace.
+     * @var string One of KIND_* consts.
      */
     private $kind;
 

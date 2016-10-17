@@ -136,11 +136,29 @@ class Reflection extends Component
         }
 
         $subclasses = $this->findClass($subclassName);
-        if (count($subclasses) === 0 || $subclasses[0]->getExtends() === null) {
+        if (count($subclasses) === 0) {
             return false;
         }
 
-        return $this->isSubclass($subclasses[0]->getExtends(), $superclassName);
+        $subclass = $subclasses[0];
+        if ($subclass instanceof Class_) {
+            if ($subclass->getExtends() !== null && $this->isSubclass($subclass->getExtends(), $superclassName)) {
+                return true;
+            }
+            foreach ($subclass->getImplements() as $interfaceName) {
+                if ($this->isSubclass($interfaceName, $superclassName)) {
+                    return true;
+                }
+            }
+        } elseif ($subclass instanceof Interface_) {
+            foreach ($subclass->getExtends() as $interfaceName) {
+                if ($this->isSubclass($interfaceName, $superclassName)) {
+                    return true;
+                }
+            }
+        }
+
+        return false;
     }
 
     /**

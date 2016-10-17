@@ -64,6 +64,10 @@ class VariableCompleter extends Component implements CompleterInterface
         }
 
         foreach ($scope as $var => $type) {
+            if ($type->equals(Type::mixed_()) && is_string($node->name) && ('$' . $node->name) === $var) {
+                continue;
+            }
+
             $completion = new Completion();
             $completion->setInsertion(ltrim($var, '$'));
             $completion->setDisplay($completion->getInsertion());

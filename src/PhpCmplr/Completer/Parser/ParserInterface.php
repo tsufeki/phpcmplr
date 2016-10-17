@@ -2,7 +2,6 @@
 
 namespace PhpCmplr\Completer\Parser;
 
-use PhpLenientParser\Error as ParserError;
 use PhpLenientParser\Node;
 use PhpLenientParser\Comment;
 

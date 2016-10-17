@@ -92,7 +92,7 @@ class Server
      */
     public function run()
     {
-        $this->logger->info("Starting server on $this->host:$this->port");
+        $this->logger->info("Server: listening on $this->host:$this->port");
         $this->socket = new ServerSocket($this->loop);
         $this->http = new HttpServer($this->socket);
 
@@ -129,7 +129,7 @@ class Server
                 throw new HttpException(404);
             }
 
-            $this->logger->info('Request: ' . $request->getPath());
+            $this->logger->info('Server: request ' . $request->getPath());
             $responseBody = $this->actions[$request->getPath()]->handleRequest(
                 $requestBody,
                 $this->phpcmplr);
@@ -169,7 +169,7 @@ class Server
      */
     public function quit()
     {
-        $this->logger->info("Quitting server");
+        $this->logger->info("Server: quit");
         $this->socket->shutdown();
     }
 }

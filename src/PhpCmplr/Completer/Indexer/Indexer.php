@@ -73,12 +73,12 @@ class Indexer extends Component implements IndexerInterface
             if (!empty($this->cachePath) && $this->io->exists($this->cachePath)) {
                 $data = json_decode($this->io->read($this->cachePath), true);
                 if (!is_array($data) || !isset($data['files']) || !isset($data['data'])) {
-                    throw new IOException("Corrupted indexer cache");
+                    throw new IOException("Corrupted cache");
                 }
                 $this->data = $data;
             }
         } catch (IOException $e) {
-            $this->logger->notice("Can't load indexed data: " . $e->getMessage(), ['exception' => $e]);
+            $this->logger->notice("Indexer: can't load indexed data: " . $e->getMessage(), ['exception' => $e]);
         }
     }
 
@@ -89,7 +89,7 @@ class Indexer extends Component implements IndexerInterface
                 $this->io->write($this->cachePath, json_encode($this->data, JSON_PRETTY_PRINT));
             }
         } catch (IOException $e) {
-            $this->logger->notice("Can't save indexed data: " . $e->getMessage(), ['exception' => $e]);
+            $this->logger->notice("Indexer: can't save indexed data: " . $e->getMessage(), ['exception' => $e]);
         }
     }
 
@@ -179,6 +179,9 @@ class Indexer extends Component implements IndexerInterface
             $this->scan();
             $this->startUpdates();
         });
+        $this->monitor->on('error', function ($e) {
+            $this->logger->error('Indexer: Filesystem monitor: ' . $e, ['exception' => $e]);
+        });
 
         $this->monitor->on('modify', function ($path) {
             $this->updateQueue->enqueue([$path, false]);
@@ -205,7 +208,7 @@ class Indexer extends Component implements IndexerInterface
 
     public function quit()
     {
-        $this->logger->debug('Quitting indexer');
+        $this->logger->debug('Indexer: quit');
         $this->monitor->close();
     }
 

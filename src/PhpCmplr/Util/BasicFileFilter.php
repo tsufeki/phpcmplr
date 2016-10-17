@@ -26,7 +26,7 @@ class BasicFileFilter implements FileFilterInterface
      * @param int|null      $maxSize
      * @param string[]|null $types      'file'|'dir'|'link'
      */
-    public function __construct(array $extensions = null, $maxSize = null, $type = ['file'])
+    public function __construct(array $extensions = null, $maxSize = null, $types = ['file'])
     {
         $this->extensions = $extensions;
         $this->maxSize = $maxSize;

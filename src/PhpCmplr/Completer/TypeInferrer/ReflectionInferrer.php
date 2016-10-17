@@ -47,6 +47,13 @@ class ReflectionInferrer extends NodeVisitorComponent
         $this->reflection->run();
     }
 
+    public function afterTraverse(array $nodes)
+    {
+        if (count($nodes) > 0) {
+            $nodes[0]->setAttribute('global_variables', $this->getCurrentFunctionScope());
+        }
+    }
+
     /**
      * @return Type[] variable name => Type
      */
@@ -243,6 +250,7 @@ class ReflectionInferrer extends NodeVisitorComponent
             $scope = [];
             $class = $this->getCurrentClass();
             if (!empty($class) && !empty($class->getClass())) {
+                $scope['$this'] = $class;
                 $method = $this->reflection->findMethod($class->getClass(), $node->name);
                 if (!empty($method)) {
                     foreach ($method->getParams() as $param) {
@@ -279,7 +287,8 @@ class ReflectionInferrer extends NodeVisitorComponent
     {
         if ($node instanceof Stmt\Function_ || $node instanceof Stmt\ClassMethod ||
                 $node instanceof Expr\Closure) {
-            array_pop($this->functionScopeStack);
+            $variables = array_pop($this->functionScopeStack);
+            $node->setAttribute('variables', $variables);
 
         } elseif ($node instanceof Stmt\ClassLike) {
             array_pop($this->classStack);
@@ -299,6 +308,8 @@ class ReflectionInferrer extends NodeVisitorComponent
                     $type = $this->getCurrentClass();
                 } elseif (array_key_exists('$' . $node->name, $this->getCurrentFunctionScope())) {
                     $type = $this->getCurrentFunctionScope()['$' . $node->name];
+                } else {
+                    $this->getCurrentFunctionScope()['$' . $node->name] = Type::mixed_();
                 }
             }
 

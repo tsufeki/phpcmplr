@@ -56,11 +56,18 @@ interface FileIOInterface
     public function getCacheDir($subdir);
 
     /**
-     * @param string     $path
-     * @param array|null $extensions Filter files by extension.
-     * @param int|null   $maxSize    Filter by size.
+     * @param string              $path
+     * @param FileFilterInterface $filter
+     *
+     * @return bool
+     */
+    public function match($path, FileFilterInterface $filter);
+
+    /**
+     * @param string              $path
+     * @param FileFilterInterface $filter
      *
      * @return array path => int mtime
      */
-    public function listFileMTimesRecursive($path, array $extensions = null, $maxSize = null);
+    public function listFileMTimesRecursive($path, FileFilterInterface $filter = null);
 }

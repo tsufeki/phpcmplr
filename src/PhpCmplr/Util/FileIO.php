@@ -2,6 +2,8 @@
 
 namespace PhpCmplr\Util;
 
+use SplFileInfo;
+
 class FileIO implements FileIOInterface
 {
     public function read($path) {
@@ -73,7 +75,16 @@ class FileIO implements FileIOInterface
         return $cacheDir;
     }
 
-    public function listFileMTimesRecursive($path, array $extensions = null, $maxSize = null)
+    public function match($path, FileFilterInterface $filter)
+    {
+        try {
+            return $filter->filter(new SplFileInfo($path));
+        } catch (\RuntimeException $e) { }
+
+        return false;
+    }
+
+    public function listFileMTimesRecursive($path, FileFilterInterface $filter = null)
     {
         $iter = new \RecursiveIteratorIterator(
             new \RecursiveDirectoryIterator($path, \RecursiveDirectoryIterator::SKIP_DOTS),
@@ -81,16 +92,13 @@ class FileIO implements FileIOInterface
             \RecursiveIteratorIterator::CATCH_GET_CHILD
         );
 
-        $regex = $extensions === null ? null : '/\.(' . implode('|', $extensions) .  ')$/i';
-
         $mtimes = [];
         foreach ($iter as $path => $file) {
-            if (!$file->isDir() &&
-                ($extensions === null || preg_match($regex, $file->getFilename())) &&
-                ($maxSize === null || $file->getSize() <= $maxSize)
-            ) {
-                $mtimes[$path] = $file->getMTime();
-            }
+            try {
+                if ($filter === null || $filter->filter($file)) {
+                    $mtimes[$path] = $file->getMTime();
+                }
+            } catch (\RuntimeException $e) { }
         }
 
         return $mtimes;

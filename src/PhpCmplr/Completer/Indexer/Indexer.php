@@ -12,6 +12,8 @@ use PhpCmplr\Completer\ContainerFactoryInterface;
 use PhpCmplr\Completer\Project;
 use PhpCmplr\Util\FileIOInterface;
 use PhpCmplr\Util\IOException;
+use PhpCmplr\Util\BasicFileFilter;
+use PhpCmplr\Util\FileFilterInterface;
 
 class Indexer extends Component implements IndexerInterface
 {
@@ -61,19 +63,9 @@ class Indexer extends Component implements IndexerInterface
     private $updateQueue;
 
     /**
-     * @var string[]|null
+     * @var FileFilterInterface
      */
-    private $extensions = ['php'];
-
-    /**
-     * @var int|null
-     */
-    private $maxSize = 1024*1024;
-
-    /**
-     * @var bool
-     */
-    private $updating = false;
+    private $fileFilter;
 
     private function loadCache()
     {
@@ -105,8 +97,7 @@ class Indexer extends Component implements IndexerInterface
     {
         $freshFiles = $this->io->listFileMTimesRecursive(
             $this->project->getRootPath(),
-            $this->extensions,
-            $this->maxSize
+            $this->fileFilter
         );
         $curFiles =& $this->data['files'];
 
@@ -134,40 +125,43 @@ class Indexer extends Component implements IndexerInterface
 
         list($path, $deleted) = $this->updateQueue->dequeue();
 
-        try {
-            $contents = $deleted ? '' : $this->io->read($path);
-            /** @var Container */
-            $cont = $this->factory->createIndexerContainer($this->project, $path, $contents);
+        if ($this->io->match($path, $this->fileFilter)) {
+            try {
+                $this->logger->info("Indexer: index " . $path);
 
-            $components = $cont->getByTag('index_data');
-            /** @var IndexDataInterface $indexData */
-            foreach ($components as $indexData) {
-                $key = $indexData->getKey();
-                if (!isset($this->data['data'][$key])) {
-                    $this->data['data'][$key] = [];
+                $contents = $deleted ? '' : $this->io->read($path);
+                /** @var Container */
+                $cont = $this->factory->createIndexerContainer($this->project, $path, $contents);
+
+                $components = $cont->getByTag('index_data');
+                /** @var IndexDataInterface $indexData */
+                foreach ($components as $indexData) {
+                    $key = $indexData->getKey();
+                    if (!isset($this->data['data'][$key])) {
+                        $this->data['data'][$key] = [];
+                    }
+                    $indexData->update($this->data['data'][$key]);
                 }
-                $indexData->update($this->data['data'][$key]);
-            }
 
-            if ($deleted) {
-                unset($this->data['files'][$path]);
-            } else {
-                $this->data['files'][$path] = $this->io->getMTime($path);;
-            }
-            $this->logger->info("Indexed " . $path);
+                if ($deleted) {
+                    unset($this->data['files'][$path]);
+                } else {
+                    $this->data['files'][$path] = $this->io->getMTime($path);;
+                }
 
-        } catch (IOException $e) {
-            $this->logger->notice("Can't index " . $path . ": " . $e->getMessage(), ['exception' => $e]);
-        } catch (\Exception $e) {
-            $this->logger->notice("Can't index " . $path . ": " . $e->getMessage(), ['exception' => $e]);
-        } catch (\Error $e) { // PHP7
-            $this->logger->notice("Can't index " . $path . ": " . $e->getMessage(), ['exception' => $e]);
+            } catch (IOException $e) {
+                $this->logger->notice("Indexer: can't index " . $path . ": " . $e->getMessage(), ['exception' => $e]);
+            } catch (\Exception $e) {
+                $this->logger->notice("Indexer: can't index " . $path . ": " . $e->getMessage(), ['exception' => $e]);
+            } catch (\Error $e) { // PHP7
+                $this->logger->notice("Indexer: can't index " . $path . ": " . $e->getMessage(), ['exception' => $e]);
+            }
         }
 
         if (!$this->updateQueue->isEmpty()) {
             $this->loop->futureTick([$this, 'update']);
         } else {
-            $this->updating = false;
+            $this->logger->debug('Indexer: save');
             $this->saveCache();
         }
     }
@@ -175,7 +169,6 @@ class Indexer extends Component implements IndexerInterface
     private function startUpdates()
     {
         if (!$this->updateQueue->isEmpty()) {
-            $this->updating = true;
             $this->loop->futureTick([$this, 'update']);
         }
     }
@@ -236,6 +229,7 @@ class Indexer extends Component implements IndexerInterface
         $this->factory = $this->container->get('factory');
         $this->project = $this->container->get('project');
         $this->cachePath = $this->io->getCacheDir('indexer') . '/' . sha1($this->project->getRootPath()) . '.json';
+        $this->fileFilter = new BasicFileFilter(['php'], 1024*1024, ['file']);
 
         $this->updateQueue = new \SplQueue();
         $this->loadCache();

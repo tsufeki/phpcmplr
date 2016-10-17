@@ -200,7 +200,7 @@ function extract_class_name($xpath) {
     $is_interface = false;
     $class = $xpath->query('//div[@class="classsynopsis"]/div[@class="classsynopsisinfo"]/*[@class="ooclass"]/*[@class="classname"]')->item(0);
     if (!$class) {
-        return array(false, $is_interface);
+        return array(false, $is_interface, null, null);
     }
     $classname = trim($class->textContent);
     $title = $xpath->query('//div[@class="classsynopsis"]/preceding-sibling::h2[@class="title"]')->item(0);

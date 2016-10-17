@@ -120,7 +120,7 @@ function main($argv){
         'interfaces' => $interfaces,
         'traits' => array(),
         'constants' => $constants,
-    ), JSON_PRETTY_PRINT));
+    )));
 
     print "\nextracted ".count($functions)." built-in functions";
     print "\nextracted ".count($classes)." built-in classes";

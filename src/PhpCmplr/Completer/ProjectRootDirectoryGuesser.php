@@ -7,6 +7,7 @@ use PhpCmplr\Util\FileIOInterface;
 class ProjectRootDirectoryGuesser implements ProjectRootDirectoryGuesserInterface
 {
     const PROJECT_FILES = ['composer.json', '.git'];
+    const PROJECT_IGNORE_FILE = '.phpcmplr-ignore';
 
     /**
      * @var FileIOInterface
@@ -30,7 +31,7 @@ class ProjectRootDirectoryGuesser implements ProjectRootDirectoryGuesserInterfac
             $curPath = dirname($path);
             while ($oldPath !== $curPath) {
                 $projectFilePath = $curPath . '/' . $projectFile;
-                if ($this->io->exists($projectFilePath)) {
+                if ($this->io->exists($projectFilePath) && !$this->io->exists($curPath . '/' . static::PROJECT_IGNORE_FILE)) {
                     $rootDir = $curPath;
                 }
                 $oldPath = $curPath;

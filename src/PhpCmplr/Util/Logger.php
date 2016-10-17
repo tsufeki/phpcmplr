@@ -18,10 +18,10 @@ class Logger extends BaseLogger
             'pid'           => (string)getmypid(),
         ];
         if (array_key_exists('exception', $context) &&
-                is_object($vars['exception']) &&
-                ($vars['exception'] instanceof \Exception || $vars['exception'] instanceof \Throwable)) {
+                is_object($context['exception']) &&
+                ($context['exception'] instanceof \Exception || $context['exception'] instanceof \Throwable)) {
             // This includes stack trace and everything
-            $vars['exception'] = (string)$context['exception'];
+            $context['exception'] = '    ' . str_replace("\n", "\n    ", (string)$context['exception']);
         }
         $vars = array_merge($vars, $context);
 

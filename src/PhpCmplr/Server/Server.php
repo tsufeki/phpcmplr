@@ -105,7 +105,6 @@ class Server
         });
 
         $this->socket->listen($this->port, $this->host);
-        $this->loop->run();
     }
 
     /**

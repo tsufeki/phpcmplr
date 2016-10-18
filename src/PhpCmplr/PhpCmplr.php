@@ -3,6 +3,7 @@
 namespace PhpCmplr;
 
 use Psr\Log\LogLevel;
+use React\EventLoop\LoopInterface;
 use React\EventLoop\Factory as EventLoopFactory;
 
 use PhpCmplr\Completer\Container;
@@ -59,6 +60,11 @@ class PhpCmplr extends Plugin implements ContainerFactoryInterface
     private $server;
 
     /**
+     * @var LoopInterface
+     */
+    private $loop;
+
+    /**
      * @var Plugin[]
      */
     private $plugins;
@@ -88,6 +94,7 @@ class PhpCmplr extends Plugin implements ContainerFactoryInterface
 
         $this->options = $options;
         $this->plugins = array_merge([$this], $plugins);
+        $this->loop = EventLoopFactory::create();
         $this->globalContainer = $this->createGlobalContainer();
         $this->server = $this->createServer();
     }
@@ -100,7 +107,7 @@ class PhpCmplr extends Plugin implements ContainerFactoryInterface
         $server = new Server(
             $this,
             $this->globalContainer->get('logger'),
-            $this->globalContainer->get('eventloop'),
+            $this->loop,
             $this->options['server']
         );
 
@@ -163,7 +170,7 @@ class PhpCmplr extends Plugin implements ContainerFactoryInterface
         $container->set('factory', $this);
         $container->set('file_store', new FileStore($container));
         $container->set('io', new FileIO());
-        $container->set('eventloop', EventLoopFactory::create());
+        $container->set('eventloop', $this->loop);
         $container->set('project_root_dir', new ProjectRootDirectoryGuesser($container->get('io')));
         $stdlibPath = __DIR__ . '/../../data/stdlib.json';
         $container->set('reflection.stdlib', new JsonReflection($container, $stdlibPath), ['reflection']);
@@ -281,11 +288,12 @@ class PhpCmplr extends Plugin implements ContainerFactoryInterface
     public function run()
     {
         $this->server->run();
+        $this->loop->run();
     }
 
     public function quit()
     {
-        $this->globalContainer->get('eventloop')->nextTick(function ($loop) {
+        $this->loop->nextTick(function ($loop) {
             $this->server->quit();
             $this->globalContainer->quit();
             $loop->stop();

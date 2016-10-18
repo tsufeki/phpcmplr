@@ -15,6 +15,9 @@ use PhpCmplr\Completer\Reflection\Element\Function_;
 use PhpCmplr\Completer\Reflection\Element\Interface_;
 use PhpCmplr\Completer\Reflection\Element\Trait_;
 
+/**
+ * @covers \PhpCmplr\Completer\Reflection\FileReflection
+ */
 class FileReflectionTest extends \PHPUnit_Framework_TestCase
 {
     protected function loadFile($contents, $path = 'qaz.php')

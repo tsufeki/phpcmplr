@@ -5,6 +5,9 @@ namespace Tests\PhpCmplr\Completer\SourceFile;
 use PhpCmplr\Completer\Container;
 use PhpCmplr\Completer\SourceFile\SourceFile;
 
+/**
+ * @covers \PhpCmplr\Completer\SourceFile\SourceFile
+ */
 class SourceFileTest extends \PHPUnit_Framework_TestCase
 {
     protected function loadFile($contents, $path = 'qaz.php')

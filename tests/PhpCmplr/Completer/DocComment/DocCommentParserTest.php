@@ -15,6 +15,20 @@ use PhpCmplr\Completer\Type\Type;
 use PhpCmplr\Completer\Type\ArrayType;
 use PhpCmplr\Completer\Type\ObjectType;
 
+/**
+ * @covers \PhpCmplr\Completer\DocComment\DocCommentParser
+ * @covers \PhpCmplr\Completer\DocComment\Tag\IdentifierTag
+ * @covers \PhpCmplr\Completer\DocComment\Tag\ParamTag
+ * @covers \PhpCmplr\Completer\DocComment\Tag\ReturnTag
+ * @covers \PhpCmplr\Completer\DocComment\Tag\Tag
+ * @covers \PhpCmplr\Completer\DocComment\Tag\ThrowsTag
+ * @covers \PhpCmplr\Completer\DocComment\Tag\TypedTag
+ * @covers \PhpCmplr\Completer\DocComment\Tag\VarTag
+ * @covers \PhpCmplr\Completer\Type\AlternativesType
+ * @covers \PhpCmplr\Completer\Type\ArrayType
+ * @covers \PhpCmplr\Completer\Type\ObjectType
+ * @covers \PhpCmplr\Completer\Type\Type
+ */
 class DocCommentParserTest extends \PHPUnit_Framework_TestCase
 {
     protected function loadFile($contents, $path = 'qaz.php')

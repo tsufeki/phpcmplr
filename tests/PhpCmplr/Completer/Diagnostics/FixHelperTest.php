@@ -5,6 +5,9 @@ namespace Tests\PhpCmplr\Completer\Diagnostics;
 use PhpCmplr\Completer\Container;
 use PhpCmplr\Completer\Diagnostics\FixHelper;
 
+/**
+ * @coversDefaultClass \PhpCmplr\Completer\Diagnostics\FixHelper
+ */
 class FixHelperTest extends \PHPUnit_Framework_TestCase
 {
     public function getFixHelper()
@@ -14,6 +17,7 @@ class FixHelperTest extends \PHPUnit_Framework_TestCase
     }
 
     /**
+     * @covers ::getIndentOfLines
      * @dataProvider getData_getIndentOfLines
      */
     public function test_getIndentOfLines($indent, $lines)
@@ -52,6 +56,9 @@ class FixHelperTest extends \PHPUnit_Framework_TestCase
         ];
     }
 
+    /**
+     * @covers ::makeIndent
+     */
     public function test_makeIndent()
     {
         $helper = $this->getFixHelper();

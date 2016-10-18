@@ -10,6 +10,18 @@ use PhpCmplr\PhpCmplr;
 use PhpCmplr\Server\Server;
 use PhpCmplr\Server\Action;
 
+/**
+ * @covers \PhpCmplr\Server\Server
+ * @covers \PhpCmplr\Server\Action
+ * @covers \PhpCmplr\Server\Action\Complete
+ * @covers \PhpCmplr\Server\Action\Diagnostics
+ * @covers \PhpCmplr\Server\Action\Fix
+ * @covers \PhpCmplr\Server\Action\GoTo_
+ * @covers \PhpCmplr\Server\Action\Load
+ * @covers \PhpCmplr\Server\Action\Ping
+ * @covers \PhpCmplr\Server\Action\Quit
+ * @covers \PhpCmplr\Server\Action\Type
+ */
 class ServerTest extends \PHPUnit_Framework_TestCase
 {
     protected function mockRequest($path, $method = 'POST')

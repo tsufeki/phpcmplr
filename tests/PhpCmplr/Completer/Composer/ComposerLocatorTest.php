@@ -7,6 +7,9 @@ use PhpCmplr\Completer\SourceFile\SourceFile;
 use PhpCmplr\Completer\Composer\ComposerLocator;
 use PhpCmplr\Util\FileIO;
 
+/**
+ * @covers \PhpCmplr\Completer\Composer\ComposerLocator
+ */
 class ComposerLocatorTest extends \PHPUnit_Framework_TestCase
 {
     public function test_getPathsForClass()

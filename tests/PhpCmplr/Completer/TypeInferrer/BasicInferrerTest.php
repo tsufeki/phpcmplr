@@ -11,6 +11,9 @@ use PhpCmplr\Completer\Type\Type;
 use PhpCmplr\Completer\TypeInferrer\TypeInferrer;
 use PhpCmplr\Completer\TypeInferrer\BasicInferrer;
 
+/**
+ * @covers \PhpCmplr\Completer\TypeInferrer\BasicInferrer
+ */
 class BasicInferrerTest extends \PHPUnit_Framework_TestCase
 {
     protected function infer(array $nodes)

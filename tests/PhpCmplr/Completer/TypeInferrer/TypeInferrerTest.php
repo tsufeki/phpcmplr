@@ -10,6 +10,9 @@ use PhpCmplr\Completer\NameResolver\NameResolver;
 use PhpCmplr\Completer\Type\Type;
 use PhpCmplr\Completer\TypeInferrer\TypeInferrer;
 
+/**
+ * @covers \PhpCmplr\Completer\TypeInferrer\TypeInferrer
+ */
 class TypeInferrerTest extends \PHPUnit_Framework_TestCase
 {
     public function test_getType()

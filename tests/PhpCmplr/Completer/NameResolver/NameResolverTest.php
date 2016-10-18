@@ -10,6 +10,10 @@ use PhpCmplr\Completer\Parser\Parser;
 use PhpCmplr\Completer\DocComment\DocCommentParser;
 use PhpCmplr\Completer\NameResolver\NameResolver;
 
+/**
+ * @covers \PhpCmplr\Completer\NameResolver\NameResolver
+ * @covers \PhpCmplr\Completer\NameResolver\NameResolverNodeVisitor
+ */
 class NameResolverTest extends \PHPUnit_Framework_TestCase
 {
     protected function loadFile($contents, $path = 'qaz.php')

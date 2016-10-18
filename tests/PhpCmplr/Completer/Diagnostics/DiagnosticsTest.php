@@ -7,6 +7,9 @@ use PhpCmplr\Completer\SourceFile\SourceFile;
 use PhpCmplr\Completer\Parser\Parser;
 use PhpCmplr\Completer\Diagnostics\Diagnostics;
 
+/**
+ * @covers \PhpCmplr\Completer\Diagnostics\Diagnostics
+ */
 class DiagnosticsTest extends \PHPUnit_Framework_TestCase
 {
     protected function loadFile($contents, $path = 'qaz.php')

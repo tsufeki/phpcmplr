@@ -18,6 +18,9 @@ use PhpCmplr\Completer\Reflection\Element\Interface_;
 use PhpCmplr\Completer\Reflection\Element\Trait_;
 use PhpCmplr\Util\FileIOInterface;
 
+/**
+ * @covers \PhpCmplr\Completer\Reflection\LocatorReflection
+ */
 class LocatorReflectionTest extends \PHPUnit_Framework_TestCase
 {
     protected function loadFile($contents, $path = 'qaz.php')

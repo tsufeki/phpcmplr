@@ -14,6 +14,9 @@ use PhpCmplr\Completer\Reflection\Element\TraitAlias;
 use PhpCmplr\Completer\Reflection\Element\TraitInsteadOf;
 use PhpCmplr\Completer\Reflection\Element\Method;
 
+/**
+ * @covers \PhpCmplr\Completer\Reflection\Reflection
+ */
 class ReflectionTest extends \PHPUnit_Framework_TestCase
 {
     protected function prepare(...$classes)

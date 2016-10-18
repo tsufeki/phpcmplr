@@ -17,6 +17,9 @@ use PhpCmplr\Completer\Reflection\Element\Method;
 use PhpCmplr\Completer\Reflection\Element\Property;
 use PhpCmplr\Completer\TypeInferrer\ReflectionInferrer;
 
+/**
+ * @covers \PhpCmplr\Completer\TypeInferrer\ReflectionInferrer
+ */
 class ReflectionInferrerTest extends \PHPUnit_Framework_TestCase
 {
     protected function infer(array $nodes, $reflection)

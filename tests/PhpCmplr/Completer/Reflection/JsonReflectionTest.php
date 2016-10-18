@@ -7,6 +7,9 @@ use PhpCmplr\Completer\Reflection\JsonReflection;
 use PhpCmplr\Util\FileIOInterface;
 use PhpCmplr\Util\FileIO;
 
+/**
+ * @covers \PhpCmplr\Completer\Reflection\JsonReflection
+ */
 class JsonReflectionTest extends \PHPUnit_Framework_TestCase
 {
     private function prepare($dataString)

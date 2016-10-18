@@ -22,6 +22,11 @@ use PhpCmplr\Completer\GoTo_\GoTo_;
 use PhpCmplr\Completer\GoTo_\GoToMemberDefinition;
 use PhpCmplr\Completer\GoTo_\GoToClassDefinition;
 
+/**
+ * @covers \PhpCmplr\Completer\GoTo_\GoTo_
+ * @covers \PhpCmplr\Completer\GoTo_\GoToClassDefinition
+ * @covers \PhpCmplr\Completer\GoTo_\GoToMemberDefinition
+ */
 class GoToTest extends \PHPUnit_Framework_TestCase
 {
     public function test_MethodCall()

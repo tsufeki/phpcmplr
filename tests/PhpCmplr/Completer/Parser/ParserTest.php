@@ -12,6 +12,9 @@ use PhpCmplr\Completer\Container;
 use PhpCmplr\Completer\SourceFile\SourceFile;
 use PhpCmplr\Completer\Parser\Parser;
 
+/**
+ * @covers \PhpCmplr\Completer\Parser\Parser
+ */
 class ParserTest extends \PHPUnit_Framework_TestCase
 {
     protected $dumper;

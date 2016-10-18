@@ -21,6 +21,9 @@ use PhpCmplr\Completer\Completer\Completer;
 use PhpCmplr\Completer\Completer\MemberCompleter;
 use PhpCmplr\Completer\Reflection\Element\Param;
 
+/**
+ * @covers \PhpCmplr\Completer\Completer\MemberCompleter
+ */
 class MemberCompleterTest extends \PHPUnit_Framework_TestCase
 {
     public function complete(array $nodes, array $methods = [], array $props = [], array $consts = [])

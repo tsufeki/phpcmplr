@@ -4,6 +4,9 @@ namespace Tests\PhpCmplr\Completer;
 
 use PhpCmplr\Completer\Container;
 
+/**
+ * @covers \PhpCmplr\Completer\Container
+ */
 class ContainerTest extends \PHPUnit_Framework_TestCase
 {
     public function testChaining()

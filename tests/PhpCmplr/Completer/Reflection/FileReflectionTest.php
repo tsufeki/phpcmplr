@@ -14,6 +14,7 @@ use PhpCmplr\Completer\Reflection\Element\Const_;
 use PhpCmplr\Completer\Reflection\Element\Function_;
 use PhpCmplr\Completer\Reflection\Element\Interface_;
 use PhpCmplr\Completer\Reflection\Element\Trait_;
+use PhpCmplr\Completer\DocComment\DocCommentNameResolver;
 
 /**
  * @covers \PhpCmplr\Completer\Reflection\FileReflection
@@ -26,6 +27,7 @@ class FileReflectionTest extends \PHPUnit_Framework_TestCase
         $container->set('file', new SourceFile($container, $path, $contents));
         $container->set('parser', new Parser($container));
         $container->set('doc_comment', new DocCommentParser($container));
+        $container->set('name_resolver.doc_comment', new DocCommentNameResolver($container), ['name_resolver']);
         $container->set('name_resolver', new NameResolver($container));
         return new FileReflection($container);
     }

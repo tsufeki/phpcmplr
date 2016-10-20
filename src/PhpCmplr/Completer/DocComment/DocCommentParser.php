@@ -2,8 +2,8 @@
 
 namespace PhpCmplr\Completer\DocComment;
 
-use PhpLenientParser\Node;
-use PhpLenientParser\Comment;
+use PhpParser\Node;
+use PhpParser\Comment;
 
 use PhpCmplr\Completer\NodeVisitorComponent;
 use PhpCmplr\Completer\DocComment\Tag\Tag;

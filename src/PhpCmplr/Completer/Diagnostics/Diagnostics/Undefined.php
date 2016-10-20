@@ -2,11 +2,11 @@
 
 namespace PhpCmplr\Completer\Diagnostics\Diagnostics;
 
-use PhpLenientParser\Node;
-use PhpLenientParser\Node\Expr;
-use PhpLenientParser\Node\Stmt;
-use PhpLenientParser\Node\Param;
-use PhpLenientParser\Node\Name;
+use PhpParser\Node;
+use PhpParser\Node\Expr;
+use PhpParser\Node\Stmt;
+use PhpParser\Node\Param;
+use PhpParser\Node\Name;
 
 use PhpCmplr\Completer\Type\Type;
 use PhpCmplr\Completer\SourceFile\Location;

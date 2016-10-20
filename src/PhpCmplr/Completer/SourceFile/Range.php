@@ -2,7 +2,7 @@
 
 namespace PhpCmplr\Completer\SourceFile;
 
-use PhpLenientParser\Node;
+use PhpParser\Node;
 
 class Range
 {

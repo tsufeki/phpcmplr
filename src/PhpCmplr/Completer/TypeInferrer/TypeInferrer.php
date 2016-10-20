@@ -2,10 +2,9 @@
 
 namespace PhpCmplr\Completer\TypeInferrer;
 
-use PhpLenientParser\Node\Expr;
-use PhpLenientParser\Node\Name;
-use PhpLenientParser\Node\Identifier;
-use PhpLenientParser\Comment;
+use PhpParser\Node\Expr;
+use PhpParser\Node\Name;
+use PhpParser\Comment;
 
 use PhpCmplr\Completer\NodeTraverserComponent;
 use PhpCmplr\Completer\Type\Type;
@@ -20,7 +19,7 @@ class TypeInferrer extends NodeTraverserComponent implements TypeInferrerInterfa
         $node = null;
         if (count($nodes) > 0) {
             $node = $nodes[0];
-            if ($node instanceof Name || $node instanceof Identifier) {
+            if ($node instanceof Name) {
                 $node = count($nodes) > 1 ? $nodes[1] : null;
             }
         }

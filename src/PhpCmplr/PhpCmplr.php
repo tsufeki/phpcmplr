@@ -41,6 +41,7 @@ use PhpCmplr\Util\FileIO;
 use PhpCmplr\Util\Logger;
 use PhpCmplr\Completer\Completer\MemberCompleter;
 use PhpCmplr\Completer\Completer\VariableCompleter;
+use PhpCmplr\Completer\DocComment\DocCommentNameResolver;
 
 class PhpCmplr extends Plugin implements ContainerFactoryInterface
 {
@@ -223,6 +224,7 @@ class PhpCmplr extends Plugin implements ContainerFactoryInterface
         $container->set('parser', new Parser($container), ['diagnostics']);
         $container->set('name_resolver', new NameResolver($container));
         $container->set('doc_comment', new DocCommentParser($container));
+        $container->set('name_resolver.doc_comment', new DocCommentNameResolver($container), ['name_resolver']);
         $container->set('reflection', new Reflection($container));
         $container->set('reflection.file', new FileReflection($container), ['reflection']);
         $container->set('reflection.locator', new LocatorReflection($container), ['reflection']);

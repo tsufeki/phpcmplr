@@ -2,12 +2,12 @@
 
 namespace PhpCmplr\Completer\Parser;
 
-use PhpLenientParser\Error as ParserError;
-use PhpLenientParser\Lexer\Emulative as Lexer;
-use PhpLenientParser\Parser as RealParser;
-use PhpLenientParser\ParserFactory;
-use PhpLenientParser\Node;
-use PhpLenientParser\Comment;
+use PhpParser\Error as ParserError;
+use PhpParser\ErrorHandler;
+use PhpParser\Node;
+use PhpParser\Comment;
+use PhpLenientParser\Lexer\Lenient as Lexer;
+use PhpLenientParser\Parser\LenientPhp7 as RealParser;
 
 use PhpCmplr\Completer\Container;
 use PhpCmplr\Completer\Component;
@@ -24,6 +24,11 @@ class Parser extends Component implements ParserInterface, DiagnosticsInterface
     private $nodes;
 
     /**
+     * @var array
+     */
+    private $tokens;
+
+    /**
      * @var Diagnostic[]
      */
     private $diagnostics;
@@ -33,17 +38,6 @@ class Parser extends Component implements ParserInterface, DiagnosticsInterface
         parent::__construct($container);
         $this->nodes = [];
         $this->diagnostics = [];
-    }
-
-    /**
-     * @return RealParser
-     */
-    protected function createParser()
-    {
-        $lexer = new Lexer(['usedAttributes' => ['comments', 'startLine', 'endLine', 'startFilePos', 'endFilePos']]);
-        $parserOptions = ['throwOnError' => false];
-
-        return (new ParserFactory())->create(ParserFactory::PREFER_PHP7, $lexer, $parserOptions);
     }
 
     public function getNodes()
@@ -141,16 +135,36 @@ class Parser extends Component implements ParserInterface, DiagnosticsInterface
         return $this->diagnostics;
     }
 
+    /**
+     * @return array [RealParser, Lexer]
+     */
+    protected function createParser()
+    {
+        $lexer = new Lexer(['usedAttributes' => [
+            'comments',
+            'startLine', 'endLine',
+            'startFilePos', 'endFilePos',
+            'startTokenPos', 'endTokenPos',
+        ]]);
+
+        $parser  = new RealParser($lexer);
+
+        return [$parser, $lexer];
+    }
+
     protected function doRun()
     {
-        $path = $this->container->get('file')->getPath();
+        $file = $this->container->get('file');
+        $path = $file->getPath();
         try {
-            $parser = $this->createParser();
-            $this->nodes = $parser->parse($this->container->get('file')->getContents());
+            list($parser, $lexer) = $this->createParser();
+            $errorHandler = new ErrorHandler\Collecting();
+            $this->nodes = $parser->parse($file->getContents(), $errorHandler);
+            $this->tokens = $lexer->getTokens();
             if ($this->nodes === null) {
                 $this->nodes = [];
             }
-            foreach ($parser->getErrors() as $error) {
+            foreach ($errorHandler->getErrors() as $error) {
                 $this->diagnostics[] = $this->makeDiagnosticFromError($error, $path);
             }
         } catch (ParserError $error) {

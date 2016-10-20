@@ -2,10 +2,10 @@
 
 namespace PhpCmplr\Completer\GoTo_;
 
-use PhpLenientParser\Node\Expr;
-use PhpLenientParser\Node\Stmt;
-use PhpLenientParser\Node\Param;
-use PhpLenientParser\Node\Name;
+use PhpParser\Node\Expr;
+use PhpParser\Node\Stmt;
+use PhpParser\Node\Param;
+use PhpParser\Node\Name;
 
 use PhpCmplr\Completer\Component;
 use PhpCmplr\Completer\Type\Type;

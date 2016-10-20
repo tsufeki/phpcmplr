@@ -2,8 +2,8 @@
 
 namespace PhpCmplr\Completer\TypeInferrer;
 
-use PhpLenientParser\Node;
-use PhpLenientParser\Node\Expr;
+use PhpParser\Node;
+use PhpParser\Node\Expr;
 
 use PhpCmplr\Completer\NodeVisitorComponent;
 use PhpCmplr\Completer\Type\Type;

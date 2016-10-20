@@ -2,11 +2,9 @@
 
 namespace PhpCmplr\Completer\Completer;
 
-use PhpLenientParser\Node\Expr;
-use PhpLenientParser\Node\Stmt;
-use PhpLenientParser\Node\Name;
-use PhpLenientParser\Node\Identifier;
-use PhpLenientParser\Node\ErrorNode;
+use PhpParser\Node\Expr;
+use PhpParser\Node\Stmt;
+use PhpParser\Node\Name;
 
 use PhpCmplr\Completer\Component;
 use PhpCmplr\Completer\Parser\Parser;
@@ -179,7 +177,7 @@ class MemberCompleter extends Component implements CompleterInterface
         $node = null;
         if (count($nodes) > 0) {
             $node = $nodes[0];
-            if ($node instanceof Identifier || $node instanceof ErrorNode\Nothing) {
+            if ($node instanceof Identifier || $node instanceof Expr\Error) {
                 $node = count($nodes) > 1 ? $nodes[1] : null;
             }
         }

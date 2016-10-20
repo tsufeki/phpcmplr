@@ -2,9 +2,8 @@
 
 namespace PhpCmplr\Completer\GoTo_;
 
-use PhpLenientParser\Node\Name;
-use PhpLenientParser\Node\Identifier;
-use PhpLenientParser\Comment;
+use PhpParser\Node\Name;
+use PhpParser\Comment;
 
 use PhpCmplr\Completer\Component;
 
@@ -17,7 +16,7 @@ class GoToMemberDefinition extends Component implements GoToInterface
         $node = null;
         if (count($nodes) > 0) {
             $node = $nodes[0];
-            if ($node instanceof Name || $node instanceof Identifier || $node instanceof Comment) {
+            if ($node instanceof Name || $node instanceof Comment) {
                 $node = count($nodes) > 1 ? $nodes[1] : null;
             }
         }

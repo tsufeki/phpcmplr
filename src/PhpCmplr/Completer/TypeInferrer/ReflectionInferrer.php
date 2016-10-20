@@ -2,11 +2,10 @@
 
 namespace PhpCmplr\Completer\TypeInferrer;
 
-use PhpLenientParser\Node;
-use PhpLenientParser\Node\Name;
-use PhpLenientParser\Node\Expr;
-use PhpLenientParser\Node\Stmt;
-use PhpLenientParser\Node\Identifier;
+use PhpParser\Node;
+use PhpParser\Node\Name;
+use PhpParser\Node\Expr;
+use PhpParser\Node\Stmt;
 
 use PhpCmplr\Completer\NodeVisitorComponent;
 use PhpCmplr\Completer\Type\Type;

@@ -2,7 +2,7 @@
 
 namespace PhpCmplr\Completer\GoTo_;
 
-use PhpLenientParser\Node;
+use PhpParser\Node;
 
 use PhpCmplr\Completer\SourceFile\Location;
 

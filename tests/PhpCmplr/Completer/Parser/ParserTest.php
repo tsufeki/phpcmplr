@@ -2,11 +2,10 @@
 
 namespace Tests\PhpCmplr\Completer\Parser;
 
-use PhpLenientParser\NodeDumper;
-use PhpLenientParser\Node\Expr;
-use PhpLenientParser\Node\Stmt;
-use PhpLenientParser\Node\Identifier;
-use PhpLenientParser\Comment;
+use PhpParser\NodeDumper;
+use PhpParser\Node\Expr;
+use PhpParser\Node\Stmt;
+use PhpParser\Comment;
 
 use PhpCmplr\Completer\Container;
 use PhpCmplr\Completer\SourceFile\SourceFile;
@@ -58,7 +57,7 @@ array(
         var: Expr_Variable(
             name: a
         )
-        name: ErrorNode_Nothing(
+        name: Expr_Error(
         )
     )
 )

@@ -2,7 +2,7 @@
 
 namespace PhpCmplr\Completer\Completer;
 
-use PhpLenientParser\Node\Expr;
+use PhpParser\Node\Expr;
 
 use PhpCmplr\Completer\Component;
 use PhpCmplr\Completer\Parser\Parser;

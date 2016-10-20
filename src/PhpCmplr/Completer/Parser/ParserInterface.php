@@ -2,8 +2,8 @@
 
 namespace PhpCmplr\Completer\Parser;
 
-use PhpLenientParser\Node;
-use PhpLenientParser\Comment;
+use PhpParser\Node;
+use PhpParser\Comment;
 
 /**
  * Parser-wrapping component.

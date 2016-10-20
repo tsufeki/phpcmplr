@@ -20,6 +20,7 @@
         "tsufeki/react-line-stream": "dev-master",
         "tsufeki/react-filesystem-monitor": "dev-master",
         "tsufeki/php-lenient-parser": "dev-master",
+        "nikic/php-parser": "dev-master",
         "justinrainbow/json-schema": "^2.0",
         "katzgrau/klogger": "^1.2",
         "composer/composer": "^1.2"

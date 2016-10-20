@@ -2,9 +2,9 @@
 
 namespace PhpCmplr\Completer\Type;
 
-use PhpLenientParser\Node\Name;
-use PhpLenientParser\Node\Name\FullyQualified;
-use PhpLenientParser\Node\Name\Relative;
+use PhpParser\Node\Name;
+use PhpParser\Node\Name\FullyQualified;
+use PhpParser\Node\Name\Relative;
 
 class Type
 {
@@ -252,7 +252,7 @@ class Type
     }
 
     /**
-     * Convert PhpLenientParser's Name to string.
+     * Convert PhpParser's Name to string.
      *
      * @param Name|string $name
      *

@@ -2,10 +2,9 @@
 
 namespace PhpCmplr\Completer\GoTo_;
 
-use PhpLenientParser\Node\Expr;
-use PhpLenientParser\Node\Name;
-use PhpLenientParser\Node\Identifier;
-use PhpLenientParser\Comment;
+use PhpParser\Node\Expr;
+use PhpParser\Node\Name;
+use PhpParser\Comment;
 
 use PhpCmplr\Completer\Component;
 use PhpCmplr\Completer\Parser\Parser;

@@ -2,10 +2,9 @@
 
 namespace Tests\PhpCmplr\Completer\Completer;
 
-use PhpLenientParser\Node\Expr;
-use PhpLenientParser\Node\Stmt;
-use PhpLenientParser\Node\Name;
-use PhpLenientParser\Node\Identifier;
+use PhpParser\Node\Expr;
+use PhpParser\Node\Stmt;
+use PhpParser\Node\Name;
 
 use PhpCmplr\Completer\Container;
 use PhpCmplr\Completer\Parser\Parser;
@@ -78,7 +77,7 @@ class MemberCompleterTest extends \PHPUnit_Framework_TestCase
                 ->setName('$a')
                 ->setDocType(Type::string_()));
         $var1 = new Expr\Variable('a', ['type' => Type::object_('\\C')]);
-        $id = new Identifier('q');
+        $id = 'q';
         $expr = new Expr\MethodCall($var1, $id, []);
 
         $completions = $this->complete([$id, $expr], [$method]);
@@ -100,7 +99,7 @@ class MemberCompleterTest extends \PHPUnit_Framework_TestCase
             ->setDocReturnType(Type::int_())
             ->setAccessibility(ClassLike::M_PRIVATE);
         $var1 = new Expr\Variable('a', ['type' => Type::object_('\\C')]);
-        $id = new Identifier('q');
+        $id = 'q';
         $expr = new Expr\MethodCall($var1, $id, []);
 
         $completions = $this->complete([$id, $expr], [$method]);
@@ -118,7 +117,7 @@ class MemberCompleterTest extends \PHPUnit_Framework_TestCase
             ->setDocReturnType(Type::int_())
             ->setAccessibility(ClassLike::M_PRIVATE);
         $var1 = new Expr\Variable('a', ['type' => Type::object_('\\C')]);
-        $id = new Identifier('q');
+        $id = 'q';
         $expr = new Expr\MethodCall($var1, $id, []);
         $ctxcls = new Stmt\Class_('C');
         $ctxcls->setAttribute('namespacedName', '\\C');
@@ -138,7 +137,7 @@ class MemberCompleterTest extends \PHPUnit_Framework_TestCase
             ->setDocReturnType(Type::int_());
         $cls = new Name('self');
         $cls->setAttribute('resolved', new Name\FullyQualified('C'));
-        $id = new Identifier('q');
+        $id = 'q';
         $expr = new Expr\StaticCall($cls, $id, []);
         $ctxmeth = new Stmt\ClassMethod('mm');
         $ctxcls = new Stmt\Class_('C');
@@ -169,7 +168,7 @@ class MemberCompleterTest extends \PHPUnit_Framework_TestCase
             ->setClass($class);
 
         $cls = new Name\FullyQualified('C');
-        $id = new Identifier('q');
+        $id = 'q';
         $expr = new Expr\StaticCall($cls, $id, []);
 
         $completions = $this->complete([$id, $expr], [$method], [$prop], [$const]);

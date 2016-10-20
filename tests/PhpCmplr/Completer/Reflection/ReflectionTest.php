@@ -201,9 +201,13 @@ class ReflectionTest extends \PHPUnit_Framework_TestCase
         $base = (new Class_())
             ->setName('\\B');
 
+        $trait = (new Trait_())
+            ->setName('\\T');
+
         $class = (new Class_())
             ->setName('\\C')
-            ->setExtends('\\B');
+            ->setExtends('\\B')
+            ->addTrait($trait);
 
         $sub = (new Class_())
             ->setName('\\D')
@@ -240,14 +244,18 @@ class ReflectionTest extends \PHPUnit_Framework_TestCase
                 ->setAccessibility(ClassLike::M_PROTECTED)
                 ->setName('g')
                 ->setClass($sub),
+            (new Method())
+                ->setAccessibility(ClassLike::M_PROTECTED)
+                ->setName('h')
+                ->setClass($trait),
         ];
 
-        $refl = $this->prepare($class, $base, $sub, $other);
+        $refl = $this->prepare($class, $base, $sub, $other, $trait);
         $names = [];
         foreach ($refl->filterAvailableMembers($members, '\\C') as $member) {
             $names[] = $member->getName();
         }
 
-        $this->assertSame(['a', 'b', 'd', 'e', 'g'], $names);
+        $this->assertSame(['a', 'b', 'd', 'e', 'g', 'h'], $names);
     }
 }

@@ -177,7 +177,7 @@ class MemberCompleter extends Component implements CompleterInterface
         $node = null;
         if (count($nodes) > 0) {
             $node = $nodes[0];
-            if ($node instanceof Identifier || $node instanceof Expr\Error) {
+            if ($node instanceof Expr\Error) {
                 $node = count($nodes) > 1 ? $nodes[1] : null;
             }
         }

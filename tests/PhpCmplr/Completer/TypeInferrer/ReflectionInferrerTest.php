@@ -27,10 +27,11 @@ class ReflectionInferrerTest extends \PHPUnit_Framework_TestCase
         $container = new Container();
         $parser = $this->getMockBuilder(Parser::class)->disableOriginalConstructor()->getMock();
         $parser->method('getNodes')->willReturn($nodes);
-        $resolver = $this->getMockBuilder(NameResolver::class)->disableOriginalConstructor()->getMock();
+        $resolver = new NameResolver($container);
         $container->set('parser', $parser);
         $container->set('name_resolver', $resolver);
         $container->set('reflection', $reflection);
+        $resolver->run();
         (new ReflectionInferrer($container))->run();
     }
 

@@ -80,7 +80,7 @@ class MemberCompleterTest extends \PHPUnit_Framework_TestCase
         $id = 'q';
         $expr = new Expr\MethodCall($var1, $id, []);
 
-        $completions = $this->complete([$id, $expr], [$method]);
+        $completions = $this->complete([$expr], [$method]);
 
         $this->assertCount(1, $completions);
         $this->assertSame('qaz(', $completions[0]->getInsertion());
@@ -102,7 +102,7 @@ class MemberCompleterTest extends \PHPUnit_Framework_TestCase
         $id = 'q';
         $expr = new Expr\MethodCall($var1, $id, []);
 
-        $completions = $this->complete([$id, $expr], [$method]);
+        $completions = $this->complete([$expr], [$method]);
 
         $this->assertCount(0, $completions);
     }
@@ -122,7 +122,7 @@ class MemberCompleterTest extends \PHPUnit_Framework_TestCase
         $ctxcls = new Stmt\Class_('C');
         $ctxcls->setAttribute('namespacedName', '\\C');
 
-        $completions = $this->complete([$id, $expr, $ctxcls], [$method]);
+        $completions = $this->complete([$expr, $ctxcls], [$method]);
 
         $this->assertCount(1, $completions);
     }
@@ -143,7 +143,7 @@ class MemberCompleterTest extends \PHPUnit_Framework_TestCase
         $ctxcls = new Stmt\Class_('C');
         $ctxcls->setAttribute('namespacedName', '\\C');
 
-        $completions = $this->complete([$id, $expr, $ctxmeth, $ctxcls], [$method]);
+        $completions = $this->complete([$expr, $ctxmeth, $ctxcls], [$method]);
 
         $this->assertCount(1, $completions);
     }
@@ -171,7 +171,7 @@ class MemberCompleterTest extends \PHPUnit_Framework_TestCase
         $id = 'q';
         $expr = new Expr\StaticCall($cls, $id, []);
 
-        $completions = $this->complete([$id, $expr], [$method], [$prop], [$const]);
+        $completions = $this->complete([$expr], [$method], [$prop], [$const]);
 
         $this->assertCount(3, $completions);
 

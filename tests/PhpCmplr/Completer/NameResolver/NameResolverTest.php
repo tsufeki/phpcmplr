@@ -10,10 +10,11 @@ use PhpCmplr\Completer\Parser\Parser;
 use PhpCmplr\Completer\DocComment\DocCommentParser;
 use PhpCmplr\Completer\NameResolver\NameResolver;
 use PhpCmplr\Completer\DocComment\DocCommentNameResolver;
+use PhpCmplr\Completer\Parser\PositionsReconstructor;
 
 /**
  * @covers \PhpCmplr\Completer\NameResolver\NameResolver
- * @covers \PhpCmplr\Completer\NameResolver\NameResolverNodeVisitor
+ * @covers \PhpCmplr\Completer\DocComment\DocCommentNameResolver
  */
 class NameResolverTest extends \PHPUnit_Framework_TestCase
 {
@@ -22,6 +23,7 @@ class NameResolverTest extends \PHPUnit_Framework_TestCase
         $container = new Container();
         $container->set('file', new SourceFile($container, $path, $contents));
         $container->set('parser', $parser = new Parser($container));
+        $container->set('parser.positions_reconstructor', new PositionsReconstructor($container));
         $container->set('doc_comment', new DocCommentParser($container));
         $container->set('name_resolver.doc_comment', new DocCommentNameResolver($container), ['name_resolver']);
         return [$parser, new NameResolver($container)];

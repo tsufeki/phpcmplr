@@ -6,6 +6,7 @@ use PhpCmplr\Completer\Container;
 use PhpCmplr\Completer\SourceFile\SourceFile;
 use PhpCmplr\Completer\Parser\Parser;
 use PhpCmplr\Completer\Diagnostics\Diagnostics;
+use PhpCmplr\Completer\Parser\PositionsReconstructor;
 
 /**
  * @covers \PhpCmplr\Completer\Diagnostics\Diagnostics
@@ -17,6 +18,7 @@ class DiagnosticsTest extends \PHPUnit_Framework_TestCase
         $container = new Container();
         $container->set('file', $file = new SourceFile($container, $path, $contents));
         $container->set('parser', new Parser($container), ['diagnostics']);
+        $container->set('parser.positions_reconstructor', new PositionsReconstructor($container));
         return [$file, new Diagnostics($container)];
     }
 

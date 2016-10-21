@@ -10,9 +10,11 @@ use PhpParser\Comment;
 use PhpCmplr\Completer\Container;
 use PhpCmplr\Completer\SourceFile\SourceFile;
 use PhpCmplr\Completer\Parser\Parser;
+use PhpCmplr\Completer\Parser\PositionsReconstructor;
 
 /**
  * @covers \PhpCmplr\Completer\Parser\Parser
+ * @covers \PhpCmplr\Completer\Parser\PositionsReconstructor
  */
 class ParserTest extends \PHPUnit_Framework_TestCase
 {
@@ -27,7 +29,10 @@ class ParserTest extends \PHPUnit_Framework_TestCase
     {
         $container = new Container();
         $container->set('file', new SourceFile($container, $path, $contents));
-        return new Parser($container);
+        $container->set('parser.positions_reconstructor', new PositionsReconstructor($container));
+        $parser = new Parser($container);
+        $container->set('parser', $parser);
+        return $parser;
     }
 
     public function test_getNodes()
@@ -79,6 +84,14 @@ array(
 )
 END;
         $this->assertSame($dump, $this->dumper->dump($nodes));
+    }
+
+    public function test_getNodes_reconstructor()
+    {
+        $nodes = $this->loadFile('<?php $qaz->wsx;')->getNodes();
+        $this->assertSame('wsx', $nodes[0]->name);
+        $this->assertSame(12, $nodes[0]->getAttribute('nameStartFilePos'));
+        $this->assertSame(14, $nodes[0]->getAttribute('nameEndFilePos'));
     }
 
     public function test_getDiagnostics()

@@ -17,6 +17,7 @@ use PhpCmplr\Completer\Reflection\Element\Function_;
 use PhpCmplr\Completer\Reflection\Element\Interface_;
 use PhpCmplr\Completer\Reflection\Element\Trait_;
 use PhpCmplr\Util\FileIOInterface;
+use PhpCmplr\Completer\Parser\PositionsReconstructor;
 
 /**
  * @covers \PhpCmplr\Completer\Reflection\LocatorReflection
@@ -28,6 +29,7 @@ class LocatorReflectionTest extends \PHPUnit_Framework_TestCase
         $container = new Container();
         $container->set('file', new SourceFile($container, $path, $contents));
         $container->set('parser', new Parser($container));
+        $container->set('parser.positions_reconstructor', new PositionsReconstructor($container));
         $container->set('doc_comment', new DocCommentParser($container));
         $container->set('name_resolver', new NameResolver($container));
         $container->set('reflection.file', new FileReflection($container));

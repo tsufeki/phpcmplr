@@ -14,6 +14,7 @@ use PhpCmplr\Completer\DocComment\Tag\ThrowsTag;
 use PhpCmplr\Completer\Type\Type;
 use PhpCmplr\Completer\Type\ArrayType;
 use PhpCmplr\Completer\Type\ObjectType;
+use PhpCmplr\Completer\Parser\PositionsReconstructor;
 
 /**
  * @covers \PhpCmplr\Completer\DocComment\DocCommentParser
@@ -36,6 +37,7 @@ class DocCommentParserTest extends \PHPUnit_Framework_TestCase
         $container = new Container();
         $container->set('file', new SourceFile($container, $path, $contents));
         $container->set('parser', $parser = new Parser($container));
+        $container->set('parser.positions_reconstructor', new PositionsReconstructor($container));
         return [$parser, new DocCommentParser($container)];
     }
 

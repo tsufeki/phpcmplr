@@ -46,6 +46,11 @@ class Parser extends Component implements ParserInterface, DiagnosticsInterface
         return $this->nodes;
     }
 
+    public function getTokens()
+    {
+        return $this->tokens;
+    }
+
     /**
      * @param Node|array|mixed $nodes
      * @param int              $offset
@@ -156,6 +161,7 @@ class Parser extends Component implements ParserInterface, DiagnosticsInterface
     {
         $file = $this->container->get('file');
         $path = $file->getPath();
+        $reconstructor = $this->container->get('parser.positions_reconstructor');
         try {
             list($parser, $lexer) = $this->createParser();
             $errorHandler = new ErrorHandler\Collecting();
@@ -170,5 +176,6 @@ class Parser extends Component implements ParserInterface, DiagnosticsInterface
         } catch (ParserError $error) {
             $this->diagnostics[] = $this->makeDiagnosticFromError($error, $path);
         }
+        $reconstructor->run();
     }
 }

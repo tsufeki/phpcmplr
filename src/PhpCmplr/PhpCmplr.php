@@ -42,6 +42,7 @@ use PhpCmplr\Util\Logger;
 use PhpCmplr\Completer\Completer\MemberCompleter;
 use PhpCmplr\Completer\Completer\VariableCompleter;
 use PhpCmplr\Completer\DocComment\DocCommentNameResolver;
+use PhpCmplr\Completer\Parser\PositionsReconstructor;
 
 class PhpCmplr extends Plugin implements ContainerFactoryInterface
 {
@@ -222,6 +223,7 @@ class PhpCmplr extends Plugin implements ContainerFactoryInterface
         $container->set('diagnostics', new Diagnostics($container));
         $container->set('fix_helper', new FixHelper($container));
         $container->set('parser', new Parser($container), ['diagnostics']);
+        $container->set('parser.positions_reconstructor', new PositionsReconstructor($container));
         $container->set('name_resolver', new NameResolver($container));
         $container->set('doc_comment', new DocCommentParser($container));
         $container->set('name_resolver.doc_comment', new DocCommentNameResolver($container), ['name_resolver']);

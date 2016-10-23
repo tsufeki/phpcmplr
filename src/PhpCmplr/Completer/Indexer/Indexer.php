@@ -14,6 +14,7 @@ use PhpCmplr\Util\FileIOInterface;
 use PhpCmplr\Util\IOException;
 use PhpCmplr\Util\BasicFileFilter;
 use PhpCmplr\Util\FileFilterInterface;
+use React\EventLoop\Timer\TimerInterface;
 
 class Indexer extends Component implements IndexerInterface
 {
@@ -63,9 +64,39 @@ class Indexer extends Component implements IndexerInterface
     private $updateQueue;
 
     /**
+     * @var array
+     */
+    private $updateQueueHash;
+
+    /**
+     * @var bool
+     */
+    private $updating;
+
+    /**
+     * @var int|float Seconds.
+     */
+    private $updateDelay;
+
+    /**
+     * @var TimerInterface
+     */
+    private $timer;
+
+    /**
      * @var FileFilterInterface
      */
     private $fileFilter;
+
+    /**
+     * @var int
+     */
+    private $updateCounter;
+
+    /**
+     * @var int
+     */
+    private $saveCounter;
 
     private function loadCache()
     {
@@ -82,35 +113,63 @@ class Indexer extends Component implements IndexerInterface
         }
     }
 
-    private function saveCache()
+    /**
+     * @internal
+     */
+    public function saveCache()
     {
         try {
-            if (!empty($this->cachePath)) {
+            if (!empty($this->cachePath) && $this->updateCounter > $this->saveCounter) {
+                $this->logger->debug('Indexer: save');
                 $this->io->write($this->cachePath, json_encode($this->data));
+                $this->saveCounter = $this->updateCounter;
             }
         } catch (IOException $e) {
             $this->logger->notice("Indexer: can't save indexed data: " . $e->getMessage(), ['exception' => $e]);
         }
     }
 
-    private function scan()
+    /**
+     * @param string $path
+     * @param bool   $deleted
+     */
+    private function enqueue($path, $deleted)
     {
-        $freshFiles = $this->io->listFileMTimesRecursive(
-            $this->project->getRootPath(),
-            $this->fileFilter
-        );
-        $curFiles =& $this->data['files'];
+        if (!array_key_exists($path, $this->updateQueueHash)) {
+            $this->updateQueue->enqueue($path);
+        }
+        $this->updateQueueHash[$path] = $deleted;
+    }
 
-        foreach ($curFiles as $path => $mtime) {
-            if (!array_key_exists($path, $freshFiles)) {
-                $this->updateQueue->enqueue([$path, true]);
-            }
+    /**
+     * @return array [string path, bool deleted]
+     */
+    private function dequeue()
+    {
+        $path = $this->updateQueue->dequeue();
+        $deleted = $this->updateQueueHash[$path];
+        unset($this->updateQueueHash[$path]);
+
+        return [$path, $deleted];
+    }
+
+    /**
+     * @param bool $immediately
+     */
+    private function startUpdates($immediately = false)
+    {
+        if ($this->updating) {
+            return;
         }
 
-        foreach ($freshFiles as $path => $mtime) {
-            if (!array_key_exists($path, $curFiles) || $curFiles[$path] !== $mtime) {
-                $this->updateQueue->enqueue([$path, false]);
-            }
+        if ($this->timer !== null && $this->timer->isActive()) {
+            $this->timer->cancel();
+        }
+
+        if ($immediately) {
+            $this->loop->futureTick([$this, 'update']);
+        } else {
+            $this->timer = $this->loop->addTimer($this->updateDelay, [$this, 'update']);
         }
     }
 
@@ -120,14 +179,18 @@ class Indexer extends Component implements IndexerInterface
     public function update()
     {
         if ($this->updateQueue->isEmpty()) {
+            $this->updating = false;
+            $this->loop->futureTick([$this, 'saveCache']);
             return;
         }
 
-        list($path, $deleted) = $this->updateQueue->dequeue();
+        $this->updating = true;
+        list($path, $deleted) = $this->dequeue();
 
-        if ($this->io->match($path, $this->fileFilter)) {
+        if ($deleted || $this->io->match($path, $this->fileFilter)) {
             try {
                 $this->logger->info("Indexer: index " . $path);
+                $this->updateCounter++;
 
                 $contents = $deleted ? '' : $this->io->read($path);
                 /** @var Container */
@@ -158,18 +221,27 @@ class Indexer extends Component implements IndexerInterface
             }
         }
 
-        if (!$this->updateQueue->isEmpty()) {
-            $this->loop->futureTick([$this, 'update']);
-        } else {
-            $this->logger->debug('Indexer: save');
-            $this->saveCache();
-        }
+        $this->loop->futureTick([$this, 'update']);
     }
 
-    private function startUpdates()
+    private function scan()
     {
-        if (!$this->updateQueue->isEmpty()) {
-            $this->loop->futureTick([$this, 'update']);
+        $freshFiles = $this->io->listFileMTimesRecursive(
+            $this->project->getRootPath(),
+            $this->fileFilter
+        );
+        $curFiles =& $this->data['files'];
+
+        foreach ($curFiles as $path => $mtime) {
+            if (!array_key_exists($path, $freshFiles)) {
+                $this->enqueue($path, true);
+            }
+        }
+
+        foreach ($freshFiles as $path => $mtime) {
+            if (!array_key_exists($path, $curFiles) || $curFiles[$path] !== $mtime) {
+                $this->enqueue($path, false);
+            }
         }
     }
 
@@ -177,26 +249,26 @@ class Indexer extends Component implements IndexerInterface
     {
         $this->monitor->on('start', function () {
             $this->scan();
-            $this->startUpdates();
+            $this->startUpdates(true);
         });
         $this->monitor->on('error', function ($e) {
             $this->logger->error('Indexer: Filesystem monitor: ' . $e, ['exception' => $e]);
         });
 
         $this->monitor->on('modify', function ($path) {
-            $this->updateQueue->enqueue([$path, false]);
+            $this->enqueue($path, false);
             $this->startUpdates();
         });
         $this->monitor->on('move_to', function ($path) {
-            $this->updateQueue->enqueue([$path, false]);
+            $this->enqueue($path, false);
             $this->startUpdates();
         });
         $this->monitor->on('move_from', function ($path) {
-            $this->updateQueue->enqueue([$path, true]);
+            $this->enqueue($path, true);
             $this->startUpdates();
         });
         $this->monitor->on('delete', function ($path) {
-            $this->updateQueue->enqueue([$path, true]);
+            $this->enqueue($path, true);
             $this->startUpdates();
         });
     }
@@ -210,6 +282,10 @@ class Indexer extends Component implements IndexerInterface
     {
         $this->logger->debug('Indexer: quit');
         $this->monitor->close();
+        $this->updateQueue = new \SplQueue();
+        $this->updateQueueHash = [];
+        $this->updating = false;
+        $this->saveCache();
     }
 
     public function getData($key) {
@@ -233,8 +309,13 @@ class Indexer extends Component implements IndexerInterface
         $this->project = $this->container->get('project');
         $this->cachePath = $this->io->getCacheDir('indexer') . '/' . sha1($this->project->getRootPath()) . '.json';
         $this->fileFilter = new BasicFileFilter(['php'], 1024*1024, ['file']);
+        $this->updateDelay = 0.5;
 
         $this->updateQueue = new \SplQueue();
+        $this->updateQueueHash = [];
+        $this->updating = false;
+        $this->updateCounter = 0;
+        $this->saveCounter = 0;
         $this->loadCache();
         $fsEvents =  ['modify', 'delete', 'move_to', 'move_from'];
         $this->monitor = new INotifyProcessMonitor($this->project->getRootPath(), $fsEvents);

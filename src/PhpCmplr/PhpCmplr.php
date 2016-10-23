@@ -262,6 +262,7 @@ class PhpCmplr extends Plugin implements ContainerFactoryInterface
     {
         if ($options['indexer']['enabled']) {
             $container->set('parser', new Parser($container), ['diagnostics']);
+            $container->set('parser.positions_reconstructor', new PositionsReconstructor($container));
             $container->set('name_resolver', new NameResolver($container));
             $container->set('reflection', new FileReflection($container), ['reflection']);
             $container->set('index_data.reflection', new ReflectionIndexData($container), ['index_data']);

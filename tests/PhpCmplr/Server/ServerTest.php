@@ -12,6 +12,7 @@ use PhpCmplr\Server\Action;
 
 /**
  * @covers \PhpCmplr\Server\Server
+ * @covers \PhpCmplr\Server\HttpException
  * @covers \PhpCmplr\Server\Action
  * @covers \PhpCmplr\Server\Action\Complete
  * @covers \PhpCmplr\Server\Action\Diagnostics

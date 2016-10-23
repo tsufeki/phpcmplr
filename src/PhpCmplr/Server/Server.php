@@ -92,7 +92,7 @@ class Server
      */
     public function run()
     {
-        $this->logger->info("Server: listening on $this->host:$this->port");
+        $this->logger->info("Server: listen on $this->host:$this->port");
         $this->socket = new ServerSocket($this->loop);
         $this->http = new HttpServer($this->socket);
 

@@ -101,7 +101,10 @@ class Undefined extends NodeVisitorComponent implements DiagnosticsNodeVisitorIn
                 $node instanceof Expr\StaticCall) {
             $classes[] = $node->class;
 
-        } elseif ($node instanceof Stmt\Catch_ || $node instanceof Param) {
+        } elseif ($node instanceof Stmt\Catch_) {
+            $classes = $node->types;
+
+        } elseif ($node instanceof Param) {
             $classes[] = $node->type;
 
         } elseif ($node instanceof Stmt\Function_ || $node instanceof Stmt\ClassMethod ||

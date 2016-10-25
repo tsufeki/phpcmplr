@@ -26,21 +26,23 @@ class ProjectRootDirectoryGuesser implements ProjectRootDirectoryGuesserInterfac
     {
         $rootDir = null;
 
-        foreach (static::PROJECT_FILES as $projectFile) {
-            $oldPath = $path;
-            $curPath = dirname($path);
-            while ($oldPath !== $curPath) {
-                $projectFilePath = $curPath . '/' . $projectFile;
-                if ($this->io->exists($projectFilePath) && !$this->io->exists($curPath . '/' . static::PROJECT_IGNORE_FILE)) {
-                    $rootDir = $curPath;
+        $oldPath = $path;
+        $curPath = dirname($path);
+        while ($oldPath !== $curPath) {
+            if (!$this->io->exists($curPath . '/' . static::PROJECT_IGNORE_FILE)) {
+                foreach (static::PROJECT_FILES as $projectFile) {
+                    if ($this->io->exists($curPath . '/' . $projectFile)) {
+                        $rootDir = $curPath;
+                        break;
+                    }
                 }
-                $oldPath = $curPath;
-                $curPath = dirname($curPath);
             }
+            $oldPath = $curPath;
+            $curPath = dirname($curPath);
+        }
 
-            if ($rootDir !== null) {
-                return $rootDir;
-            }
+        if ($rootDir !== null) {
+            return $rootDir;
         }
 
         return null;

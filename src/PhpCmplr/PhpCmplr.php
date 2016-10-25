@@ -199,7 +199,8 @@ class PhpCmplr extends Plugin implements ContainerFactoryInterface
     public function addProjectComponents(Container $container, array $options)
     {
         $container->set('namespace_reflection', new NamespaceReflection($container));
-        if ($options['indexer']['enabled']) {
+        $rootPath = $container->get('project')->getRootPath();
+        if ($options['indexer']['enabled'] && !empty($rootPath) && $rootPath !== '/') {
             $container->set('indexer', new Indexer($container));
             $container->set('reflection.locator.index', new IndexLocator($container), ['reflection.locator']);
             $container->set('namespace_reflection.index', new IndexNamespaceReflection($container), ['namespace_reflection']);

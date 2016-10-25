@@ -20,6 +20,11 @@ class FileStore implements FileStoreInterface
     private $projects;
 
     /**
+     * @var mixed
+     */
+    private $logger;
+
+    /**
      * @param Container $container
      */
     public function __construct(Container $container)
@@ -27,6 +32,7 @@ class FileStore implements FileStoreInterface
         $this->factory = $container->get('factory');
         $this->projects = [];
         $this->projectRootDirCache = [];
+        $this->logger = $container->get('logger');
     }
 
     /**
@@ -67,6 +73,7 @@ class FileStore implements FileStoreInterface
         $projectRootPath = $this->getProjectRootPath($path);
 
         if (!array_key_exists($projectRootPath, $this->projects)) {
+            $this->logger->debug(sprintf('File store: add %s to project %s', $path, $projectRootPath));
             $this->projects[$projectRootPath] = $this->factory->createProject($projectRootPath);
         }
         $project = $this->projects[$projectRootPath];

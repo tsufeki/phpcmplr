@@ -72,22 +72,21 @@ class ReflectionInferrer extends NodeVisitorComponent
     /**
      * @param Type   $objectType
      * @param string $methodName
-     * @param bool   $staticContext
      *
      * @return Method[]
      */
-    protected function findMethods(Type $objectType, $methodName, $staticContext = false)
+    protected function findMethods(Type $objectType, $methodName)
     {
         $methods = [];
 
         if ($objectType instanceof AlternativesType) {
             foreach ($objectType->getAlternatives() as $altType) {
-                $methods = array_merge($methods, $this->findMethods($altType, $methodName, $staticContext));
+                $methods = array_merge($methods, $this->findMethods($altType, $methodName));
             }
 
         } elseif ($objectType instanceof ObjectType) {
             $method = $this->reflection->findMethod($objectType->getClass(), $methodName);
-            if ($method !== null && (!$staticContext || $method->isStatic())) {
+            if ($method !== null) {
                 $methods[] = $method;
             }
         }
@@ -313,8 +312,7 @@ class ReflectionInferrer extends NodeVisitorComponent
             if ($node->class instanceof Name && is_string($node->name)) {
                 $reflections = $this->findMethods(
                     Type::object_(Type::nameToString($node->class)),
-                    $node->name,
-                    true);
+                    $node->name);
             }
             $type = $this->functionsReturnType($reflections);
 

@@ -164,7 +164,21 @@ class ReflectionInferrer extends NodeVisitorComponent
      */
     protected function findClassConsts(Type $objectType, $constName)
     {
-        return []; // TODO
+        $consts = [];
+
+        if ($objectType instanceof AlternativesType) {
+            foreach ($objectType->getAlternatives() as $altType) {
+                $consts = array_merge($consts, $this->findClassConsts($altType, $constName));
+            }
+
+        } elseif ($objectType instanceof ObjectType) {
+            $const = $this->reflection->findClassConst($objectType->getClass(), $constName);
+            if ($const !== null) {
+                $consts[] = $const;
+            }
+        }
+
+        return $consts;
     }
 
     /**
@@ -174,7 +188,7 @@ class ReflectionInferrer extends NodeVisitorComponent
      */
     protected function constsType(array $consts)
     {
-        return Type::mixed_(); // TODO
+        return Type::mixed_();
     }
 
     public function enterNode(Node $node)
@@ -299,7 +313,13 @@ class ReflectionInferrer extends NodeVisitorComponent
             }
             $type = $this->functionsReturnType($reflections);
 
-        // TODO: ConstFetch
+        } elseif ($node instanceof Expr\ConstFetch) {
+            $reflections = [];
+            if ($node->name instanceof Name) {
+                $reflections = $this->reflection->findConst(Type::nameToString($node->name));
+            }
+            $type = $this->constsType($reflections);
+
         } elseif ($node instanceof Expr\MethodCall) {
             $reflections = [];
             if (is_string($node->name)) {
@@ -332,7 +352,6 @@ class ReflectionInferrer extends NodeVisitorComponent
             $type = $this->variablesType($reflections);
 
         } elseif ($node instanceof Expr\ClassConstFetch) {
-            // TODO ::class
             $reflections = [];
             if ($node->class instanceof Name) {
                 $reflections = $this->findClassConsts(

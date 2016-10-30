@@ -580,6 +580,13 @@ class Reflection extends Component
         foreach ($class->getConsts() as $const) {
             $this->mergeConst($consts, clone $const);
         }
+
+        if (!($class instanceof Trait_)) {
+            $classClassConst = new ClassConst();
+            $classClassConst->setName('class');
+            $classClassConst->setClass($class);
+            $this->mergeConst($consts, $classClassConst);
+        }
     }
 
     /**

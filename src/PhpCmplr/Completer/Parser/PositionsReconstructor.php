@@ -5,6 +5,7 @@ namespace PhpCmplr\Completer\Parser;
 use PhpCmplr\Completer\NodeVisitorComponent;
 use PhpParser\Node;
 use PhpParser\Node\Expr;
+use PhpParser\Node\Stmt;
 
 class PositionsReconstructor extends NodeVisitorComponent
 {
@@ -92,6 +93,41 @@ class PositionsReconstructor extends NodeVisitorComponent
             if (count($tokens) >= 2 && in_array($tokens[0]['id'], [T_OBJECT_OPERATOR, T_PAAMAYIM_NEKUDOTAYIM])) {
                 $node->setAttribute('nameStartFilePos', $tokens[1]['offset']);
                 $node->setAttribute('nameEndFilePos', $tokens[1]['offset'] + strlen($tokens[1]['value']) - 1);
+            }
+        }
+
+        if (($node instanceof Stmt\PropertyProperty ||
+            $node instanceof Stmt\StaticVar) &&
+            is_string($node->name)
+        ) {
+            $tokens = $this->getUnassignedTokens($node);
+            if (count($tokens) >= 1 && $tokens[0]['id'] === T_VARIABLE) {
+                $node->setAttribute('nameStartFilePos', $tokens[0]['offset']);
+                $node->setAttribute('nameEndFilePos', $tokens[0]['offset'] + strlen($tokens[0]['value']) - 1);
+            }
+        }
+
+        if ($node instanceof Node\Const_) {
+            $tokens = $this->getUnassignedTokens($node);
+            if (count($tokens) >= 1 && $tokens[0]['id'] === T_STRING) {
+                $node->setAttribute('nameStartFilePos', $tokens[0]['offset']);
+                $node->setAttribute('nameEndFilePos', $tokens[0]['offset'] + strlen($tokens[0]['value']) - 1);
+            }
+        }
+
+        if ($node instanceof Stmt\Function_ ||
+            $node instanceof Stmt\ClassMethod ||
+            $node instanceof Stmt\ClassLike
+        ) {
+            $tokens = $this->getUnassignedTokens($node);
+            foreach ($tokens as $token) {
+                if ($token['id'] === T_STRING) {
+                    $node->setAttribute('nameStartFilePos', $token['offset']);
+                    $node->setAttribute('nameEndFilePos', $token['offset'] + strlen($token['value']) - 1);
+                    break;
+                } elseif (in_array($token['id'], ['(', ')', '{', '}'])) {
+                    break;
+                }
             }
         }
     }

@@ -318,7 +318,7 @@ class ReflectionInferrer extends NodeVisitorComponent
             array_pop($this->dontInferVarsStack);
         }
 
-        if (!($node instanceof Expr)) {
+        if (!($node instanceof Expr) && !($node instanceof Stmt\Foreach_)) {
             return;
         }
 
@@ -332,7 +332,8 @@ class ReflectionInferrer extends NodeVisitorComponent
                 } elseif (array_key_exists('$' . $node->name, $this->getCurrentFunctionScope())) {
                     $type = $this->getCurrentFunctionScope()['$' . $node->name];
                 } else {
-                    $this->getCurrentFunctionScope()['$' . $node->name] = Type::mixed_();
+                    $this->getCurrentFunctionScope()['$' . $node->name] = $node->hasAttribute('type')
+                        ? $node->getAttribute('type') : Type::mixed_();
                 }
             }
 
@@ -341,9 +342,25 @@ class ReflectionInferrer extends NodeVisitorComponent
             if ($var instanceof Expr\Variable && is_string($var->name)) {
                 $name = '$' . $var->name;
                 if (!isset($this->getCurrentDontInferVars()[$name])) {
+                    $arrayType = $node->expr->getAttribute('type');
+                    $altTypes = [$arrayType];
+                    if ($arrayType instanceof AlternativesType) {
+                        $altTypes = $arrayType->getAlternatives();
+                    }
+                    $valueTypes = [];
+                    foreach ($altTypes as $altType) {
+                        if ($altType instanceof ArrayType) {
+                            $valueTypes[] = $altType->getValueType();
+                        } elseif ($altType instanceof ObjectType) {
+                            $valueTypes[] = $this->functionsReturnType($this->findMethods($altType, 'offsetGet'));
+                            // TODO: check for ArrayAccess
+                        }
+                    }
+                    $valueType = $valueTypes !== [] ? Type::alternatives($valueTypes) : Type::mixed_();
+
                     $this->getCurrentFunctionScope()[$name] = Type::alternatives([
                         $this->getCurrentFunctionScope()[$name],
-                        $node->expr->getAttribute('type'),
+                        $valueType,
                     ]);
                 }
             }

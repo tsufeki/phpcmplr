@@ -147,8 +147,8 @@ class ReflectionInferrerTest extends \PHPUnit_Framework_TestCase
         $var1 = new Expr\Variable('a', ['type' => Type::fromString('int[]')]);
         $var2 = new Expr\Variable('b');
         $var3 = new Expr\Variable('b');
-        $stmt = new Stmt\Foreach_($var1, $var2);
-        $this->infer([$stmt, $var3], $refl);
+        $stmt = new Stmt\Foreach_($var1, $var2, ['stmts' => [$var3]]);
+        $this->infer([$stmt], $refl);
         $this->assertTrue($var3->getAttribute('type')->equals(Type::fromString('mixed|int')));
     }
 }

@@ -59,6 +59,9 @@ class NameResolver extends PhpParserNameResolver implements Runnable, NameResolv
     public function resolveOtherName(Name $name, $type)
     {
         $resolved = parent::resolveOtherName($name, $type);
+        if (!$resolved->isFullyQualified()) {
+            $resolved = new FullyQualified($resolved);
+        }
         $name->setAttribute('resolved', $resolved);
 
         return $name;

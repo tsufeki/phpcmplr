@@ -194,4 +194,24 @@ END;
         $this->assertSame('\\R\\S', $alts[0]->getClass());
         $this->assertSame('\\T\\U', $alts[1]->getClass());
     }
+
+    public function test_run_unqualifiedFunction()
+    {
+        $source = <<<'END'
+<?php
+namespace A\B;
+
+f();
+END;
+        list($parser, $resolver) = $this->loadFile($source);
+        $resolver->run();
+        $nodes = $parser->getNodes();
+
+        $funcCall = $nodes[0]->stmts[0];
+
+        $this->assertInstanceOf(FullyQualified::class, $funcCall->name->getAttribute('resolved'));
+        $this->assertSame('f', $funcCall->name->getAttribute('resolved')->toString());
+        $this->assertInstanceOf(FullyQualified::class, $funcCall->name->getAttribute('namespacedName'));
+        $this->assertSame('A\\B\\f', $funcCall->name->getAttribute('namespacedName')->toString());
+    }
 }

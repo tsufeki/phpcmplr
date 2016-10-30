@@ -143,11 +143,57 @@ class Undefined extends NodeVisitorComponent implements DiagnosticsNodeVisitorIn
                 }
             }
         }
+
+        if ($node instanceof Expr\FuncCall && $node->name instanceof Name) {
+            $names = $this->getFunctionOrConstNames($node);
+            $found = false;
+            foreach ($names as $name) {
+                if (!empty($this->reflection->findFunction($name))) {
+                    $found = true;
+                    break;
+                }
+            }
+
+            if (!$found) {
+                $this->diagnostics[] = new Diagnostic(
+                    [Range::fromNode($node->name, $this->file->getPath())],
+                    'Undefined function'
+                );
+            }
+        }
+
+        if ($node instanceof Expr\ConstFetch && $node->name instanceof Name) {
+            $names = $this->getFunctionOrConstNames($node);
+            $found = false;
+            foreach ($names as $name) {
+                if (!empty($this->reflection->findConst($name))) {
+                    $found = true;
+                    break;
+                }
+            }
+
+            if (!$found) {
+                $this->diagnostics[] = new Diagnostic(
+                    [Range::fromNode($node->name, $this->file->getPath())],
+                    'Undefined const'
+                );
+            }
+        }
     }
 
     public function leaveNode(Node $node)
     {
         array_pop($this->nodePathFromTop);
+    }
+
+    private function getFunctionOrConstNames(Node $node)
+    {
+        $names = [Type::nameToString($node->name)];
+        if ($node->name->hasAttribute('namespacedName')) {
+            $names[] = Type::nameToString($node->name->getAttribute('namespacedName'));
+        }
+
+        return $names;
     }
 
     /**

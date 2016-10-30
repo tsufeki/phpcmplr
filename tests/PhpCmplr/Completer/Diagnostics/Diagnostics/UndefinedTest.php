@@ -104,4 +104,78 @@ class UndefinedTest extends \PHPUnit_Framework_TestCase
         $this->assertSame(22, $range->getStart()->getOffset());
         $this->assertSame(22, $range->getEnd()->getOffset());
     }
+
+    protected function getFunctionDiags($contents, $functions, $path = 'qaz.php')
+    {
+        $container = new Container();
+        $container->set('file', new SourceFile($container, $path, $contents));
+        $container->set('parser', new Parser($container), ['diagnostics']);
+        $container->set('parser.positions_reconstructor', new PositionsReconstructor($container));
+        $container->set('name_resolver', new NameResolver($container));
+        $container->set('fix_helper', new FixHelper($container));
+        $reflection = $this->getMockBuilder(Reflection::class)
+            ->setMethods(['findFunction'])
+            ->disableOriginalConstructor()
+            ->getMock();
+        $reflection
+            ->method('findFunction')
+            ->will($this->returnValueMap($functions));
+        $container->set('reflection', $reflection);
+        $component = new Undefined($container);
+        $component->run();
+
+        return $component->getDiagnostics();
+    }
+
+    public function test_FuncCall()
+    {
+        $diags = $this->getFunctionDiags('<?php ff();', [['\\ff', []]]);
+        $this->assertCount(1, $diags);
+        $this->assertSame('Undefined function', $diags[0]->getDescription());
+        $range = $diags[0]->getRanges()[0];
+        $this->assertSame('qaz.php', $diags[0]->getPath());
+        $this->assertSame(6, $range->getStart()->getOffset());
+        $this->assertSame(7, $range->getEnd()->getOffset());
+    }
+
+    public function test_FuncCall_noDiag()
+    {
+        $diags = $this->getFunctionDiags('<?php namespace N; ff();', [['\\ff', ['a func']]]);
+        $this->assertCount(0, $diags);
+        $diags = $this->getFunctionDiags('<?php namespace N; ff();', [['\\ff', []], ['\\N\\ff', ['a func']]]);
+        $this->assertCount(0, $diags);
+    }
+
+    protected function getConstDiags($contents, $consts, $path = 'qaz.php')
+    {
+        $container = new Container();
+        $container->set('file', new SourceFile($container, $path, $contents));
+        $container->set('parser', new Parser($container), ['diagnostics']);
+        $container->set('parser.positions_reconstructor', new PositionsReconstructor($container));
+        $container->set('name_resolver', new NameResolver($container));
+        $container->set('fix_helper', new FixHelper($container));
+        $reflection = $this->getMockBuilder(Reflection::class)
+            ->setMethods(['findConst'])
+            ->disableOriginalConstructor()
+            ->getMock();
+        $reflection
+            ->method('findConst')
+            ->will($this->returnValueMap($consts));
+        $container->set('reflection', $reflection);
+        $component = new Undefined($container);
+        $component->run();
+
+        return $component->getDiagnostics();
+    }
+
+    public function test_ConstFetch()
+    {
+        $diags = $this->getConstDiags('<?php CCC;', [['\\CCC', []]]);
+        $this->assertCount(1, $diags);
+        $this->assertSame('Undefined const', $diags[0]->getDescription());
+        $range = $diags[0]->getRanges()[0];
+        $this->assertSame('qaz.php', $diags[0]->getPath());
+        $this->assertSame(6, $range->getStart()->getOffset());
+        $this->assertSame(8, $range->getEnd()->getOffset());
+    }
 }

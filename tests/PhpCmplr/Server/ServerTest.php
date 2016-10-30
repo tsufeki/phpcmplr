@@ -77,7 +77,7 @@ class ServerTest extends \PHPUnit_Framework_TestCase
         $data = new \stdClass();
         $fileData = new \stdClass();
         $fileData->path = 'qaz.php';
-        $fileData->contents = '<?php '."\n\n".'$a = 7 + *f("wsx");';
+        $fileData->contents = '<?php '."\n\n".'$a = 7 + *strlen("wsx");';
         $data->files = [$fileData];
 
         $this->server->handle(

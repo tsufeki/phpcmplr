@@ -86,7 +86,7 @@ class MemberCompleterTest extends \PHPUnit_Framework_TestCase
         $this->assertSame('qaz(', $completions[0]->getInsertion());
         $this->assertSame('qaz(', $completions[0]->getDisplay());
         $this->assertSame('method', $completions[0]->getKind());
-        $this->assertSame('string $a) : int', $completions[0]->getExtendedDisplay());
+        $this->assertSame('string $a): int', $completions[0]->getExtendedDisplay());
     }
 
     public function test_MethodCall_private()

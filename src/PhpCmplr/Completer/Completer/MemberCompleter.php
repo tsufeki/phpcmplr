@@ -123,7 +123,7 @@ class MemberCompleter extends Component implements CompleterInterface
             $completion->setDisplay($completion->getInsertion());
             $completion->setKind($method->isStatic() ? Completion::KIND_STATIC_METHOD : Completion::KIND_METHOD);
             $completion->setExtendedDisplay(
-                $method->getParamsAsString(true) . ($zeroParams ? '' : ') ') .
+                $method->getParamsAsString(true) . ($zeroParams ? '' : ')') .
                 ': ' . $method->getDocReturnType()->toString(true)
             );
             $completions[] = $completion;

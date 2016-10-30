@@ -117,4 +117,27 @@ class ReflectionInferrerTest extends \PHPUnit_Framework_TestCase
         $this->assertTrue($expr->getAttribute('type')->equals(Type::int_()));
         $this->assertSame([$prop], $expr->getAttribute('reflections'));
     }
+
+    public function test_Assign()
+    {
+        $refl = $this->getMockBuilder(Reflection::class)->disableOriginalConstructor()->getMock();
+        $var1 = new Expr\Variable('a', ['type' => Type::object_('\\C')]);
+        $var2 = new Expr\Variable('b');
+        $var3 = new Expr\Variable('b');
+        $expr = new Expr\Assign($var2, $var1);
+        $this->infer([$expr, $var3], $refl);
+        $this->assertTrue($var3->getAttribute('type')->equals(Type::fromString('mixed|\\C')));
+    }
+
+    public function test_Assign_annot()
+    {
+        $refl = $this->getMockBuilder(Reflection::class)->disableOriginalConstructor()->getMock();
+        $var1 = new Expr\Variable('b', ['annotations' => ['var' => [Tag::get('var', 'int $b')]]]);
+        $var2 = new Expr\Variable('a', ['type' => Type::object_('\\C')]);
+        $var3 = new Expr\Variable('b');
+        $var4 = new Expr\Variable('b');
+        $expr = new Expr\Assign($var3, $var2);
+        $this->infer([$var1, $expr, $var4], $refl);
+        $this->assertTrue($var4->getAttribute('type')->equals(Type::int_()));
+    }
 }

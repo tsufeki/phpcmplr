@@ -34,6 +34,11 @@ class ReflectionInferrer extends NodeVisitorComponent
     protected $functionScopeStack;
 
     /**
+     * @var bool[][]
+     */
+    protected $dontInferVarsStack;
+
+    /**
      * @var ObjectType[]
      */
     protected $classStack;
@@ -41,6 +46,7 @@ class ReflectionInferrer extends NodeVisitorComponent
     public function beforeTraverse(array $nodes)
     {
         $this->functionScopeStack = [[]]; // global scope
+        $this->dontInferVarsStack = [[]];
         $this->classStack = [];
         $this->reflection = $this->container->get('reflection');
         $this->reflection->run();
@@ -59,6 +65,14 @@ class ReflectionInferrer extends NodeVisitorComponent
     protected function &getCurrentFunctionScope()
     {
         return $this->functionScopeStack[count($this->functionScopeStack) - 1];
+    }
+
+    /**
+     * @return bool[] variable name => bool
+     */
+    protected function &getCurrentDontInferVars()
+    {
+        return $this->dontInferVarsStack[count($this->dontInferVarsStack) - 1];
     }
 
     /**
@@ -210,6 +224,7 @@ class ReflectionInferrer extends NodeVisitorComponent
                         } elseif ($var instanceof Stmt\Global_ && count($var->vars) === 1) {
                             $var = $var->vars[0];
                         }
+
                         if ($var instanceof Expr\Assign || $var instanceof Expr\AssignRef ||
                                 $var instanceof Expr\AssignOp) {
                             $var = $var->var;
@@ -220,6 +235,7 @@ class ReflectionInferrer extends NodeVisitorComponent
                     }
                     if (!empty($name)) {
                         $this->getCurrentFunctionScope()[$name] = $varTag->getType();
+                        $this->getCurrentDontInferVars()[$name] = true;
                     }
                 }
             }
@@ -227,18 +243,22 @@ class ReflectionInferrer extends NodeVisitorComponent
 
         if ($node instanceof Stmt\Function_) {
             $scope = [];
+            $dontInfer = [];
             $functions = $this->reflection->findFunction($node->hasAttribute('namespacedName')
                 ? Type::nameToString($node->getAttribute('namespacedName'))
                 : $node->name);
             if (!empty($functions)) {
                 foreach ($functions[0]->getParams() as $param) {
                     $scope[$param->getName()] = $param->getDocType();
+                    $dontInfer[$param->getName()] = true;
                 }
             }
             $this->functionScopeStack[] = $scope;
+            $this->dontInferVarsStack[] = $dontInfer;
 
         } elseif ($node instanceof Stmt\ClassMethod) {
             $scope = [];
+            $dontInfer = ['$this' => true];
             $class = $this->getCurrentClass();
             if (!empty($class) && !empty($class->getClass())) {
                 $scope['$this'] = $class;
@@ -246,23 +266,32 @@ class ReflectionInferrer extends NodeVisitorComponent
                 if (!empty($method)) {
                     foreach ($method->getParams() as $param) {
                         $scope[$param->getName()] = $param->getDocType();
+                        $dontInfer[$param->getName()] = true;
                     }
                 }
             }
             $this->functionScopeStack[] = $scope;
+            $this->dontInferVarsStack[] = $dontInfer;
 
         } elseif ($node instanceof Expr\Closure) {
             $scope = [];
+            $dontInfer = ['$this' => true];
             $parentScope = &$this->getCurrentFunctionScope();
+            $parentDontInfer = &$this->getCurrentDontInferVars();
             foreach ($node->uses as $use) {
                 if (array_key_exists('$' . $use->var, $parentScope)) {
                     $scope['$' . $use->var] = $parentScope['$' . $use->var];
+                    if (isset($parentScope['$' . $use->var])) {
+                        $dontInfer['$' . $use->var] = true;
+                    }
                 }
             }
             foreach ($node->params as $param) {
                 $scope['$' . $param->name] = Type::fromString(Type::nameToString($param->type));
+                $dontInfer['$' . $param->name] = true;
             }
             $this->functionScopeStack[] = $scope;
+            $this->dontInferVarsStack[] = $dontInfer;
 
         } elseif ($node instanceof Stmt\ClassLike) {
             $className = $node->hasAttribute('namespacedName')
@@ -271,6 +300,7 @@ class ReflectionInferrer extends NodeVisitorComponent
             $this->classStack[] = Type::object_($className);
             // for isolation, in case of illegal statements in class def:
             $this->functionScopeStack[] = [];
+            $this->dontInferVarsStack[] = [];
         }
     }
 
@@ -280,10 +310,12 @@ class ReflectionInferrer extends NodeVisitorComponent
                 $node instanceof Expr\Closure) {
             $variables = array_pop($this->functionScopeStack);
             $node->setAttribute('variables', $variables);
+            array_pop($this->dontInferVarsStack);
 
         } elseif ($node instanceof Stmt\ClassLike) {
             array_pop($this->classStack);
             array_pop($this->functionScopeStack);
+            array_pop($this->dontInferVarsStack);
         }
 
         if (!($node instanceof Expr)) {
@@ -304,6 +336,31 @@ class ReflectionInferrer extends NodeVisitorComponent
                 }
             }
 
+        } elseif ($node instanceof Stmt\Foreach_) {
+            $var = $node->valueVar;
+            if ($var instanceof Expr\Variable && is_string($var->name)) {
+                $name = '$' . $var->name;
+                if (!isset($this->getCurrentDontInferVars()[$name])) {
+                    $this->getCurrentFunctionScope()[$name] = Type::alternatives([
+                        $this->getCurrentFunctionScope()[$name],
+                        $node->expr->getAttribute('type'),
+                    ]);
+                }
+            }
+
+        } elseif ($node instanceof Expr\Assign || $node instanceof Expr\AssignRef) {
+            $var = $node->var;
+            if ($var instanceof Expr\Variable && is_string($var->name)) {
+                $name = '$' . $var->name;
+                if (!isset($this->getCurrentDontInferVars()[$name])) {
+                    $this->getCurrentFunctionScope()[$name] = Type::alternatives([
+                        $this->getCurrentFunctionScope()[$name],
+                        $node->expr->getAttribute('type'),
+                    ]);
+                }
+            }
+
+        // TODO: Global_
         } elseif ($node instanceof Expr\FuncCall) {
             $reflections = [];
             if ($node->name instanceof Name) {

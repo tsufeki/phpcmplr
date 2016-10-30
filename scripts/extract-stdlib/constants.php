@@ -25,6 +25,13 @@ function extract_constant_names($files, $extensions) {
                     $constants['common'][$constant] = array(
                         'name' => $constant,
                     );
+                    // lower-case variants
+                    if (in_array($constant, array('NULL', 'TRUE', 'FALSE'))) {
+                        $constant = strtolower($constant);
+                        $constants['common'][$constant] = array(
+                            'name' => $constant,
+                        );
+                    }
                     continue;
                 }
                 $extension_name = get_extension_name($file, $extensions);

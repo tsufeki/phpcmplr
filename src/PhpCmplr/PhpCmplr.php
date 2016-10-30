@@ -91,6 +91,7 @@ class PhpCmplr extends Plugin implements ContainerFactoryInterface
             ],
             'diagnostics' => [
                 'undefined' => true,
+                'undefined_member' => true,
                 'duplicate_member' => true,
             ],
         ], $options);
@@ -245,6 +246,9 @@ class PhpCmplr extends Plugin implements ContainerFactoryInterface
 
         if ($options['diagnostics']['undefined']) {
             $container->set('diagnostics.undefined', new Diagnostics\Undefined($container), ['diagnostics.visitor']);
+        }
+        if ($options['diagnostics']['undefined_member']) {
+            $container->set('diagnostics.undefined_member', new Diagnostics\UndefinedMember($container), ['diagnostics.visitor']);
         }
         if ($options['diagnostics']['duplicate_member']) {
             $container->set('diagnostics.duplicate_member', new Diagnostics\DuplicateMember($container), ['diagnostics.visitor']);

@@ -2,6 +2,7 @@
 
 namespace PhpCmplr\Completer\Reflection\Element;
 
+// TODO: PHP 7.1 class const accesibility
 class ClassConst extends Const_
 {
     /**

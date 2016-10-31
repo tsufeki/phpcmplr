@@ -9,20 +9,14 @@ use PhpParser\Node\Param;
 use PhpParser\Node\Name;
 
 use PhpCmplr\Completer\Type\Type;
-use PhpCmplr\Completer\SourceFile\Location;
-use PhpCmplr\Completer\SourceFile\OffsetLocation;
-use PhpCmplr\Completer\SourceFile\LineAndColumnLocation;
 use PhpCmplr\Completer\SourceFile\Range;
 use PhpCmplr\Completer\SourceFile\SourceFileInterface;
 use PhpCmplr\Completer\NodeVisitorComponent;
 use PhpCmplr\Completer\Diagnostics\DiagnosticsNodeVisitorInterface;
 use PhpCmplr\Completer\Diagnostics\Diagnostic;
-use PhpCmplr\Completer\Diagnostics\Fix;
-use PhpCmplr\Completer\Diagnostics\FixChunk;
 use PhpCmplr\Completer\Diagnostics\FixHelper;
 use PhpCmplr\Completer\Reflection\Reflection;
 use PhpCmplr\Completer\Reflection\NamespaceReflection;
-use PhpCmplr\Completer\Parser\Parser;
 
 class Undefined extends NodeVisitorComponent implements DiagnosticsNodeVisitorInterface
 {
@@ -47,29 +41,9 @@ class Undefined extends NodeVisitorComponent implements DiagnosticsNodeVisitorIn
     private $namespaceReflection;
 
     /**
-     * @var Parser
-     */
-    private $parser;
-
-    /**
      * @var FixHelper
      */
     private $fixHelper;
-
-    /**
-     * @var Node[]
-     */
-    private $nodePathFromTop;
-
-    /**
-     * @var Range
-     */
-    private $insertRange;
-
-    /**
-     * @var string
-     */
-    private $insertText;
 
     public function getDiagnostics()
     {
@@ -81,17 +55,13 @@ class Undefined extends NodeVisitorComponent implements DiagnosticsNodeVisitorIn
         $this->file = $this->container->get('file');
         $this->reflection = $this->container->get('reflection');
         $this->namespaceReflection = $this->container->get('namespace_reflection');
-        $this->parser = $this->container->get('parser');
         $this->fixHelper = $this->container->get('fix_helper');
         $this->container->get('name_resolver')->run();
         $this->diagnostics = [];
-        $this->nodePathFromTop = [];
-        $this->insertLocation = null;
     }
 
     public function enterNode(Node $node)
     {
-        array_push($this->nodePathFromTop, $node);
         $classes = [];
 
         if ($node instanceof Expr\Instanceof_ ||
@@ -134,8 +104,7 @@ class Undefined extends NodeVisitorComponent implements DiagnosticsNodeVisitorIn
                     $fixes = [];
                     if ($this->namespaceReflection !== null && $class->isUnqualified()) {
                         foreach ($this->namespaceReflection->findFullyQualifiedClasses($class->toString()) as $fqname) {
-                            //$fixes[] = new Fix([new FixChunk($range, $fqname)], $fqname);
-                            $fixes[] = $this->getFix($fqname);
+                            $fixes[] = $this->fixHelper->getUseFix($fqname, $range->getStart());
                         }
                     }
 
@@ -181,11 +150,11 @@ class Undefined extends NodeVisitorComponent implements DiagnosticsNodeVisitorIn
         }
     }
 
-    public function leaveNode(Node $node)
-    {
-        array_pop($this->nodePathFromTop);
-    }
-
+    /**
+     * @param Expr\FuncCall|Expr\ConstFetch $node
+     *
+     * @return string[]
+     */
     private function getFunctionOrConstNames(Node $node)
     {
         $names = [Type::nameToString($node->name)];
@@ -194,60 +163,5 @@ class Undefined extends NodeVisitorComponent implements DiagnosticsNodeVisitorIn
         }
 
         return $names;
-    }
-
-    /**
-     * @param string $fqname
-     *
-     * @return Fix
-     */
-    private function getFix($fqname)
-    {
-        if ($this->insertRange === null) {
-            $namespace = null;
-            foreach (array_reverse($this->nodePathFromTop) as $ancestor) {
-                if ($ancestor instanceof Stmt\Namespace_) {
-                    $namespace = $ancestor;
-                    break;
-                }
-            }
-
-            $lastUse = null;
-            $stmts = $namespace === null ? $this->parser->getNodes() : $namespace->stmts;
-            foreach ($stmts as $stmt) {
-                if ($stmt instanceof Stmt\Use_ || $stmt instanceof Stmt\GroupUse) {
-                    $lastUse = $stmt;
-                }
-            }
-
-            if ($lastUse !== null) {
-                /** @var Range */
-                $range = Range::fromNode($lastUse, $this->file->getPath());
-                $startLine = $range->getStart()->getLineAndColumn($this->file)[0];
-                $insertLocation = OffsetLocation::move($this->file, $range->getEnd());
-                $indent = $this->fixHelper->getIndentOfLines([$this->file->getLine($startLine)]);
-                $this->insertText = "\n" . $this->fixHelper->makeIndent($indent) . "use %s;";
-            } else {
-                $insertLocation = LineAndColumnLocation::moveToStartOfLine(
-                    $this->file,
-                    Range::fromNode($stmts[0], $this->file->getPath())->getStart()
-                );
-                $this->insertText = "use %s;\n\n";
-            }
-
-            $this->insertRange = new Range(
-                $insertLocation,
-                OffsetLocation::move($this->file, $insertLocation, -1)
-            );
-        }
-
-        $fqname = ltrim($fqname, '\\');
-        return new Fix(
-            [new FixChunk(
-                $this->insertRange,
-                sprintf($this->insertText, $fqname)
-            )],
-            'use ' . $fqname
-        );
     }
 }

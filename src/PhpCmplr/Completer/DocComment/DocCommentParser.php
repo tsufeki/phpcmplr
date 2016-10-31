@@ -12,58 +12,80 @@ class DocCommentParser extends NodeVisitorComponent
 {
     /**
      * @param string $docComment
+     * @param int    $startFilePos
      *
      * @return array [short description string, long description string, Tag[][]]
      */
-    protected function parse($docComment)
+    protected function parse($docComment, $startFilePos)
     {
+        $pos = $startFilePos;
+        if (!empty($docComment) && substr_compare($docComment, '/**', 0, 3) === 0) {
+            $pos += 3;
+            $docComment = substr_replace($docComment, '', 0, 3);
+        }
+        if (!empty($docComment) && substr_compare($docComment, '*/', -2, 2) === 0) {
+            $docComment = substr_replace($docComment, '', -2, 2);
+        }
+
+        $parts = [['text' => '', 'kind' => 'short']];
+        $inShortDescription = true;
+        foreach (explode("\n", $docComment) as $line) {
+            $trimmed = preg_replace('~^\\*\\s?~', '', trim($line));
+
+            // End of short description.
+            if ($trimmed === '' && $inShortDescription) {
+                if ($parts[0]['text'] !== '') {
+                    $inShortDescription = false;
+                    $parts[] = ['text' => '', 'kind' => 'long'];
+                }
+
+            // @annotation
+            } elseif (preg_match('~^((\\s*)@([\\S]+)\\s*)(.*)~', $trimmed, $matches)) {
+                $inShortDescription = false;
+                $parts[] = [
+                    'text' => $matches[4],
+                    'kind' => 'annotation',
+                    'name' => $matches[3],
+                    'pos' => $pos + strlen($matches[2]),
+                    'textPos' => $pos + strlen($matches[1]),
+                ];
+
+            } else {
+                $parts[count($parts) - 1]['text'] .= "\n" . $trimmed;
+            }
+
+            $pos += strlen($line) + 1;
+        }
+
         $shortDescription = '';
         $longDescription = '';
         $annotations = [];
-
-        $docBlock = trim(preg_replace([
-            '~^/\\*\\*~',
-            '~\\*/$~'
-        ], '', $docComment));
-        $current = &$shortDescription;
-        $inShortDescription = true;
-        foreach (explode("\n", $docBlock) as $line) {
-            $line = preg_replace('~^\\*\\s?~', '', trim($line));
-
-            // End of short description.
-            if ($line === '' && $inShortDescription) {
-                $current = &$longDescription;
-                $inShortDescription = false;
-                continue;
+        foreach ($parts as $part) {
+            switch ($part['kind']) {
+            case 'short':
+                $shortDescription = trim($part['text']) ?: null;
+                break;
+            case 'long':
+                $longDescription = trim($part['text']) ?: null;
+                break;
+            case 'annotation':
+                $annotations[$part['name']][] = Tag::get(
+                    $part['name'],
+                    trim($part['text']),
+                    $part['pos'],
+                    $part['textPos']
+                );
+                break;
             }
-
-            // @annotation
-            if (preg_match('~^\\s*@([\\S]+)\\s*(.*)~', $line, $matches)) {
-                $name = $matches[1];
-                $current = &$annotations[$name][];
-                $current = $matches[2];
-                $inShortDescription = false;
-                continue;
-            }
-
-            // Continuation.
-            $current .= "\n" . $line;
         }
 
-        array_walk_recursive($annotations, function (&$value) { $value = trim($value); });
-        foreach ($annotations as $aname => &$alist) {
-            foreach ($alist as &$annot) {
-                $annot = Tag::get($aname, $annot);
-                unset($annot);
-            }
-            unset($alist);
-        }
-        return [trim($shortDescription) ?: null, trim($longDescription) ?: null, $annotations];
+        return [$shortDescription, $longDescription, $annotations];
     }
 
     public function enterNode(Node $node)
     {
         if ($node->hasAttribute('comments')) {
+            /** @var Comment\Doc|null */
             $lastDocComment = null;
             foreach ($node->getAttribute('comments') as $comment) {
                 if ($comment instanceof Comment\Doc) {
@@ -71,7 +93,10 @@ class DocCommentParser extends NodeVisitorComponent
                 }
             }
             if ($lastDocComment) {
-                list($shortDescription, $longDescription, $annotations) = $this->parse($lastDocComment->getText());
+                list($shortDescription, $longDescription, $annotations) = $this->parse(
+                    $lastDocComment->getText(),
+                    $lastDocComment->getFilePos()
+                );
                 if (!empty($shortDescription)) {
                     $node->setAttribute('shortDescription', $shortDescription);
                 }

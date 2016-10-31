@@ -9,27 +9,22 @@ abstract class TypedTag extends Tag
     /**
      * @var Type
      */
-    protected $type;
+    private $type;
 
     /**
      * @var string
      */
-    protected $description;
+    private $description;
 
     /**
-     * @param string $name
-     * @param string $text
+     * @var int
      */
-    protected function __construct($name, $text)
-    {
-        parent::__construct($name, $text);
-        $text = trim($text);
-        $parts = preg_split('~\\s+~', trim($text), 2);
-        $this->type = Type::fromString($parts[0]);
-        if (count($parts) >= 2) {
-            $this->description = $parts[1] ?: null;
-        }
-    }
+    private $typeStartPos;
+
+    /**
+     * @var int
+     */
+    private $typeEndPos;
 
     /**
      * @return Type
@@ -57,5 +52,57 @@ abstract class TypedTag extends Tag
     public function getDescription()
     {
         return $this->description;
+    }
+
+    /**
+     * @param string $description
+     *
+     * @return $this
+     */
+    public function setDescription($description)
+    {
+        $this->description = $description;
+
+        return $this;
+    }
+
+    /**
+     * @return int
+     */
+    public function getTypeStartPos()
+    {
+        return $this->typeStartPos;
+    }
+
+    /**
+     * @param int $typeStartPos
+     *
+     * @return $this
+     */
+    public function setTypeStartPos($typeStartPos)
+    {
+        $this->typeStartPos = $typeStartPos;
+
+        return $this;
+    }
+
+    /**
+     * @return int
+     */
+    public function getTypeEndPos()
+    {
+        return $this->typeEndPos;
+    }
+
+    /**
+     * @param int $typeEndPos
+     *
+     * @return $this
+     */
+    public function setTypeEndPos($typeEndPos)
+    {
+        $this->typeEndPos = $typeEndPos;
+
+        return $this;
     }
 }

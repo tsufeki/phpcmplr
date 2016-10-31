@@ -2,6 +2,8 @@
 
 namespace PhpCmplr\Completer\DocComment\Tag;
 
+use PhpCmplr\Completer\Type\Type;
+
 class Tag
 {
     /**
@@ -15,14 +17,14 @@ class Tag
     private $text;
 
     /**
-     * @param string $name
-     * @param string $text
+     * @var int|null
      */
-    protected function __construct($name, $text)
-    {
-        $this->name = $name;
-        $this->text = $text;
-    }
+    private $startPos;
+
+    /**
+     * @var int|null
+     */
+    private $endPos;
 
     /**
      * @return string
@@ -30,6 +32,18 @@ class Tag
     public function getName()
     {
         return $this->name;
+    }
+
+    /**
+     * @param string $name
+     *
+     * @return $this
+     */
+    public function setName($name)
+    {
+        $this->name = $name;
+
+        return $this;
     }
 
     /**
@@ -41,24 +55,100 @@ class Tag
     }
 
     /**
+     * @param string $text
+     *
+     * @return $this
+     */
+    public function setText($text)
+    {
+        $this->text = $text;
+
+        return $this;
+    }
+
+    /**
+     * @return int
+     */
+    public function getStartPos()
+    {
+        return $this->startPos;
+    }
+
+    /**
+     * @param int $startPos
+     *
+     * @return $this
+     */
+    public function setStartPos($startPos)
+    {
+        $this->startPos = $startPos;
+
+        return $this;
+    }
+
+    /**
+     * @return int
+     */
+    public function getEndPos()
+    {
+        return $this->endPos;
+    }
+
+    /**
+     * @param int $endPos
+     *
+     * @return $this
+     */
+    public function setEndPos($endPos)
+    {
+        $this->endPos = $endPos;
+
+        return $this;
+    }
+
+    /**
      * @param string $name
      * @param string $text
      *
      * @return Tag
      */
-    public static function get($name, $text) {
+    public static function get($name, $text, $startPos = null, $textStartPos = null)
+    {
+        $tag = null;
         switch ($name) {
-            case 'var':
-                return new VarTag($name, $text);
-            case 'param':
-                return new ParamTag($name, $text);
-            case 'return':
-                return new ReturnTag($name, $text);
-            case 'throws':
             case 'throw':
-                return new ThrowsTag('throws', $text);
+                $name = 'throws';
+            case 'return':
+            case 'throws':
+                $tag = $name === 'return' ? new ReturnTag() : new ThrowsTag();
+                preg_match('~^(\\S*)(\\s*)(.*)$~s', $text, $matches);
+                $tag->setType(Type::fromString($matches[1]));
+                $tag->setDescription(trim($matches[3]) ?: null);
+                $tag->setTypeStartPos($textStartPos);
+                $tag->setTypeEndPos($textStartPos + strlen($matches[1]) - 1);
+                break;
+            case 'var':
+            case 'param':
+                $tag = $name === 'var' ? new VarTag() : new ParamTag();
+                preg_match('~^(\\S*)(\\s*)(\\$\\S*|)(\\s*)(.*)$~s', $text, $matches);
+                $tag->setType(Type::fromString($matches[1]));
+                $tag->setDescription(trim($matches[5]) ?: null);
+                $tag->setIdentifier(trim($matches[3]) ?: null);
+                $tag->setTypeStartPos($textStartPos);
+                $tag->setTypeEndPos($textStartPos + strlen($matches[1]) - 1);
+                break;
             default:
-                return new Tag($name, $text);
+                $tag = new Tag();
+                break;
         }
+
+        $tag->setName($name);
+        $tag->setText($text);
+        $tag->setStartPos($startPos);
+        if ($textStartPos !== null) {
+            $tag->setEndPos($textStartPos + strlen($text) - 1);
+        }
+
+        return $tag;
     }
 }

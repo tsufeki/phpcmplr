@@ -44,6 +44,13 @@ class Reflection extends Component
      */
     private $classConstsCache = [];
 
+    /**
+     * Find semantic information about a class, interface or trait.
+     *
+     * @param string $fullyQualifiedName
+     *
+     * @return ClassLike[]
+     */
     public function findClass($fullyQualifiedName)
     {
         $this->run();
@@ -55,6 +62,13 @@ class Reflection extends Component
         return $this->unique($classes);
     }
 
+    /**
+     * Find semantic information about a function (not a method).
+     *
+     * @param string $fullyQualifiedName
+     *
+     * @return Function_[]
+     */
     public function findFunction($fullyQualifiedName)
     {
         $this->run();
@@ -67,6 +81,13 @@ class Reflection extends Component
         return $this->unique($functions);
     }
 
+    /**
+     * Find semantic information about a non-class const.
+     *
+     * @param string $fullyQualifiedName
+     *
+     * @return Const_[]
+     */
     public function findConst($fullyQualifiedName)
     {
         $this->run();

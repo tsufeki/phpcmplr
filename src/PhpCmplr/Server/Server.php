@@ -10,6 +10,7 @@ use React\Http\Request;
 use React\Http\Response;
 use React\Http\ResponseCodes;
 use React\Http\StreamingBodyParser\Factory as BodyParserFactory;
+use Psr\Log\LoggerInterface;
 
 use PhpCmplr\PhpCmplr;
 
@@ -49,7 +50,7 @@ class Server
     private $phpcmplr;
 
     /**
-     * @var mixed
+     * @var LoggerInterface
      */
     private $logger;
 
@@ -59,12 +60,12 @@ class Server
     private $actions;
 
     /**
-     * @param PhpCmplr      $phpcmplr
-     * @param mixed         $logger
-     * @param LoopInterface $loop
-     * @param array         $options
+     * @param PhpCmplr        $phpcmplr
+     * @param LoggerInterface $logger
+     * @param LoopInterface   $loop
+     * @param array           $options
      */
-    public function __construct(PhpCmplr $phpcmplr, $logger, LoopInterface $loop, array $options)
+    public function __construct(PhpCmplr $phpcmplr, LoggerInterface $logger, LoopInterface $loop, array $options)
     {
         $this->host = $options['host'];
         $this->port = $options['port'];

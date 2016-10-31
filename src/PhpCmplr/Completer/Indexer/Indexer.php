@@ -5,6 +5,7 @@ namespace PhpCmplr\Completer\Indexer;
 use React\EventLoop\LoopInterface;
 use ReactFilesystemMonitor\FilesystemMonitorInterface;
 use ReactFilesystemMonitor\INotifyProcessMonitor;
+use Psr\Log\LoggerInterface;
 
 use PhpCmplr\Completer\Component;
 use PhpCmplr\Completer\Container;
@@ -49,7 +50,7 @@ class Indexer extends Component implements IndexerInterface
     private $factory;
 
     /**
-     * @var mixed
+     * @var LoggerInterface
      */
     private $logger;
 

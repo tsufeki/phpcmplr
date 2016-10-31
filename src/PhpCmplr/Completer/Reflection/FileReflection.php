@@ -29,6 +29,7 @@ use PhpCmplr\Completer\Reflection\Element\TraitAlias;
 use PhpCmplr\Completer\Reflection\Element\TraitInsteadOf;
 use PhpCmplr\Completer\Reflection\Element\Trait_;
 use PhpCmplr\Completer\Reflection\Element\Variable;
+use PhpCmplr\Completer\SourceFile\SourceFileInterface;
 
 class FileReflection extends NodeVisitorComponent implements ReflectionInterface
 {
@@ -55,7 +56,9 @@ class FileReflection extends NodeVisitorComponent implements ReflectionInterface
     public function __construct(Container $container)
     {
         parent::__construct($container);
-        $this->path = $this->container->get('file')->getPath();
+        /** @var SourceFileInterface */
+        $file = $this->container->get('file');
+        $this->path = $file->getPath();
     }
 
     /**

@@ -12,6 +12,7 @@ use PhpParser\Node\Stmt;
 
 use PhpCmplr\Completer\ComponentTrait;
 use PhpCmplr\Completer\Runnable;
+use PhpCmplr\Completer\Parser\Parser;
 
 class NameResolver extends PhpParserNameResolver implements Runnable, NameResolverInterface
 {
@@ -58,6 +59,7 @@ class NameResolver extends PhpParserNameResolver implements Runnable, NameResolv
 
     public function resolveOtherName(Name $name, $type)
     {
+        /** @var Name */
         $resolved = parent::resolveOtherName($name, $type);
         if (!$resolved->isFullyQualified()) {
             $resolved = new FullyQualified($resolved);
@@ -117,6 +119,7 @@ class NameResolver extends PhpParserNameResolver implements Runnable, NameResolv
         foreach ($this->components as $component) {
             $component->run();
         }
+        /** @var Parser */
         $parser = $this->container->get('parser');
         $traverser = new NodeTraverser();
         $traverser->addVisitor($this);

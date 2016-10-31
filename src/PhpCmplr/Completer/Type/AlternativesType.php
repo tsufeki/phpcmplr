@@ -29,7 +29,7 @@ class AlternativesType extends Type
     public function toString($short = false)
     {
         return implode('|', array_map(
-            function ($a) use ($short) { return $a->toString($short); },
+            function (Type $a) use ($short) { return $a->toString($short); },
             $this->getAlternatives()));
     }
 
@@ -39,6 +39,7 @@ class AlternativesType extends Type
         if ($cmp !== 0) {
             return $cmp;
         }
+        /** @var self $other */
         for ($i = 0;; $i++) {
             if (count($this->alternatives) <= $i && count($other->alternatives) <= $i) {
                 return 0;

@@ -18,6 +18,7 @@ use PhpCmplr\Completer\Reflection\Element\Param;
 use PhpCmplr\Completer\Reflection\Element\Property;
 use PhpCmplr\Completer\Reflection\Element\Trait_;
 use PhpCmplr\Completer\Reflection\Element\Variable;
+use PhpCmplr\Util\FileIOInterface;
 
 class JsonReflection extends Component implements ReflectionInterface
 {
@@ -151,6 +152,10 @@ class JsonReflection extends Component implements ReflectionInterface
         }
     }
 
+    /**
+     * @param Property|Method $member
+     * @param array           $data
+     */
     protected function handleMember($member, $data)
     {
         $access = ClassLike::M_PUBLIC;
@@ -160,7 +165,6 @@ class JsonReflection extends Component implements ReflectionInterface
             $access = ClassLike::M_PRIVATE;
         }
         $member->setAccessibility($access);
-
         $member->setStatic(in_array('static', $data['modifiers']));
     }
 
@@ -222,7 +226,9 @@ class JsonReflection extends Component implements ReflectionInterface
     {
         // TODO: validation.
         // TODO: traits.
-        $data = json_decode($this->container->get('io')->read($this->path), true);
+        /** @var FileIOInterface */
+        $io = $this->container->get('io');
+        $data = json_decode($io->read($this->path), true);
 
         $functionAliases = [];
         foreach ($data['functions'] as $functionData) {

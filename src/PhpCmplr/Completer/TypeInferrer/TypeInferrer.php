@@ -2,20 +2,26 @@
 
 namespace PhpCmplr\Completer\TypeInferrer;
 
+use PhpParser\Node;
 use PhpParser\Node\Expr;
 use PhpParser\Node\Name;
 use PhpParser\Comment;
 
 use PhpCmplr\Completer\NodeTraverserComponent;
 use PhpCmplr\Completer\Type\Type;
+use PhpCmplr\Completer\Parser\ParserInterface;
+use PhpCmplr\Completer\Runnable;
 
 class TypeInferrer extends NodeTraverserComponent implements TypeInferrerInterface
 {
     public function getType($offset)
     {
         $this->run();
-        $nodes = $this->container->get('parser')->getNodesAtOffset($offset);
+        /** @var ParserInterface */
+        $parser = $this->container->get('parser');
+        $nodes = $parser->getNodesAtOffset($offset);
 
+        /** @var Node|null */
         $node = null;
         if (count($nodes) > 0) {
             $node = $nodes[0];
@@ -41,7 +47,9 @@ class TypeInferrer extends NodeTraverserComponent implements TypeInferrerInterfa
         foreach ($visitors as $visitor) {
             $this->addVisitor($visitor);
         }
-        $this->container->get('name_resolver')->run();
+        /** @var Runnable */
+        $nameResolver = $this->container->get('name_resolver');
+        $nameResolver->run();
         parent::doRun();
     }
 }

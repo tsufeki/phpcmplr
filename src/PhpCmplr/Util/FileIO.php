@@ -93,6 +93,7 @@ class FileIO implements FileIOInterface
         );
 
         $mtimes = [];
+        /** @var \SplFileInfo $file */
         foreach ($iter as $path => $file) {
             try {
                 if ($filter === null || $filter->filter($file)) {

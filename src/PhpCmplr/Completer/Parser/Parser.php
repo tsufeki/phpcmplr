@@ -15,6 +15,7 @@ use PhpCmplr\Completer\SourceFile\OffsetLocation;
 use PhpCmplr\Completer\SourceFile\Range;
 use PhpCmplr\Completer\Diagnostics\DiagnosticsInterface;
 use PhpCmplr\Completer\Diagnostics\Diagnostic;
+use PhpCmplr\Completer\SourceFile\SourceFileInterface;
 
 class Parser extends Component implements ParserInterface, DiagnosticsInterface
 {
@@ -63,6 +64,7 @@ class Parser extends Component implements ParserInterface, DiagnosticsInterface
     {
         if ($nodes instanceof Node) {
 
+            /** @var Comment[] */
             $comments = $nodes->getAttribute('comments', []);
             foreach ($comments as $comment) {
                 if ($comment instanceof Comment\Doc) {
@@ -159,10 +161,14 @@ class Parser extends Component implements ParserInterface, DiagnosticsInterface
 
     protected function doRun()
     {
+        /** @var SourceFileInterface */
         $file = $this->container->get('file');
         $path = $file->getPath();
+        /** @var PositionsReconstructor */
         $reconstructor = $this->container->get('parser.positions_reconstructor');
         try {
+            /** @var RealParser $parser
+             *  @var Lexer $lexer */
             list($parser, $lexer) = $this->createParser();
             $errorHandler = new ErrorHandler\Collecting();
             $this->nodes = $parser->parse($file->getContents(), $errorHandler);

@@ -15,7 +15,7 @@ use PhpCmplr\Completer\Reflection\Element\Function_;
 class LocatorReflection extends Component implements ReflectionInterface
 {
     /**
-     * @var FileIOInterface
+     * @var FileStoreInterface
      */
     private $fileStore;
 
@@ -61,6 +61,7 @@ class LocatorReflection extends Component implements ReflectionInterface
                     if ($cont === null) {
                         $cont = $this->fileStore->addFile($path, $this->io->read($path));
                     }
+                    /** @var FileReflection */
                     $file = $cont->get('reflection.file');
                     if ($file !== null) {
                         $classes = array_merge($classes, $file->findClass($fullyQualifiedName));
@@ -90,6 +91,7 @@ class LocatorReflection extends Component implements ReflectionInterface
                     if ($cont === null) {
                         $cont = $this->fileStore->addFile($path, $this->io->read($path));
                     }
+                    /** @var FileReflection */
                     $file = $cont->get('reflection.file');
                     if ($file !== null) {
                         $functions = array_merge($functions, $file->findFunction($fullyQualifiedName));
@@ -119,6 +121,7 @@ class LocatorReflection extends Component implements ReflectionInterface
                     if ($cont === null) {
                         $cont = $this->fileStore->addFile($path, $this->io->read($path));
                     }
+                    /** @var FileReflection */
                     $file = $cont->get('reflection.file');
                     if ($file !== null) {
                         $consts = array_merge($consts, $file->findConst($fullyQualifiedName));

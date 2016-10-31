@@ -2,6 +2,9 @@
 
 namespace PhpCmplr\Completer;
 
+use Psr\Log\LoggerInterface;
+use PhpCmplr\Util\FileIOInterface;
+
 class FileStore implements FileStoreInterface
 {
     /**
@@ -20,7 +23,7 @@ class FileStore implements FileStoreInterface
     private $projects;
 
     /**
-     * @var mixed
+     * @var LoggerInterface
      */
     private $logger;
 
@@ -46,7 +49,9 @@ class FileStore implements FileStoreInterface
             return $this->projectRootDirCache[$path];
         }
 
-        $rootPath = $this->factory->getGlobalContainer()->get('project_root_dir')->getProjectRootDir($path);
+        /** @var ProjectRootDirectoryGuesserInterface */
+        $rootGuesser = $this->factory->getGlobalContainer()->get('project_root_dir');
+        $rootPath = $rootGuesser->getProjectRootDir($path);
         if (empty($rootPath)) {
             $rootPath = '/';
         }
@@ -57,7 +62,9 @@ class FileStore implements FileStoreInterface
 
     public function getFile($path)
     {
-        $path = $this->factory->getGlobalContainer()->get('io')->canonicalPath($path);
+        /** @var FileIOInterface */
+        $io = $this->factory->getGlobalContainer()->get('io');
+        $path = $io->canonicalPath($path);
         $projectRootPath = $this->getProjectRootPath($path);
 
         if (array_key_exists($projectRootPath, $this->projects)) {
@@ -69,7 +76,9 @@ class FileStore implements FileStoreInterface
 
     public function addFile($path, $contents)
     {
-        $path = $this->factory->getGlobalContainer()->get('io')->canonicalPath($path);
+        /** @var FileIOInterface */
+        $io = $this->factory->getGlobalContainer()->get('io');
+        $path = $io->canonicalPath($path);
         $projectRootPath = $this->getProjectRootPath($path);
 
         if (!array_key_exists($projectRootPath, $this->projects)) {

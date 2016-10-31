@@ -32,6 +32,7 @@ use PhpCmplr\Completer\GoTo_\GoToClassDefinition;
 use PhpCmplr\Completer\Completer\Completer;
 use PhpCmplr\Completer\Reflection\NamespaceReflection;
 use PhpCmplr\Completer\Indexer\Indexer;
+use PhpCmplr\Completer\Indexer\IndexerInterface;
 use PhpCmplr\Completer\Indexer\ReflectionIndexData;
 use PhpCmplr\Completer\Indexer\IndexLocator;
 use PhpCmplr\Completer\Indexer\IndexNamespaceReflection;
@@ -190,6 +191,7 @@ class PhpCmplr extends Plugin implements ContainerFactoryInterface
             $plugin->addProjectComponents($container, $this->options);
         }
 
+        /** @var IndexerInterface */
         $indexer = $container->get('indexer');
         if ($indexer !== null) {
             $indexer->run();
@@ -201,7 +203,9 @@ class PhpCmplr extends Plugin implements ContainerFactoryInterface
     public function addProjectComponents(Container $container, array $options)
     {
         $container->set('namespace_reflection', new NamespaceReflection($container));
-        $rootPath = $container->get('project')->getRootPath();
+        /** @var Project */
+        $project = $container->get('project');
+        $rootPath = $project->getRootPath();
         if ($options['indexer']['enabled'] && !empty($rootPath) && $rootPath !== '/') {
             $container->set('indexer', new Indexer($container));
             $container->set('reflection.locator.index', new IndexLocator($container), ['reflection.locator']);
@@ -285,7 +289,9 @@ class PhpCmplr extends Plugin implements ContainerFactoryInterface
      */
     public function getFile($path)
     {
-        return $this->globalContainer->get('file_store')->getFile($path);
+        /** @var FileStoreInterface */
+        $fileStore =  $this->globalContainer->get('file_store');
+        return $fileStore->getFile($path);
     }
 
     /**
@@ -296,7 +302,9 @@ class PhpCmplr extends Plugin implements ContainerFactoryInterface
      */
     public function addFile($path, $contents)
     {
-        return $this->globalContainer->get('file_store')->addFile($path, $contents);
+        /** @var FileStoreInterface */
+        $fileStore =  $this->globalContainer->get('file_store');
+        return $fileStore->addFile($path, $contents);
     }
 
     public function run()
@@ -307,7 +315,7 @@ class PhpCmplr extends Plugin implements ContainerFactoryInterface
 
     public function quit()
     {
-        $this->loop->nextTick(function ($loop) {
+        $this->loop->nextTick(function (LoopInterface $loop) {
             $this->server->quit();
             $this->globalContainer->quit();
             $loop->stop();

@@ -8,6 +8,7 @@ use PhpCmplr\Completer\SourceFile\SourceFileInterface;
 use PhpCmplr\Util\Json;
 use PhpCmplr\Util\JsonLoadException;
 use PhpCmplr\Util\JsonDumpException;
+use Psr\Log\LoggerInterface;
 
 /**
  * Base action class.
@@ -36,7 +37,7 @@ abstract class Action implements ActionInterface
     private $schema = null;
 
     /**
-     * @var mixed
+     * @var LoggerInterface
      */
     private $logger = null;
 
@@ -119,7 +120,7 @@ END;
         return new \stdClass();
     }
 
-    public function setLogger($logger)
+    public function setLogger(LoggerInterface $logger)
     {
         $this->logger = $logger;
 

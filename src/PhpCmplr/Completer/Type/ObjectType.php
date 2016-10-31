@@ -42,6 +42,7 @@ class ObjectType extends Type
     public function compare(Type $other)
     {
         $cmp = parent::compare($other);
+        /** @var self $other */
         return $cmp !== 0 ? $cmp : strcasecmp($this->getClass(), $other->getClass());
     }
 }

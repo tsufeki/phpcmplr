@@ -20,6 +20,7 @@ use PhpCmplr\Completer\Reflection\Element\Variable;
 use PhpCmplr\Completer\Reflection\Element\Property;
 use PhpCmplr\Completer\Reflection\Element\Const_;
 use PhpCmplr\Completer\Reflection\Element\ClassConst;
+use PhpCmplr\Completer\DocComment\Tag\VarTag;
 
 class ReflectionInferrer extends NodeVisitorComponent
 {
@@ -213,6 +214,7 @@ class ReflectionInferrer extends NodeVisitorComponent
                 $annotations = $node->getAttribute('annotations');
             }
             if (!empty($annotations['var'])) {
+                /** @var VarTag */
                 foreach ($annotations['var'] as $varTag) {
                     $name = $varTag->getIdentifier();
                     if (empty($name)) {

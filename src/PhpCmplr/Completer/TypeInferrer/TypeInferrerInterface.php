@@ -3,8 +3,9 @@
 namespace PhpCmplr\Completer\TypeInferrer;
 
 use PhpCmplr\Completer\Type\Type;
+use PhpCmplr\Completer\Runnable;
 
-interface TypeInferrerInterface
+interface TypeInferrerInterface extends Runnable
 {
     /**
      * Get type of the expression at offset.

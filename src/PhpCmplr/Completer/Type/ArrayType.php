@@ -53,6 +53,7 @@ class ArrayType extends Type
         if ($cmp !== 0) {
             return $cmp;
         }
+        /** @var self $other */
         $cmp = $this->getValueType()->compare($other->getValueType());
         if ($cmp !== 0) {
             return $cmp;

@@ -3,6 +3,7 @@
 namespace PhpCmplr\Server;
 
 use PhpCmplr\PhpCmplr;
+use Psr\Log\LoggerInterface;
 
 interface ActionInterface
 {
@@ -25,7 +26,7 @@ interface ActionInterface
     public function handleRequest($body, PhpCmplr $phpcmplr);
 
     /**
-     * @param mixed $logger
+     * @param LoggerInterface $logger
      */
-    public function setLogger($logger);
+    public function setLogger(LoggerInterface $logger);
 }

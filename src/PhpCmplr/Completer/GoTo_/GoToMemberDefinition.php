@@ -6,6 +6,8 @@ use PhpParser\Node\Name;
 use PhpParser\Comment;
 
 use PhpCmplr\Completer\Component;
+use PhpCmplr\Completer\Reflection\Element\Element;
+use PhpCmplr\Completer\TypeInferrer\TypeInferrerInterface;
 
 class GoToMemberDefinition extends Component implements GoToInterface
 {
@@ -24,6 +26,7 @@ class GoToMemberDefinition extends Component implements GoToInterface
         $locations = [];
 
         if ($node !== null && $node->hasAttribute('reflections')) {
+            /** @var Element */
             foreach ($node->getAttribute('reflections') as $refl) {
                 $loc = $refl->getLocation();
                 if ($loc !== null) {
@@ -37,6 +40,8 @@ class GoToMemberDefinition extends Component implements GoToInterface
 
     protected function doRun()
     {
-        $this->container->get('typeinfer')->run();
+        /** @var TypeInferrerInterface */
+        $typeinfer = $this->container->get('typeinfer');
+        $typeinfer->run();
     }
 }

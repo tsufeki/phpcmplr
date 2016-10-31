@@ -151,6 +151,7 @@ class Type
      */
     public static function alternatives(array $alternatives)
     {
+        /** @var Type[] */
         $normalized = [];
         // Flatten the structure.
         foreach ($alternatives as $alternative) {

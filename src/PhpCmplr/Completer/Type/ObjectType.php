@@ -10,20 +10,35 @@ class ObjectType extends Type
     private $class;
 
     /**
-     * @param string|nulll $class
+     * @var string|null
      */
-    public function __construct($class)
+    private $unresolvedClass;
+
+    /**
+     * @param string|null       $class
+     * @param string|null|false $unresolvedClass
+     */
+    public function __construct($class, $unresolvedClass = false)
     {
         parent::__construct('object');
         $this->class = $class;
+        $this->unresolvedClass = $unresolvedClass === false ? $class : $unresolvedClass;
     }
 
     /**
-     * @return string
+     * @return string|null
      */
     public function getClass()
     {
         return $this->class;
+    }
+
+    /**
+     * @return string|null
+     */
+    public function getUnresolvedClass()
+    {
+        return $this->unresolvedClass;
     }
 
     public function toString($short = false)

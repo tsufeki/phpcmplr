@@ -18,7 +18,7 @@ class DocCommentNameResolver extends Component implements NameResolverComponentI
     {
         return $type->walk(function (Type $type) use ($nameResolver) {
             if ($type instanceof ObjectType) {
-                $nameStr = $type->getClass();
+                $unresolved = $nameStr = $type->getClass();
                 if ($nameStr !== null && $nameStr !== '') {
                     if ($nameStr[0] === '\\') {
                         $name = new Name\FullyQualified(substr($nameStr, 1));
@@ -31,7 +31,7 @@ class DocCommentNameResolver extends Component implements NameResolverComponentI
                     if ($name instanceof Name\FullyQualified) {
                         $nameStr = '\\' . $nameStr;
                     }
-                    return Type::object_($nameStr);
+                    return Type::object_($nameStr, $unresolved);
                 }
             }
 

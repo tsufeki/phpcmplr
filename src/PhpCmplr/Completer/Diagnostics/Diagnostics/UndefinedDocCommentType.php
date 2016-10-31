@@ -76,8 +76,10 @@ class UndefinedDocCommentType extends NodeVisitorComponent implements Diagnostic
                         /** @var TypedTag $tag */
                         $tag->getType()->walk(function (Type $type) use (&$classes, $tag) {
                             if ($type instanceof ObjectType && ($name = $type->getClass())) {
-                                $classes[] = [$name, $tag];
+                                $classes[] = [$name, $type->getUnresolvedClass(), $tag];
                             }
+
+                            return $type;
                         });
                     }
                 }
@@ -85,7 +87,7 @@ class UndefinedDocCommentType extends NodeVisitorComponent implements Diagnostic
         }
 
         /** @var TypedTag $tag */
-        foreach ($classes as list($name, $tag)) {
+        foreach ($classes as list($name, $unresolved, $tag)) {
             if (!in_array(strtolower($name), ['self', 'parent', 'static']) &&
                     empty($this->reflection->findClass($name))) {
                 $range = new Range(
@@ -93,8 +95,8 @@ class UndefinedDocCommentType extends NodeVisitorComponent implements Diagnostic
                     new OffsetLocation($this->file->getPath(), $tag->getTypeEndPos())
                 );
                 $fixes = [];
-                if ($this->namespaceReflection !== null && strpos($name, '\\') === false) {
-                    foreach ($this->namespaceReflection->findFullyQualifiedClasses($name) as $fqname) {
+                if ($this->namespaceReflection !== null && strpos($unresolved, '\\') === false) {
+                    foreach ($this->namespaceReflection->findFullyQualifiedClasses($unresolved) as $fqname) {
                         $fixes[] = $this->fixHelper->getUseFix($fqname, $range->getStart());
                     }
                 }

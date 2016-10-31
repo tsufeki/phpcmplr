@@ -135,13 +135,14 @@ class Type
     }
 
     /**
-     * @param string|null $class
+     * @param string|null       $class
+     * @param string|null|false $unresolvedClass
      *
      * @return ObjectType
      */
-    public static function object_($class = null)
+    public static function object_($class = null, $unresolvedClass = false)
     {
-        return new ObjectType($class);
+        return new ObjectType($class, $unresolvedClass);
     }
 
     /**

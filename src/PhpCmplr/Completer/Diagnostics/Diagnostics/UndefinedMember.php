@@ -62,11 +62,12 @@ class UndefinedMember extends NodeVisitorComponent implements DiagnosticsNodeVis
         }
 
         $reflections = $node->hasAttribute('reflections') ? $node->getAttribute('reflections') : [];
-        if ($node instanceof Expr\MethodCall ||
+        if (($node instanceof Expr\MethodCall ||
             $node instanceof Expr\StaticCall ||
             $node instanceof Expr\PropertyFetch ||
             $node instanceof Expr\StaticPropertyFetch ||
-            $node instanceof Expr\ClassConstFetch
+            $node instanceof Expr\ClassConstFetch) &&
+            is_string($node->name)
         ) {
             // TODO: PHP 7.1 class const accesibility
             if (!($node instanceof Expr\ClassConstFetch)) {

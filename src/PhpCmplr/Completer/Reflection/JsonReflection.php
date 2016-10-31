@@ -44,7 +44,7 @@ class JsonReflection extends Component implements ReflectionInterface
     private $functions = [];
 
     /**
-     * @var Consts_[]
+     * @var Const_[]
      */
     private $consts = [];
 

@@ -15,26 +15,6 @@ class VariableCompleter extends Component implements CompleterInterface
      */
     private $parser;
 
-    /**
-     * @param Property[] $properties
-     * @param bool       $staticContext
-     *
-     * @return Completion[]
-     */
-    public function formatProperties(array $properties, $staticContext = false)
-    {
-        $completions = [];
-        foreach ($properties as $property) {
-            $completion = new Completion();
-            $completion->setInsertion($staticContext ? $property->getName() : ltrim($property->getName(), '$'));
-            $completion->setDisplay($completion->getInsertion());
-            $completion->setKind($property->isStatic() ? Completion::KIND_STATIC_PROPERTY : Completion::KIND_PROPERTY);
-            $completion->setExtendedDisplay($property->getType()->toString(true));
-            $completions[] = $completion;
-        }
-        return $completions;
-    }
-
     public function complete($offset)
     {
         $this->run();

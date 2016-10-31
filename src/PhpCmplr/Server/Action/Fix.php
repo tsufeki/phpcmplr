@@ -6,6 +6,7 @@ use PhpCmplr\PhpCmplr;
 use PhpCmplr\Completer\Diagnostics\Diagnostic;
 use PhpCmplr\Completer\Diagnostics\Fix as FixObject;
 use PhpCmplr\Completer\Diagnostics\FixChunk;
+use PhpCmplr\Completer\Diagnostics\Diagnostics as DiagnosticsComponent;
 
 /**
  * Get fix for the nearest diagnostic on the given line.
@@ -61,8 +62,9 @@ END;
             $file = $container->get('file');
             $nearestDiag = null;
             $nearestDistance = 999999;
-            /** @var Diagnostic $diag */
-            foreach ($container->get('diagnostics')->getDiagnostics() as $diag) {
+            /** @var DiagnosticsComponent */
+            $diagnostics = $container->get('diagnostics');
+            foreach ($diagnostics->getDiagnostics() as $diag) {
                 // TODO: not only the first range
                 $range = $diag->getRanges()[0];
                 list($line1, $col1) = $range->getStart()->getLineAndColumn($file);

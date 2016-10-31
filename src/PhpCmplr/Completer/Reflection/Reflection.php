@@ -655,7 +655,7 @@ class Reflection extends Component
         }
 
         $class = $classes[0];
-        /** @var Const[] $consts name => Const. */
+        /** @var ClassConst[] $consts name => Const. */
         $consts = [];
 
         if ($class instanceof Class_) {

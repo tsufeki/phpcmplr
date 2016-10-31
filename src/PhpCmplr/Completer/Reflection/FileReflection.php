@@ -44,7 +44,7 @@ class FileReflection extends NodeVisitorComponent implements ReflectionInterface
     private $functions = [];
 
     /**
-     * @var Consts_[]
+     * @var Const_[]
      */
     private $consts = [];
 

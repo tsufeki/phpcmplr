@@ -82,10 +82,12 @@ class FileStore implements FileStoreInterface
         $projectRootPath = $this->getProjectRootPath($path);
 
         if (!array_key_exists($projectRootPath, $this->projects)) {
-            $this->logger->debug(sprintf('File store: add %s to project %s', $path, $projectRootPath));
             $this->projects[$projectRootPath] = $this->factory->createProject($projectRootPath);
         }
         $project = $this->projects[$projectRootPath];
+        if ($project->getFile($path) === null) {
+            $this->logger->debug(sprintf('File store: add %s to project %s', $path, $projectRootPath));
+        }
         $fileContainer = $this->factory->createFileContainer($project, $path, $contents);
         $project->addFile($path, $fileContainer);
 

@@ -3,6 +3,9 @@
 namespace PhpCmplr\Server\Action;
 
 use PhpCmplr\PhpCmplr;
+use PhpCmplr\Completer\SourceFile\SourceFileInterface;
+use PhpCmplr\Completer\GoTo_\GoTo_ as GoToComponent;
+use PhpCmplr\Util\FileIOInterface;
 
 /**
  * Go to definition of the object at location.
@@ -49,14 +52,19 @@ END;
         $gotoData = [];
 
         if ($container !== null) {
+            /** @var SourceFileInterface */
             $file = $container->get('file');
             $offset = $file->getOffset($data->location->line, $data->location->col);
-            foreach ($container->get('goto')->getGoToLocations($offset) as $location) {
+            /** @var FileIOInterface */
+            $io = $container->get('io');
+            /** @var GoToComponent */
+            $goto = $container->get('goto');
+            foreach ($goto->getGoToLocations($offset) as $location) {
                 $gotoContainer = $phpcmplr->getFile($location->getPath());
                 if ($gotoContainer === null) {
                     $gotoContainer = $phpcmplr->addFile(
                         $location->getPath(), 
-                        $container->get('io')->read($location->getPath()));
+                        $io->read($location->getPath()));
                 }
                 $gotoData[] = $this->makeLocation($location, $gotoContainer->get('file'), true);
             }

@@ -7,13 +7,21 @@ use PhpCmplr\Completer\Component;
 class Completer extends Component
 {
     /**
-     * @var CompleterInterface
+     * @var CompleterInterface[]
      */
     private $components;
 
+    /**
+     * Find completions at offset.
+     *
+     * @param int $offset
+     *
+     * @return Completion[]
+     */
     public function complete($offset)
     {
         $this->run();
+        /** @var Completion[] */
         $completions = [];
         foreach ($this->components as $component) {
             $completions = array_merge($completions, $component->complete($offset));

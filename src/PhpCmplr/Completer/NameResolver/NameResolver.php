@@ -19,7 +19,7 @@ class NameResolver extends PhpParserNameResolver implements Runnable, NameResolv
     use ComponentTrait;
 
     /**
-     * @var NodeResolverComponentInterface[]
+     * @var NameResolverComponentInterface[]
      */
     private $components;
 

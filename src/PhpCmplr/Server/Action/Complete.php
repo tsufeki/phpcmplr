@@ -3,6 +3,8 @@
 namespace PhpCmplr\Server\Action;
 
 use PhpCmplr\PhpCmplr;
+use PhpCmplr\Completer\SourceFile\SourceFileInterface;
+use PhpCmplr\Completer\Completer\Completer;
 
 /**
  * Get completions for location.
@@ -53,9 +55,12 @@ END;
         $completionsData = [];
 
         if ($container !== null) {
+            /** @var SourceFileInterface */
             $file = $container->get('file');
             $offset = $file->getOffset($data->location->line, $data->location->col);
-            foreach ($container->get('completer')->complete($offset) as $completion) {
+            /** @var Completer */
+            $completer = $container->get('completer');
+            foreach ($completer->complete($offset) as $completion) {
                 $data = new \stdClass();
                 $data->insertion = $completion->getInsertion();
                 $data->display = $completion->getDisplay();

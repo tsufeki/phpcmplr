@@ -3,6 +3,9 @@
 namespace PhpCmplr\Server\Action;
 
 use PhpCmplr\PhpCmplr;
+use PhpCmplr\Completer\SourceFile\SourceFileInterface;
+use PhpCmplr\Completer\Type\Type as TypeType;
+use PhpCmplr\Completer\TypeInferrer\TypeInferrerInterface;
 
 /**
  * Get type of expression at location.
@@ -39,12 +42,16 @@ END;
         parent::handle($data, $phpcmplr);
 
         $container = $phpcmplr->getFile($data->location->path);
+        /** @var TypeType|null */
         $type = null;
 
         if ($container !== null) {
+            /** @var SourceFileInterface */
             $file = $container->get('file');
             $offset = $file->getOffset($data->location->line, $data->location->col);
-            $type = $container->get('typeinfer')->getType($offset);
+            /** @var TypeInferrerInterface */
+            $typeinfer = $container->get('typeinfer');
+            $type = $typeinfer->getType($offset);
         }
 
         $result = new \stdClass();

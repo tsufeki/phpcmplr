@@ -8,6 +8,7 @@ use PhpParser\Comment;
 
 use PhpCmplr\Completer\Component;
 use PhpCmplr\Completer\Parser\Parser;
+use PhpCmplr\Completer\SourceFile\Location;
 
 class GoTo_ extends Component
 {
@@ -21,6 +22,13 @@ class GoTo_ extends Component
      */
     private $goToComponents;
 
+    /**
+     * Get "go to" locations for the given position in current file.
+     *
+     * @param int    $offset
+     *
+     * @return Location[] Preferred locations first.
+     */
     public function getGoToLocations($offset)
     {
         $this->run();

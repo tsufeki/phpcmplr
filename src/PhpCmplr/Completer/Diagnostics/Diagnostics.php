@@ -18,6 +18,9 @@ class Diagnostics extends NodeTraverserComponent
         $this->diagnostics = [];
     }
 
+    /**
+     * @return Diagnostic[]
+     */
     public function getDiagnostics()
     {
         $this->run();
@@ -26,6 +29,7 @@ class Diagnostics extends NodeTraverserComponent
 
     protected function doRun()
     {
+        /** @var DiagnosticsNodeVisitorInterface[] */
         $visitors = $this->container->getByTag('diagnostics.visitor');
         foreach ($visitors as $visitor) {
             $this->addVisitor($visitor);
@@ -34,6 +38,7 @@ class Diagnostics extends NodeTraverserComponent
         foreach ($visitors as $visitor) {
             $this->diagnostics = array_merge($this->diagnostics, $visitor->getDiagnostics());
         }
+        /** @var DiagnosticsInterface[] */
         $components = $this->container->getByTag('diagnostics');
         foreach ($components as $component) {
             $this->diagnostics = array_merge($this->diagnostics, $component->getDiagnostics());

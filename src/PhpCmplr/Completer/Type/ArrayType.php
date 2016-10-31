@@ -15,7 +15,7 @@ class ArrayType extends Type
     private $keyType;
 
     /**
-     * @param Type $valuetype
+     * @param Type $valueType
      * @param Type $keyType
      */
     protected function __construct(Type $valueType, Type $keyType)

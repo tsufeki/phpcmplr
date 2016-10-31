@@ -6,6 +6,7 @@ use PhpCmplr\PhpCmplr;
 use PhpCmplr\Completer\Diagnostics\Diagnostic;
 use PhpCmplr\Completer\Diagnostics\Fix;
 use PhpCmplr\Completer\Diagnostics\FixChunk;
+use PhpCmplr\Completer\Diagnostics\Diagnostics as DiagnosticsComponent;
 
 /**
  * Get diagnostics for one file.
@@ -53,8 +54,9 @@ END;
 
         if ($container !== null) {
             $file = $container->get('file');
-            /** @var Diagnostic $diag */
-            foreach ($container->get('diagnostics')->getDiagnostics() as $diag) {
+            /** @var DiagnosticsComponent */
+            $diagnostics = $container->get('diagnostics');
+            foreach ($diagnostics->getDiagnostics() as $diag) {
                 $diagData = new \stdClass();
                 // TODO: not only the first range
                 $range = $diag->getRanges()[0];

@@ -109,8 +109,8 @@ END;
     /**
      * Override this.
      *
-     * @param mixed    $data
-     * @param PhpCmplr $phpcmplr
+     * @param \stdClass $data
+     * @param PhpCmplr  $phpcmplr
      *
      * @return object Response object which must be serializable to JSON.
      * @throws HttpException

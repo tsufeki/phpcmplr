@@ -19,6 +19,7 @@ use PhpCmplr\Completer\Reflection\Element\Property;
 use PhpCmplr\Completer\Reflection\Element\Trait_;
 use PhpCmplr\Completer\Reflection\Element\Variable;
 use PhpCmplr\Util\FileIOInterface;
+use PhpCmplr\Completer\Type\ObjectType;
 
 class JsonReflection extends Component implements ReflectionInterface
 {
@@ -115,8 +116,15 @@ class JsonReflection extends Component implements ReflectionInterface
         if (array_key_exists($typeString, static::TYPE_ALIASES)) {
             $typeString = static::TYPE_ALIASES[$typeString];
         }
+        $type = empty($typeString) ? Type::mixed_() : Type::fromString($typeString);
 
-        return empty($typeString) ? Type::mixed_() : Type::fromString($typeString);
+        return $type->walk(function (Type $type) {
+            if ($type instanceof ObjectType && $type->getClass() !== null) {
+                return Type::object_('\\' . trim($type->getClass(), '\\'));
+            }
+
+            return $type;
+        });
     }
 
     /**
@@ -203,9 +211,9 @@ class JsonReflection extends Component implements ReflectionInterface
         $this->handleClassLike($class, $data);
         $class->setAbstract(in_array('abstract', $data['modifiers']));
         $class->setFinal(in_array('final', $data['modifiers']));
-        $class->setExtends($data['extends']);
+        $class->setExtends($data['extends'] ? '\\' . trim($data['extends'], '\\') : null);
         foreach ($data['implements'] as $implements) {
-            $class->addImplements($implements);
+            $class->addImplements('\\' . trim($implements, '\\'));
         }
     }
 
@@ -213,7 +221,7 @@ class JsonReflection extends Component implements ReflectionInterface
     {
         $this->handleClassLike($interface, $data);
         foreach ($data['extends'] as $extends) {
-            $interface->addExtends($extends);
+            $interface->addExtends('\\' . trim($extends, '\\'));
         }
     }
 

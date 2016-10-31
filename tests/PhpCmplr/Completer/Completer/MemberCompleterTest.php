@@ -148,6 +148,21 @@ class MemberCompleterTest extends \PHPUnit_Framework_TestCase
         $this->assertCount(1, $completions);
     }
 
+    public function test_MethodCall_magic()
+    {
+        $class = (new Class_())
+            ->setName('\\C');
+        $method = (new Method())
+            ->setName('__construct')
+            ->setClass($class);
+        $var1 = new Expr\Variable('a', ['type' => Type::object_('\\C')]);
+        $id = 'q';
+        $expr = new Expr\MethodCall($var1, $id, []);
+
+        $completions = $this->complete([$expr], [$method]);
+
+        $this->assertCount(0, $completions);
+    }
 
     public function test_StaticCall()
     {

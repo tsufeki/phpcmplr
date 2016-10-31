@@ -200,6 +200,10 @@ class MemberCompleter extends Component implements CompleterInterface
             $methods = $this->reflection->filterAvailableMembers($methods, $ctxClass);
             $properties = $this->reflection->filterAvailableMembers($properties, $ctxClass);
 
+            $methods = array_filter($methods, function (Method $method) {
+                return substr_compare($method->getName(), '__', 0, 2) !== 0;
+            });
+
             $completions = array_merge(
                 $this->formatMethods($methods),
                 $this->formatProperties($properties));
@@ -224,6 +228,10 @@ class MemberCompleter extends Component implements CompleterInterface
 
             $methods = $this->reflection->filterAvailableMembers($methods, $ctxClass);
             $properties = $this->reflection->filterAvailableMembers($properties, $ctxClass);
+
+            $methods = array_filter($methods, function (Method $method) {
+                return substr_compare($method->getName(), '__', 0, 2) !== 0;
+            });
 
             $completions = array_merge(
                 $this->formatMethods($methods),

@@ -441,6 +441,7 @@ class Reflection extends Component
             $method->setName('*');
             $method->setReturnType($call->getReturnType());
             $method->setDocReturnType($call->getDocReturnType());
+            $method->setLocation($call->getLocation());
         } elseif (array_key_exists(strtolower('__callStatic'), $methods)) {
             $call = $methods[strtolower('__callStatic')];
             $method = new Method();
@@ -448,6 +449,7 @@ class Reflection extends Component
             $method->setName('*');
             $method->setReturnType($call->getReturnType());
             $method->setDocReturnType($call->getDocReturnType());
+            $method->setLocation($call->getLocation());
         }
 
         return $method;
@@ -554,6 +556,7 @@ class Reflection extends Component
             $property = new Property();
             $property->setName('*');
             $property->setType($get->getDocReturnType());
+            $property->setLocation($get->getLocation());
         } elseif (strtolower($className) === '\\stdclass') {
             $property = new Property();
             $property->setName('*');

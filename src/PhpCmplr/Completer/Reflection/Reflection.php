@@ -431,12 +431,26 @@ class Reflection extends Component
      */
     public function findMethod($className, $methodName)
     {
+        $method = null;
         $methods = $this->findAllMethods($className);
         if (array_key_exists(strtolower($methodName), $methods)) {
-            return $methods[strtolower($methodName)];
+            $method = $methods[strtolower($methodName)];
+        } elseif (array_key_exists(strtolower('__call'), $methods)) {
+            $call = $methods[strtolower('__call')];
+            $method = new Method();
+            $method->setName('*');
+            $method->setReturnType($call->getReturnType());
+            $method->setDocReturnType($call->getDocReturnType());
+        } elseif (array_key_exists(strtolower('__callStatic'), $methods)) {
+            $call = $methods[strtolower('__callStatic')];
+            $method = new Method();
+            $method->setStatic(true);
+            $method->setName('*');
+            $method->setReturnType($call->getReturnType());
+            $method->setDocReturnType($call->getDocReturnType());
         }
 
-        return null;
+        return $method;
     }
 
     /**
@@ -532,12 +546,21 @@ class Reflection extends Component
      */
     public function findProperty($className, $propertyName)
     {
+        $property = null;
         $properties = $this->findAllProperties($className);
         if (array_key_exists($propertyName, $properties)) {
-            return $properties[$propertyName];
+            $property = $properties[$propertyName];
+        } elseif (($get = $this->findMethod($className, '__get')) !== null) {
+            $property = new Property();
+            $property->setName('*');
+            $property->setType($get->getDocReturnType());
+        } elseif (strtolower($className) === '\\stdclass') {
+            $property = new Property();
+            $property->setName('*');
+            $property->setType(Type::fromString('\\stdClass|\\stdClass[]|mixed'));
         }
 
-        return null;
+        return $property;
     }
 
     /**

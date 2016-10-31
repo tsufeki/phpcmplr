@@ -40,10 +40,10 @@ class DocCommentParser extends NodeVisitorComponent
                 }
 
             // @annotation
-            } elseif (preg_match('~^((\\s*)@([\\S]+)\\s*)(.*)~', $trimmed, $matches)) {
+            } elseif (preg_match('~^((\\s*\\*?\\s*)@([\\S]+)\\s*)(.*)~', $line, $matches)) {
                 $inShortDescription = false;
                 $parts[] = [
-                    'text' => $matches[4],
+                    'text' => trim($matches[4]),
                     'kind' => 'annotation',
                     'name' => $matches[3],
                     'pos' => $pos + strlen($matches[2]),

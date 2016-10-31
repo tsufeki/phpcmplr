@@ -56,6 +56,8 @@ class DocCommentParserTest extends \PHPUnit_Framework_TestCase
         $this->assertSame('string', $annot['var'][0]->getType()->getName());
         $this->assertNull($annot['var'][0]->getIdentifier());
         $this->assertNull($annot['var'][0]->getDescription());
+        $this->assertSame(10, $annot['var'][0]->getStartPos());
+        $this->assertSame(20, $annot['var'][0]->getEndPos());
     }
 
     public function test_run_multi()

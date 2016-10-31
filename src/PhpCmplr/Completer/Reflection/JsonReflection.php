@@ -259,7 +259,7 @@ class JsonReflection extends Component implements ReflectionInterface
             $interface = new Interface_();
             $this->handleInterface($interface, $interfaceData);
             $this->addBackslash($interface);
-            $this->interfaces[strtolower($interface->getName())] = $interface;
+            $this->classes[strtolower($interface->getName())] = $interface;
         }
 
         foreach ($data['constants'] as $constData) {

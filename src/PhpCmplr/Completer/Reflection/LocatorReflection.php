@@ -131,7 +131,7 @@ class LocatorReflection extends Component implements ReflectionInterface
             }
         }
 
-        return $this->constsCache[$fullyQualifiedName] = $consts;
+        return $this->constCache[$fullyQualifiedName] = $consts;
     }
 
     protected function doRun()

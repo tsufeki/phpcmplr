@@ -19,7 +19,7 @@ class DiagnosticsTest extends \PHPUnit_Framework_TestCase
         $container->set('file', $file = new SourceFile($container, $path, $contents));
         $container->set('parser', new Parser($container), ['diagnostics']);
         $container->set('parser.positions_reconstructor', new PositionsReconstructor($container));
-        return [$file, new Diagnostics($container)];
+        return [$file, new Diagnostics($container, 999)];
     }
 
     public function test_getDiagnostics()

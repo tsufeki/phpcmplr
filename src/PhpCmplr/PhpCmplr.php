@@ -139,6 +139,7 @@ class PhpCmplr extends Plugin implements ContainerFactoryInterface
                 'enabled' => true,
             ],
             'diagnostics' => [
+                'max' => 30,
                 'undefined' => true,
                 'undefined_member' => true,
                 'undefined_doc_comment_type' => true,
@@ -282,7 +283,7 @@ class PhpCmplr extends Plugin implements ContainerFactoryInterface
 
     public function addFileComponents(Container $container, array $options)
     {
-        $container->set('diagnostics', new Diagnostics($container));
+        $container->set('diagnostics', new Diagnostics($container, $options['diagnostics']['max']));
         $container->set('fix_helper', new FixHelper($container));
         $container->set('parser', new Parser($container), ['diagnostics']);
         $container->set('parser.positions_reconstructor', new PositionsReconstructor($container));

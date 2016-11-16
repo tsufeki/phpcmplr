@@ -2,11 +2,12 @@
 
 namespace PhpCmplr\Completer;
 
+use PhpCmplr\PhpCmplr;
 use PhpCmplr\Util\FileIOInterface;
 
 class ProjectRootDirectoryGuesser implements ProjectRootDirectoryGuesserInterface
 {
-    const PROJECT_FILES = ['composer.json', '.git'];
+    const PROJECT_FILES = [PhpCmplr::PROJECT_OPTIONS_FILE, 'composer.json', '.git'];
     const PROJECT_IGNORE_FILE = '.phpcmplr-ignore';
 
     /**

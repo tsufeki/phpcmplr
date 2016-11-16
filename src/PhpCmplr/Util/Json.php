@@ -65,6 +65,22 @@ class Json
     }
 
     /**
+     * @param string      $string JSON encoded object.
+     *
+     * @return array
+     * @throws JsonLoadException
+     */
+    public static function loadAsArray($string)
+    {
+        $array = json_decode($string, true);
+        if ($array === null) {
+            throw new JsonLoadException(json_last_error_msg());
+        }
+
+        return $array;
+    }
+
+    /**
      * @param object $object
      *
      * @return string JSON.

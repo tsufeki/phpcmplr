@@ -44,9 +44,18 @@ use PhpCmplr\Completer\Completer\MemberCompleter;
 use PhpCmplr\Completer\Completer\VariableCompleter;
 use PhpCmplr\Completer\DocComment\DocCommentNameResolver;
 use PhpCmplr\Completer\Parser\PositionsReconstructor;
+use PhpCmplr\Util\FileIOInterface;
+use PhpCmplr\Util\IOException;
+use PhpCmplr\Util\JsonLoadException;
+use PhpCmplr\Util\Json;
+use Psr\Log\LoggerInterface;
 
 class PhpCmplr extends Plugin implements ContainerFactoryInterface
 {
+    const GLOBAL_OPTIONS_FILE = '.config/phpcmplr.json';
+    const PROJECT_OPTIONS_FILE = 'phpcmplr-project.json';
+    const STDLIB_DATA_PATH = __DIR__ . '/../../data/stdlib.json';
+
     /**
      * @var array
      */
@@ -68,6 +77,11 @@ class PhpCmplr extends Plugin implements ContainerFactoryInterface
     private $loop;
 
     /**
+     * @var FileIOInterface
+     */
+    private $io;
+
+    /**
      * @var Plugin[]
      */
     private $plugins;
@@ -78,7 +92,41 @@ class PhpCmplr extends Plugin implements ContainerFactoryInterface
      */
     public function __construct(array $options = [], array $plugins = [])
     {
-        $options = array_replace_recursive([
+        $this->loop = EventLoopFactory::create();
+        $this->io = new FileIO();
+
+        $this->plugins = array_merge([$this], $plugins);
+
+        $this->options = [];
+        foreach ($this->plugins as $plugin) {
+            $this->options = array_replace_recursive($this->options, $plugin->getDefaultOptions());
+        }
+        /** @var \Exception */
+        $savedException = null;
+        $globalOptions = [];
+        try {
+            $globalOptionsFile = getenv('HOME') . '/' . self::GLOBAL_OPTIONS_FILE;
+            $globalOptions = Json::loadAsArray($this->io->read($globalOptionsFile));
+        } catch (IOException $e) {
+        } catch (JsonLoadException $e) {
+            $savedException = $e;
+        }
+        $this->options = array_replace_recursive($this->options, $globalOptions);
+        $this->options = array_replace_recursive($this->options, $options);
+
+        $this->globalContainer = $this->createGlobalContainer();
+        if ($savedException !== null) {
+            /** @var LoggerInterface */
+            $logger = $this->globalContainer->get('logger');
+            $logger->error("Config error in " . $globalOptionsFile . ": " . $savedException->getMessage(),
+                ['exception' => $savedException]);
+        }
+        $this->server = $this->createServer();
+    }
+
+    public function getDefaultOptions()
+    {
+        return [
             'server' => [
                 'port' => 41749,
                 'host' => '127.0.0.1',
@@ -96,13 +144,7 @@ class PhpCmplr extends Plugin implements ContainerFactoryInterface
                 'undefined_doc_comment_type' => true,
                 'duplicate_member' => true,
             ],
-        ], $options);
-
-        $this->options = $options;
-        $this->plugins = array_merge([$this], $plugins);
-        $this->loop = EventLoopFactory::create();
-        $this->globalContainer = $this->createGlobalContainer();
-        $this->server = $this->createServer();
+        ];
     }
 
     /**
@@ -175,21 +217,33 @@ class PhpCmplr extends Plugin implements ContainerFactoryInterface
         ));
         $container->set('factory', $this);
         $container->set('file_store', new FileStore($container));
-        $container->set('io', new FileIO());
+        $container->set('io', $this->io);
         $container->set('eventloop', $this->loop);
         $container->set('project_root_dir', new ProjectRootDirectoryGuesser($container->get('io')));
-        $stdlibPath = __DIR__ . '/../../data/stdlib.json';
-        $container->set('reflection.stdlib', new JsonReflection($container, $stdlibPath), ['reflection']);
+        $container->set('reflection.stdlib', new JsonReflection($container, self::STDLIB_DATA_PATH), ['reflection']);
     }
 
     public function createProject($rootPath)
     {
+        $projectOptions = [];
+        try {
+            $projectOptionsFile = $rootPath . '/' . self::PROJECT_OPTIONS_FILE;
+            $projectOptions = Json::loadAsArray($this->io->read($projectOptionsFile));
+        } catch (IOException $e) {
+        } catch (JsonLoadException $e) {
+            /** @var LoggerInterface */
+            $logger = $this->globalContainer->get('logger');
+            $logger->error("Config error in " . $globalOptionsFile . ": " . $e->getMessage(),
+                ['exception' => $e]);
+        }
+        $options = array_replace_recursive($this->options, $projectOptions);
+
         $container = new Container($this->globalContainer);
-        $project = new Project($rootPath, $container);
+        $project = new Project($rootPath, $container, $options);
         $container->set('project', $project);
 
         foreach ($this->plugins as $plugin) {
-            $plugin->addProjectComponents($container, $this->options);
+            $plugin->addProjectComponents($container, $options);
         }
 
         /** @var IndexerInterface */
@@ -220,7 +274,7 @@ class PhpCmplr extends Plugin implements ContainerFactoryInterface
         $container->set('file', new SourceFile($container, $path, $contents));
 
         foreach ($this->plugins as $plugin) {
-            $plugin->addFileComponents($container, $this->options);
+            $plugin->addFileComponents($container, $project->getOptions());
         }
 
         return $container;
@@ -273,7 +327,7 @@ class PhpCmplr extends Plugin implements ContainerFactoryInterface
         $container->set('file', new SourceFile($container, $path, $contents));
 
         foreach ($this->plugins as $plugin) {
-            $plugin->addIndexerComponents($container, $this->options);
+            $plugin->addIndexerComponents($container, $project->getOptions());
         }
 
         return $container;

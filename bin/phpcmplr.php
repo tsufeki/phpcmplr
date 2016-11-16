@@ -27,18 +27,14 @@ if (!array_key_exists('port', $opts)) {
     exit(2);
 }
 
-if (empty($opts['loglevel'])) {
-    $opts['loglevel'] = 'warning';
-}
-
 $options = [
     'server' => [
         'port' => (int)$opts['port'],
     ],
-    'log' => [
-        'level' => $opts['loglevel'],
-    ],
 ];
+if (!empty($opts['loglevel'])) {
+    $options['log']['level'] = $opts['loglevel'];
+}
 
 $phpcmplr = new PhpCmplr($options);
 $phpcmplr->run();

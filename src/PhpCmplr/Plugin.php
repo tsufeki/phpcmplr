@@ -11,6 +11,14 @@ use PhpCmplr\Server\Server;
 abstract class Plugin
 {
     /**
+     * @return array
+     */
+    public function getDefaultOptions()
+    {
+        return [];
+    }
+
+    /**
      * @param Server $server
      */
     public function addActions(Server $server, array $options)

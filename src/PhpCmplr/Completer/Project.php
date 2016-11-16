@@ -23,14 +23,20 @@ class Project
     private $fileContainers;
 
     /**
+     * @var array
+     */
+    private $options;
+
+    /**
      * @param string    $rootPath
      * @param Container $projectContainer
      */
-    public function __construct($rootPath, Container $projectContainer)
+    public function __construct($rootPath, Container $projectContainer, array $options)
     {
         $this->rootPath = $rootPath;
         $this->projectContainer = $projectContainer;
         $this->fileContainers = [];
+        $this->options = $options;
     }
 
     /**
@@ -88,6 +94,14 @@ class Project
     public function getFiles()
     {
         return $this->fileContainers;
+    }
+
+    /**
+     * @return array
+     */
+    public function getOptions()
+    {
+        return $this->options;
     }
 
     public function quit()

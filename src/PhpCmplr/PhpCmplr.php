@@ -285,7 +285,7 @@ class PhpCmplr extends Plugin implements ContainerFactoryInterface
     {
         $container->set('diagnostics', new Diagnostics($container, $options['diagnostics']['max']));
         $container->set('fix_helper', new FixHelper($container));
-        $container->set('parser', new Parser($container), ['diagnostics']);
+        $container->set('parser', new Parser($container), [['diagnostics', 99]]);
         $container->set('parser.positions_reconstructor', new PositionsReconstructor($container));
         $container->set('name_resolver', new NameResolver($container));
         $container->set('doc_comment', new DocCommentParser($container));
@@ -306,19 +306,19 @@ class PhpCmplr extends Plugin implements ContainerFactoryInterface
 
         if ($options['diagnostics']['undefined']) {
             $container->set('diagnostics.undefined',
-                new Diagnostics\Undefined($container), ['diagnostics.visitor']);
+                new Diagnostics\Undefined($container), [['diagnostics.visitor', 50]]);
         }
         if ($options['diagnostics']['undefined_member']) {
             $container->set('diagnostics.undefined_member',
-                new Diagnostics\UndefinedMember($container), ['diagnostics.visitor']);
+                new Diagnostics\UndefinedMember($container), [['diagnostics.visitor', 20]]);
         }
         if ($options['diagnostics']['undefined_doc_comment_type']) {
             $container->set('diagnostics.undefined_doc_comment_type',
-                new Diagnostics\UndefinedDocCommentType($container), ['diagnostics.visitor']);
+                new Diagnostics\UndefinedDocCommentType($container), [['diagnostics.visitor', 10]]);
         }
         if ($options['diagnostics']['duplicate_member']) {
             $container->set('diagnostics.duplicate_member',
-                new Diagnostics\DuplicateMember($container), ['diagnostics.visitor']);
+                new Diagnostics\DuplicateMember($container), [['diagnostics.visitor', 50]]);
         }
     }
 

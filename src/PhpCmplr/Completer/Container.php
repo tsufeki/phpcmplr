@@ -15,7 +15,7 @@ class Container
     private $components;
 
     /**
-     * @var string[][]
+     * @var array[][] of [string key, int priority]
      */
     private $componentKeysByTag;
 
@@ -57,9 +57,9 @@ class Container
         }
 
         if ($this->parent !== null) {
-            foreach ($this->parent->getKeysByTag($tag) as $key) {
+            foreach ($this->parent->getKeysByTag($tag) as list($key, $priority)) {
                 if (!array_key_exists($key, $this->components)) {
-                    $keys[] = $key;
+                    $keys[] = [$key, $priority];
                 }
             }
         }
@@ -75,7 +75,11 @@ class Container
     public function getByTag($tag)
     {
         $components = [];
-        foreach ($this->getKeysByTag($tag) as $key) {
+        $keys = $this->getKeysByTag($tag);
+        usort($keys, function ($x, $y) {
+            return $y[1] - $x[1];
+        });
+        foreach ($keys as list($key, $priority)) {
             $components[] = $this->get($key);
         }
 
@@ -97,7 +101,11 @@ class Container
 
         $this->components[$componentKey] = $component;
         foreach ($tags as $tag) {
-            $this->componentKeysByTag[$tag][] = $componentKey;
+            $priority = 0;
+            if (is_array($tag)) {
+                list($tag, $priority) = $tag;
+            }
+            $this->componentKeysByTag[$tag][] = [$componentKey, $priority];
         }
 
         return $this;
@@ -110,7 +118,7 @@ class Container
     {
         unset($this->components[$componentKey]);
         foreach ($this->componentKeysByTag as &$keys) {
-            foreach ($keys as $i => $key) {
+            foreach ($keys as $i => list($key, $priority)) {
                 if ($key === $componentKey) {
                     unset($keys[$i]);
                 }

@@ -53,7 +53,7 @@ use Psr\Log\LoggerInterface;
 class PhpCmplr extends Plugin implements ContainerFactoryInterface
 {
     const GLOBAL_OPTIONS_FILE = '.config/phpcmplr.json';
-    const PROJECT_OPTIONS_FILE = 'phpcmplr-project.json';
+    const PROJECT_OPTIONS_FILE = '.phpcmplr-project.json';
     const STDLIB_DATA_PATH = __DIR__ . '/../../data/stdlib.json';
 
     /**

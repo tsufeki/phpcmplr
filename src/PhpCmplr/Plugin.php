@@ -2,7 +2,7 @@
 
 namespace PhpCmplr;
 
-use PhpCmplr\Completer\Container;
+use PhpCmplr\Core\Container;
 use PhpCmplr\Server\Server;
 
 /**

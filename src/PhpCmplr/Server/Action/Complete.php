@@ -3,8 +3,8 @@
 namespace PhpCmplr\Server\Action;
 
 use PhpCmplr\PhpCmplr;
-use PhpCmplr\Completer\SourceFile\SourceFileInterface;
-use PhpCmplr\Completer\Completer\Completer;
+use PhpCmplr\Core\SourceFile\SourceFileInterface;
+use PhpCmplr\Core\Completer\Completer;
 
 /**
  * Get completions for location.

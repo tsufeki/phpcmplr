@@ -3,8 +3,8 @@
 namespace PhpCmplr\Server;
 
 use PhpCmplr\PhpCmplr;
-use PhpCmplr\Completer\SourceFile\Location;
-use PhpCmplr\Completer\SourceFile\SourceFileInterface;
+use PhpCmplr\Core\SourceFile\Location;
+use PhpCmplr\Core\SourceFile\SourceFileInterface;
 use PhpCmplr\Util\Json;
 use PhpCmplr\Util\JsonLoadException;
 use PhpCmplr\Util\JsonDumpException;

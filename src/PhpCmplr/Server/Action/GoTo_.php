@@ -3,8 +3,8 @@
 namespace PhpCmplr\Server\Action;
 
 use PhpCmplr\PhpCmplr;
-use PhpCmplr\Completer\SourceFile\SourceFileInterface;
-use PhpCmplr\Completer\GoTo_\GoTo_ as GoToComponent;
+use PhpCmplr\Core\SourceFile\SourceFileInterface;
+use PhpCmplr\Core\GoTo_\GoTo_ as GoToComponent;
 use PhpCmplr\Util\FileIOInterface;
 
 /**

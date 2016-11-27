@@ -3,9 +3,9 @@
 namespace PhpCmplr\Server\Action;
 
 use PhpCmplr\PhpCmplr;
-use PhpCmplr\Completer\SourceFile\SourceFileInterface;
-use PhpCmplr\Completer\Type\Type as TypeType;
-use PhpCmplr\Completer\TypeInferrer\TypeInferrerInterface;
+use PhpCmplr\Core\SourceFile\SourceFileInterface;
+use PhpCmplr\Core\Type\Type as TypeType;
+use PhpCmplr\Core\TypeInferrer\TypeInferrerInterface;
 
 /**
  * Get type of expression at location.

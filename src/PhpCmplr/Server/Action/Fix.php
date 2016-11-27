@@ -3,10 +3,10 @@
 namespace PhpCmplr\Server\Action;
 
 use PhpCmplr\PhpCmplr;
-use PhpCmplr\Completer\Diagnostics\Diagnostic;
-use PhpCmplr\Completer\Diagnostics\Fix as FixObject;
-use PhpCmplr\Completer\Diagnostics\FixChunk;
-use PhpCmplr\Completer\Diagnostics\Diagnostics as DiagnosticsComponent;
+use PhpCmplr\Core\Diagnostics\Diagnostic;
+use PhpCmplr\Core\Diagnostics\Fix as FixObject;
+use PhpCmplr\Core\Diagnostics\FixChunk;
+use PhpCmplr\Core\Diagnostics\Diagnostics as DiagnosticsComponent;
 
 /**
  * Get fix for the nearest diagnostic on the given line.

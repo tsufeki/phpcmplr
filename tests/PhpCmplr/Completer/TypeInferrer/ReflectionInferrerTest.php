@@ -44,6 +44,11 @@ class ReflectionInferrerTest extends \PHPUnit_Framework_TestCase
             ->method('findMethod')
             ->with($this->equalTo('\\C'), $this->equalTo('f'))
             ->willReturn($method);
+        $refl
+            ->expects($this->once())
+            ->method('filterAvailableMembers')
+            ->with($this->equalTo('\\C'), $this->equalTo([$method]), $this->equalTo(null))
+            ->willReturn([$method]);
         $var1 = new Expr\Variable('a', ['type' => Type::object_('\\C')]);
         $expr = new Expr\MethodCall($var1, 'f');
         $this->infer([$expr], $refl);
@@ -60,6 +65,11 @@ class ReflectionInferrerTest extends \PHPUnit_Framework_TestCase
             ->method('findMethod')
             ->with($this->equalTo('\\C'), $this->equalTo('f'))
             ->willReturn($method);
+        $refl
+            ->expects($this->once())
+            ->method('filterAvailableMembers')
+            ->with($this->equalTo('\\C'), $this->equalTo([$method]), $this->equalTo(null))
+            ->willReturn([$method]);
         $var1 = new Expr\Variable('a', ['type' => Type::alternatives([
             Type::bool_(),
             Type::object_('\\C'),
@@ -109,6 +119,11 @@ class ReflectionInferrerTest extends \PHPUnit_Framework_TestCase
             ->method('findProperty')
             ->with($this->equalTo('\\C'), $this->equalTo('$x'))
             ->willReturn($prop);
+        $refl
+            ->expects($this->once())
+            ->method('filterAvailableMembers')
+            ->with($this->equalTo('\\C'), $this->equalTo([$prop]), $this->equalTo('\\C'))
+            ->willReturn([$prop]);
         $expr = new Expr\StaticPropertyFetch(new Name('self'), 'x');
         $class = new Stmt\Class_('C', ['stmts' => [
             new Stmt\ClassMethod('f', ['stmts' => [$expr]]),

@@ -69,12 +69,6 @@ class UndefinedMember extends NodeVisitorComponent implements DiagnosticsNodeVis
             $node instanceof Expr\ClassConstFetch) &&
             is_string($node->name)
         ) {
-            // TODO: PHP 7.1 class const accesibility
-            if (!($node instanceof Expr\ClassConstFetch)) {
-                $reflections = $this->reflection->filterAvailableMembers($reflections, $this->ctxClass);
-            }
-
-            // TODO: stdClass objects can have arbitrary properties.
             if (empty($reflections)) {
                 $this->diagnostics[] = new Diagnostic(
                     [$this->makeRange($node)],

@@ -33,12 +33,13 @@ class MemberCompleter extends Component implements CompleterInterface
     private $reflection;
 
     /**
-     * @param Type $objectType
-     * @param bool $staticContext
+     * @param Type        $objectType
+     * @param string|null $contextClass
+     * @param bool        $staticContext
      *
      * @return Method[]
      */
-    protected function findMethods(Type $objectType, $staticContext = false)
+    protected function findMethods(Type $objectType, $contextClass = null, $staticContext = false)
     {
         $methods = [];
 
@@ -53,18 +54,20 @@ class MemberCompleter extends Component implements CompleterInterface
                     $methods[] = $method;
                 }
             }
+            $methods = $this->reflection->filterAvailableMembers($objectType->getClass(), $methods, $contextClass);
         }
 
         return $methods;
     }
 
     /**
-     * @param Type $objectType
-     * @param bool $staticContext
+     * @param Type        $objectType
+     * @param string|null $contextClass
+     * @param bool        $staticContext
      *
      * @return Property[]
      */
-    protected function findProperties(Type $objectType, $staticContext = false)
+    protected function findProperties(Type $objectType, $contextClass = null, $staticContext = false)
     {
         $properties = [];
 
@@ -79,6 +82,7 @@ class MemberCompleter extends Component implements CompleterInterface
                     $properties[] = $property;
                 }
             }
+            $properties = $this->reflection->filterAvailableMembers($objectType->getClass(), $properties, $contextClass);
         }
 
         return $properties;
@@ -194,11 +198,8 @@ class MemberCompleter extends Component implements CompleterInterface
         }
 
         if ($node instanceof Expr\MethodCall || $node instanceof Expr\PropertyFetch) {
-            $methods = $this->findMethods($node->var->getAttribute('type'));
-            $properties = $this->findProperties($node->var->getAttribute('type'));
-
-            $methods = $this->reflection->filterAvailableMembers($methods, $ctxClass);
-            $properties = $this->reflection->filterAvailableMembers($properties, $ctxClass);
+            $methods = $this->findMethods($node->var->getAttribute('type'), $ctxClass);
+            $properties = $this->findProperties($node->var->getAttribute('type'), $ctxClass);
 
             $methods = array_filter($methods, function (Method $method) {
                 return substr_compare($method->getName(), '__', 0, 2) !== 0;
@@ -222,12 +223,9 @@ class MemberCompleter extends Component implements CompleterInterface
                 }
             }
 
-            $methods = $this->findMethods(Type::object_(Type::nameToString($node->class)), $staticOnly);
-            $properties = $this->findProperties(Type::object_(Type::nameToString($node->class)), $staticOnly);
+            $methods = $this->findMethods(Type::object_(Type::nameToString($node->class)), $ctxClass, $staticOnly);
+            $properties = $this->findProperties(Type::object_(Type::nameToString($node->class)), $ctxClass, $staticOnly);
             $consts = $this->findClassConsts(Type::object_(Type::nameToString($node->class)));
-
-            $methods = $this->reflection->filterAvailableMembers($methods, $ctxClass);
-            $properties = $this->reflection->filterAvailableMembers($properties, $ctxClass);
 
             $methods = array_filter($methods, function (Method $method) {
                 return substr_compare($method->getName(), '__', 0, 2) !== 0;

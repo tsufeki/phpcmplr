@@ -216,46 +216,65 @@ class ReflectionTest extends \PHPUnit_Framework_TestCase
         $other = (new Class_())
             ->setName('\\X');
 
-        $members = [
-            (new Method())
-                ->setName('a')
-                ->setClass($other),
+        $membersOfClass = [
             (new Method())
                 ->setAccessibility(ClassLike::M_PRIVATE)
+                ->setName('a')
+                ->setClass($class),
+            (new Method())
+                ->setAccessibility(ClassLike::M_PROTECTED)
                 ->setName('b')
                 ->setClass($class),
             (new Method())
-                ->setAccessibility(ClassLike::M_PRIVATE)
+                ->setAccessibility(ClassLike::M_PROTECTED)
                 ->setName('c')
-                ->setClass($other),
-            (new Method())
-                ->setAccessibility(ClassLike::M_PROTECTED)
-                ->setName('d')
-                ->setClass($class),
-            (new Method())
-                ->setAccessibility(ClassLike::M_PROTECTED)
-                ->setName('e')
                 ->setClass($base),
             (new Method())
                 ->setAccessibility(ClassLike::M_PROTECTED)
+                ->setName('d')
+                ->setClass($trait),
+        ];
+        $membersOfSub = [
+            (new Method())
+                ->setAccessibility(ClassLike::M_PROTECTED)
+                ->setName('e')
+                ->setClass($sub),
+        ];
+        $membersOfBase = [
+            (new Method())
+                ->setAccessibility(ClassLike::M_PROTECTED)
                 ->setName('f')
+                ->setClass($base),
+        ];
+        $membersOfOther = [
+            (new Method())
+                ->setName('g')
+                ->setClass($other),
+            (new Method())
+                ->setAccessibility(ClassLike::M_PRIVATE)
+                ->setName('h')
                 ->setClass($other),
             (new Method())
                 ->setAccessibility(ClassLike::M_PROTECTED)
-                ->setName('g')
-                ->setClass($sub),
-            (new Method())
-                ->setAccessibility(ClassLike::M_PROTECTED)
-                ->setName('h')
-                ->setClass($trait),
+                ->setName('i')
+                ->setClass($other),
         ];
 
         $refl = $this->prepare($class, $base, $sub, $other, $trait);
         $names = [];
-        foreach ($refl->filterAvailableMembers($members, '\\C') as $member) {
+        foreach ($refl->filterAvailableMembers('\\C', $membersOfClass, '\\C') as $member) {
+            $names[] = $member->getName();
+        }
+        foreach ($refl->filterAvailableMembers('\\D', $membersOfSub, '\\C') as $member) {
+            $names[] = $member->getName();
+        }
+        foreach ($refl->filterAvailableMembers('\\B', $membersOfBase, '\\C') as $member) {
+            $names[] = $member->getName();
+        }
+        foreach ($refl->filterAvailableMembers('\\X', $membersOfOther, '\\C') as $member) {
             $names[] = $member->getName();
         }
 
-        $this->assertSame(['a', 'b', 'd', 'e', 'g', 'h'], $names);
+        $this->assertSame(['a', 'b', 'c', 'd', 'e', 'f', 'g'], $names);
     }
 }

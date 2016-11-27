@@ -102,7 +102,10 @@ class ReflectionInferrer extends NodeVisitorComponent
         } elseif ($objectType instanceof ObjectType) {
             $method = $this->reflection->findMethod($objectType->getClass(), $methodName);
             if ($method !== null) {
-                $methods[] = $method;
+                $contextClass = $this->getCurrentClass() === null ? null : $this->getCurrentClass()->getClass();
+                if (!empty($this->reflection->filterAvailableMembers($objectType->getClass(), [$method], $contextClass))) {
+                    $methods[] = $method;
+                }
             }
         }
 
@@ -146,7 +149,10 @@ class ReflectionInferrer extends NodeVisitorComponent
         } elseif ($objectType instanceof ObjectType) {
             $property = $this->reflection->findProperty($objectType->getClass(), $propertyName);
             if ($property !== null && ($staticContext === $property->isStatic())) {
-                $properties[] = $property;
+                $contextClass = $this->getCurrentClass() === null ? null : $this->getCurrentClass()->getClass();
+                if (!empty($this->reflection->filterAvailableMembers($objectType->getClass(), [$property], $contextClass))) {
+                    $properties[] = $property;
+                }
             }
         }
 

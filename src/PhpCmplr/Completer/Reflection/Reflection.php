@@ -690,36 +690,35 @@ class Reflection extends Component
     }
 
     /**
-     * @param Method[]|Property[] $members
-     * @param string|null         $contextClassName
+     * @param string              $owningClassName
+     * @param Method[]|Property[] $members          All of them must belong to $owningClassName class-like.
+     * @param string|null         $contextClassName Where members are used.
      *
      * @return Method[]|Property[]
      */
-    public function filterAvailableMembers(array $members, $contextClassName = null)
+    public function filterAvailableMembers($owningClassName, array $members, $contextClassName = null)
     {
-        // TODO: Take used traits into account
+        if ($this->isTrait($owningClassName)) {
+            $publicAccess = $protectedAccess = $privateAccess = $contextClassName &&
+                $this->isTrait($contextClassName) &&
+                strtolower($owningClassName) === strtolower($contextClassName);
+        } else {
+            $publicAccess = true;
+            $protectedAccess = $contextClassName && (
+                $this->isSubclass($contextClassName, $owningClassName) ||
+                $this->isSubclass($owningClassName, $contextClassName));
+            $privateAccess = $contextClassName &&
+                strtolower($owningClassName) === strtolower($contextClassName);
+        }
+
         $result = [];
-        /** @var Method|Property $member */
         foreach ($members as $member) {
-            switch ($member->getAccessibility()) {
-                case ClassLike::M_PUBLIC:
-                    $result[] = $member;
-                    break;
-
-                case ClassLike::M_PROTECTED:
-                    if ($contextClassName !== null && (
-                        $this->isSubclass($contextClassName, $member->getClass()->getName()) ||
-                        $this->isSubclass($member->getClass()->getName(), $contextClassName)
-                    )) {
-                        $result[] = $member;
-                    }
-                    break;
-
-                case ClassLike::M_PRIVATE:
-                    if ($contextClassName === $member->getClass()->getName()) {
-                        $result[] = $member;
-                    }
-                    break;
+            if (
+                ($member->getAccessibility() === ClassLike::M_PUBLIC && $publicAccess) ||
+                ($member->getAccessibility() === ClassLike::M_PROTECTED && $protectedAccess) ||
+                ($member->getAccessibility() === ClassLike::M_PRIVATE && $privateAccess)
+            ) {
+                $result[] = $member;
             }
         }
 

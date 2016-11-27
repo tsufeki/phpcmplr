@@ -44,7 +44,7 @@ class MemberCompleterTest extends \PHPUnit_Framework_TestCase
             ->willReturn(null);
         $container->set('typeinfer', $typeinfer);
         $reflection = $this->getMockBuilder(Reflection::class)
-            ->setMethods(['findAllMethods', 'findAllProperties', 'findAllClassConsts'])
+            ->setMethods(['findAllMethods', 'findAllProperties', 'findAllClassConsts', 'isTrait'])
             ->disableOriginalConstructor()
             ->getMock();
         $reflection
@@ -59,6 +59,10 @@ class MemberCompleterTest extends \PHPUnit_Framework_TestCase
             ->method('findAllClassConsts')
             ->with($this->equalTo('\\C'))
             ->willReturn($consts);
+        $reflection
+            ->method('isTrait')
+            ->with($this->equalTo('\\C'))
+            ->willReturn(false);
         $container->set('reflection', $reflection);
 
         $completer = new MemberCompleter($container);

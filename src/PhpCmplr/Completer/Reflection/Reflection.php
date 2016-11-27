@@ -59,7 +59,7 @@ class Reflection extends Component
             $classes = array_merge($classes, $component->findClass($fullyQualifiedName));
         }
 
-        return $this->unique($classes);
+        return $this->unique($classes, false);
     }
 
     /**
@@ -78,7 +78,7 @@ class Reflection extends Component
         }
 
         // TODO: merge returnType and docReturnType, and param types
-        return $this->unique($functions);
+        return $this->unique($functions, false);
     }
 
     /**
@@ -101,14 +101,15 @@ class Reflection extends Component
 
     /**
      * @param Element[] $elements
+     * @param bool      $caseSensitive
      *
      * @return Element[]
      */
-    private function unique(array $elements)
+    private function unique(array $elements, $caseSensitive = true)
     {
         $uniq = [];
         foreach ($elements as $element) {
-            $uniq[$element->getName()] = $element;
+            $uniq[$caseSensitive ? $element->getName() : strtolower($element->getName())] = $element;
         }
 
         return array_values($uniq);

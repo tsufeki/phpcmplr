@@ -91,9 +91,7 @@ class Config
     public function resolve()
     {
         foreach ($this->parameters as $key => $value) {
-            // This ignores infinite loops silently.
-            $this->parameters[$key] = null;
-            $this->parameters[$key] = $this->resolveValue($value);
+            $this->resolveParameter($key);
         }
 
         foreach ($this->getAllServices() as $service) {
@@ -101,16 +99,35 @@ class Config
         }
     }
 
+    /**
+     * @param string $key
+     *
+     * @return string|mixed
+     */
+    private function resolveParameter($key)
+    {
+        $value = $this->parameters[$key];
+        // This ignores infinite loops silently.
+        $this->parameters[$key] = null;
+
+        return $this->parameters[$key] = $this->resolveValue($value);
+    }
+
+    /**
+     * @param string|mixed $value
+     *
+     * @return string|mixed
+     */
     private function resolveValue($value)
     {
         if (is_string($value)) {
             if (preg_match('/^%([^%]+)%$/', $value, $matches) === 1) {
-                $value = $this->resolveValue($this->getParameter($matches[1]));
+                $value = $this->resolveParameter($matches[1]);
             } else {
                 $value = preg_replace_callback(
                     '/%([^%]*)%/',
                     function ($matches) {
-                        $v = $this->resolveValue($this->getParameter($matches[1]));
+                        $v = $this->resolveParameter($matches[1]);
                         return is_scalar($v) ? (string)$v : '';
                     },
                     $value);

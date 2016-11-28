@@ -44,12 +44,14 @@ class ConfigTest extends \PHPUnit_Framework_TestCase
     public function test_resolve_infiniteLoop()
     {
         $cfg = new Config();
+        $cfg->addParameter('edc', '%qaz%');
         $cfg->addParameter('qaz', '%wsx%');
         $cfg->addParameter('wsx', '%qaz%');
         $cfg->resolve();
 
         $this->assertNull($cfg->getParameter('qaz'));
         $this->assertNull($cfg->getParameter('wsx'));
+        $this->assertNull($cfg->getParameter('edc'));
     }
 
     public function test_resolve_arraySubstitution()

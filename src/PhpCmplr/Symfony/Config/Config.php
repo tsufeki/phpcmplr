@@ -92,30 +92,34 @@ class Config
     {
         foreach ($this->parameters as $key => $value) {
             // This ignores infinite loops silently.
-            $this->parameters[$key] = '';
-            $this->parameters[$key] = $this->resolveParam($value);
+            $this->parameters[$key] = null;
+            $this->parameters[$key] = $this->resolveValue($value);
         }
 
         foreach ($this->getAllServices() as $service) {
-            $service->setClass($this->resolveParam($service->getClass()));
+            $service->setClass($this->resolveValue($service->getClass()));
         }
     }
 
-    private function resolveParam($value)
+    private function resolveValue($value)
     {
         if (is_string($value)) {
-            $value = preg_replace_callback(
-                '/%([^%]*)%/',
-                function ($matches) {
-                    $v = $this->resolveParam($this->getParameter($matches[1]));
-                    return is_scalar($v) ? (string)$v : '';
-                },
-                $value);
+            if (preg_match('/^%([^%]+)%$/', $value, $matches) === 1) {
+                $value = $this->resolveValue($this->getParameter($matches[1]));
+            } else {
+                $value = preg_replace_callback(
+                    '/%([^%]*)%/',
+                    function ($matches) {
+                        $v = $this->resolveValue($this->getParameter($matches[1]));
+                        return is_scalar($v) ? (string)$v : '';
+                    },
+                    $value);
+            }
 
         } elseif (is_array($value)) {
             $result = [];
             foreach ($value as $key => $item) {
-                $result[$this->resolveParam($key)] = $this->resolveParam($item);
+                $result[$this->resolveValue($key)] = $this->resolveValue($item);
             }
             $value = $result;
         }

@@ -21,6 +21,7 @@ class ConfigTest extends \PHPUnit_Framework_TestCase
         $cfg->addParameter('tgb', ['%wsx%']);
         $cfg->addParameter('yhn', ['k' => 1, 'm' => 'z%rfv%z%ujm%']);
         $cfg->addParameter('ujm', '%qaz%');
+        $cfg->addParameter('ikl', '%tgb%');
         $cfg->addService((new Service('abc'))->setClass('stdClass'));
         $cfg->addService((new Service('def'))->setClass('\A%qaz%'));
         $cfg->resolve();
@@ -32,6 +33,7 @@ class ConfigTest extends \PHPUnit_Framework_TestCase
         $this->assertSame(['bb'], $cfg->getParameter('tgb'));
         $this->assertSame(['k' => 1, 'm' => 'zrrbbzaaaa'], $cfg->getParameter('yhn'));
         $this->assertSame('aaaa', $cfg->getParameter('ujm'));
+        $this->assertSame(['bb'], $cfg->getParameter('ikl'));
         $this->assertSame('\stdClass', $cfg->getService('abc')->getClass());
         $this->assertSame('\Aaaaa', $cfg->getService('def')->getClass());
 
@@ -46,8 +48,8 @@ class ConfigTest extends \PHPUnit_Framework_TestCase
         $cfg->addParameter('wsx', '%qaz%');
         $cfg->resolve();
 
-        $this->assertSame($cfg->getParameter('qaz'), '');
-        $this->assertSame($cfg->getParameter('wsx'), '');
+        $this->assertNull($cfg->getParameter('qaz'));
+        $this->assertNull($cfg->getParameter('wsx'));
     }
 
     public function test_resolve_arraySubstitution()
@@ -55,10 +57,12 @@ class ConfigTest extends \PHPUnit_Framework_TestCase
         $cfg = new Config();
         $cfg->addParameter('qaz', []);
         $cfg->addParameter('wsx', '%qaz%');
+        $cfg->addParameter('edc', 'a%qaz%');
         $cfg->resolve();
 
-        $this->assertSame($cfg->getParameter('qaz'), []);
-        $this->assertSame($cfg->getParameter('wsx'), '');
+        $this->assertSame([], $cfg->getParameter('qaz'));
+        $this->assertSame([], $cfg->getParameter('wsx'));
+        $this->assertSame('a', $cfg->getParameter('edc'));
     }
 
     public function test_getPublicServices()

@@ -67,6 +67,40 @@ class ConfigTest extends \PHPUnit_Framework_TestCase
         $this->assertSame('a', $cfg->getParameter('edc'));
     }
 
+    public function test_resolve_serviceAlias()
+    {
+        $cfg = new Config();
+        $services = [
+            (new Service('a'))->setAlias('b'),
+            (new Service('b'))->setClass('\\X'),
+        ];
+        foreach ($services as $service) {
+            $cfg->addService($service);
+        }
+        $cfg->resolve();
+
+        $this->assertSame('\\X', $cfg->getService('b')->getClass());
+        $this->assertSame('\\X', $cfg->getService('a')->getClass());
+    }
+
+    public function test_resolve_serviceInfiniteLoop()
+    {
+        $cfg = new Config();
+        $services = [
+            (new Service('a'))->setAlias('b'),
+            (new Service('b'))->setAlias('c'),
+            (new Service('c'))->setAlias('b'),
+        ];
+        foreach ($services as $service) {
+            $cfg->addService($service);
+        }
+        $cfg->resolve();
+
+        $this->assertNull($cfg->getService('a')->getClass());
+        $this->assertNull($cfg->getService('b')->getClass());
+        $this->assertNull($cfg->getService('c')->getClass());
+    }
+
     public function test_getPublicServices()
     {
         $cfg = new Config();

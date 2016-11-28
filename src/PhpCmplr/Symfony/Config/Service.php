@@ -19,6 +19,11 @@ class Service
      */
     private $public = true;
 
+    /**
+     * @var string
+     */
+    private $alias;
+
     public function __construct($id)
     {
         $this->id = (string)$id;
@@ -47,7 +52,9 @@ class Service
      */
     public function setClass($class)
     {
-        $this->class = '\\' . ltrim($class, '\\');
+        if ($class !== null && $class !== '') {
+            $this->class = '\\' . ltrim($class, '\\');
+        }
 
         return $this;
     }
@@ -68,6 +75,26 @@ class Service
     public function setPublic($public)
     {
         $this->public = (bool)$public;
+
+        return $this;
+    }
+
+    /**
+     * @return string
+     */
+    public function getAlias()
+    {
+        return $this->alias;
+    }
+
+    /**
+     * @param string $alias
+     *
+     * @return $this
+     */
+    public function setAlias($alias)
+    {
+        $this->alias = $alias;
 
         return $this;
     }

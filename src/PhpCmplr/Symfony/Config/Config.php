@@ -44,6 +44,14 @@ class Config
     }
 
     /**
+     * @return array
+     */
+    public function getAllParameters()
+    {
+        return $parameters;
+    }
+
+    /**
      * @param Service $service
      *
      * @return $this
@@ -95,7 +103,7 @@ class Config
         }
 
         foreach ($this->getAllServices() as $service) {
-            $service->setClass($this->resolveValue($service->getClass()));
+            $this->resolveService($service);
         }
     }
 
@@ -111,6 +119,27 @@ class Config
         $this->parameters[$key] = null;
 
         return $this->parameters[$key] = $this->resolveValue($value);
+    }
+
+    /**
+     * @param Service $service
+     */
+    private function resolveService(Service $service)
+    {
+        if ($service->getAlias()) {
+            $alias = $service->getAlias();
+            $aliasedService = $this->getService($alias);
+            if ($aliasedService !== null) {
+                // This ignores infinite loops silently.
+                $service->setAlias(null);
+                $this->resolveService($aliasedService);
+                $service->setAlias($alias);
+                $service->setClass($aliasedService->getClass());
+            }
+
+        } else {
+            $service->setClass($this->resolveValue($service->getClass()));
+        }
     }
 
     /**

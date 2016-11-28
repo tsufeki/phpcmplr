@@ -4,6 +4,8 @@ namespace PhpCmplr\Symfony;
 
 use PhpCmplr\Core\Container;
 use PhpCmplr\Plugin;
+use PhpCmplr\Symfony\Config\ConfigLoader;
+use PhpCmplr\Symfony\Config\YamlLoader;
 
 class SymfonyPlugin extends Plugin
 {
@@ -26,6 +28,9 @@ class SymfonyPlugin extends Plugin
     public function addProjectComponents(Container $container, array $options)
     {
         if ($options['symfony']['enabled']) {
+            $container->set('symfony.paths', new Paths($container));
+            $container->set('symfony.config', new ConfigLoader($container));
+            $container->set('symfony.config_loader.yaml', new YamlLoader(), ['symfony.config_loader']);
         }
     }
 

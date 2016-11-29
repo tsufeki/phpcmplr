@@ -24,6 +24,11 @@ class BundleClassesExtractor extends NodeVisitorComponent
         return $this->classes;
     }
 
+    public function beforeTraverse(array $nodes)
+    {
+        $this->container->get('name_resolver')->run();
+    }
+
     public function enterNode(Node $node)
     {
         if ($node instanceof Node\Expr\New_ && is_object($node->class) && $node->class instanceof Name) {

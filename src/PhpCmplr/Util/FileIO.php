@@ -86,11 +86,15 @@ class FileIO implements FileIOInterface
 
     public function listFileMTimesRecursive($path, FileFilterInterface $filter = null)
     {
-        $iter = new \RecursiveIteratorIterator(
-            new \RecursiveDirectoryIterator($path, \RecursiveDirectoryIterator::SKIP_DOTS),
-            \RecursiveIteratorIterator::SELF_FIRST,
-            \RecursiveIteratorIterator::CATCH_GET_CHILD
-        );
+        try {
+            $iter = new \RecursiveIteratorIterator(
+                new \RecursiveDirectoryIterator($path, \RecursiveDirectoryIterator::SKIP_DOTS),
+                \RecursiveIteratorIterator::SELF_FIRST,
+                \RecursiveIteratorIterator::CATCH_GET_CHILD
+            );
+        } catch (\RuntimeException $e) {
+            return [];
+        }
 
         $mtimes = [];
         /** @var \SplFileInfo $file */

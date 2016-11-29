@@ -5,6 +5,7 @@ require_once(__DIR__ . '/../vendor/autoload.php');
 
 use Psr\Log\LogLevel;
 use PhpCmplr\PhpCmplr;
+use PhpCmplr\Symfony\SymfonyPlugin;
 
 $opts = getopt('', ['help', 'port:', 'loglevel:']);
 if (!is_array($opts)) {
@@ -36,6 +37,10 @@ if (!empty($opts['loglevel'])) {
     $options['log']['level'] = $opts['loglevel'];
 }
 
-$phpcmplr = new PhpCmplr($options);
+$plugins = [
+    new SymfonyPlugin(),
+];
+
+$phpcmplr = new PhpCmplr($options, $plugins);
 $phpcmplr->run();
 

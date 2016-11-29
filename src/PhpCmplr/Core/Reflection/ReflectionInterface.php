@@ -2,6 +2,10 @@
 
 namespace PhpCmplr\Core\Reflection;
 
+use PhpCmplr\Core\Reflection\Element\ClassLike;
+use PhpCmplr\Core\Reflection\Element\Function_;
+use PhpCmplr\Core\Reflection\Element\Const_;
+
 interface ReflectionInterface
 {
     /**

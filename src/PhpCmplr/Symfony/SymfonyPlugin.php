@@ -6,6 +6,8 @@ use PhpCmplr\Core\Container;
 use PhpCmplr\Plugin;
 use PhpCmplr\Symfony\Config\ConfigLoader;
 use PhpCmplr\Symfony\Config\YamlLoader;
+use PhpCmplr\Symfony\Config\Paths;
+use PhpCmplr\Symfony\TypeInferer\ContainerInferrer;
 
 class SymfonyPlugin extends Plugin
 {
@@ -41,6 +43,8 @@ class SymfonyPlugin extends Plugin
     public function addFileComponents(Container $container, array $options)
     {
         if ($options['symfony']['enabled']) {
+            $container->set('symfony.typeinfer.container',
+                new ContainerInferrer($container), [['typeinfer.visitor', -10]]);
         }
     }
 }

@@ -5,9 +5,16 @@ namespace PhpCmplr\Symfony\Config;
 use PhpCmplr\Core\Component;
 use PhpCmplr\Util\FileIOInterface;
 use PhpCmplr\Util\BasicFileFilter;
+use PhpCmplr\Util\IOException;
+use Psr\Log\LoggerInterface;
 
 class ConfigLoader extends Component
 {
+    /**
+     * @var LoggerInterface
+     */
+    private $logger;
+
     /**
      * @var FileIOInterface
      */
@@ -53,17 +60,24 @@ class ConfigLoader extends Component
     {
         $ext = strtolower(pathinfo($path, PATHINFO_EXTENSION));
         if (array_key_exists($ext, $extensionMap)) {
-            $contents = $this->io->read($path);
-            foreach ($extensionMap[$ext] as $loader) {
-                if ($loader->load($contents, $this->config)) {
-                    break;
+            try {
+                $contents = $this->io->read($path);
+                foreach ($extensionMap[$ext] as $loader) {
+                    if ($loader->load($contents, $this->config)) {
+                        $this->logger->debug(sprintf("Symfony: load config file %s", $path));
+                        break;
+                    }
                 }
+            } catch (IOException $e) {
+                $this->logger->notice(sprintf("Symfony: can't load config file %s",
+                    $path), ['exception' => $e]);
             }
         }
     }
 
     protected function doRun()
     {
+        $this->logger = $this->container->get('logger');
         $this->io = $this->container->get('io');
         /** @var PathsInterface */
         $paths = $this->container->get('symfony.paths');

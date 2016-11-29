@@ -7,7 +7,7 @@ use PhpCmplr\Plugin;
 use PhpCmplr\Symfony\Config\ConfigLoader;
 use PhpCmplr\Symfony\Config\YamlLoader;
 use PhpCmplr\Symfony\Config\Paths;
-use PhpCmplr\Symfony\TypeInferer\ContainerInferrer;
+use PhpCmplr\Symfony\TypeInferrer\ContainerInferrer;
 
 class SymfonyPlugin extends Plugin
 {

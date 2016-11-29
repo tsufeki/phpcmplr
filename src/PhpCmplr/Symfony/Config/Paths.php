@@ -9,7 +9,7 @@ use PhpCmplr\Core\FileStoreInterface;
 use PhpCmplr\Core\Container;
 use Psr\Log\LoggerInterface;
 use PhpCmplr\Util\IOException;
-use PhpCmplr\Core\Reflection\Reflection;
+use PhpCmplr\Core\Reflection\LocatorInterface;
 
 class Paths extends Component implements PathsInterface
 {
@@ -47,8 +47,8 @@ class Paths extends Component implements PathsInterface
         $io = $this->container->get('io');
         /** @var LoggerInterface */
         $logger = $this->container->get('logger');
-        /** @var Reflection */
-        $reflection = $this->container->get('reflection');
+        /** @var LocatorInterface[] */
+        $locators = $this->container->getByTag('reflection.locator');
 
         $this->appConfigPath = $project->getRootPath() . '/app/config';
         $this->bundlesPaths = [];
@@ -64,9 +64,19 @@ class Paths extends Component implements PathsInterface
             $extractor = new BundleClassesExtractor($cont);
             $classes = $extractor->getClasses();
             foreach ($classes as $class) {
-                $reflClasses = $reflection->findClass($class);
-                if (!empty($reflClasses) && null !== ($location = $reflClasses[0]->getLocation())) {
-                    $this->bundlesPaths[] = dirname($location->getPath());
+                $bundlePath = null;
+                foreach ($locators as $locator) {
+                    $paths = $locator->getPathsForClass($class);
+                    if (!empty($paths)) {
+                        $bundlePath = dirname($paths[0]);
+                        break;
+                    }
+                }
+                if ($bundlePath) {
+                    $this->bundlesPaths[] = $bundlePath;
+                    $logger->debug(sprintf("Symfony: located bundle %s", $bundlePath));
+                } else {
+                    $logger->debug(sprintf("Symfony: can't locate bundle %s", $class));
                 }
             }
         } catch (IOException $e) {

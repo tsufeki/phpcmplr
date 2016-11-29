@@ -82,7 +82,7 @@ class ConfigLoader extends Component
         /** @var PathsInterface */
         $paths = $this->container->get('symfony.paths');
         $fileLoaders = $this->container->getByTag('symfony.config_loader');
-        $extensionMap = $this->getFileExtensionMap();
+        $extensionMap = $this->getFileExtensionMap($fileLoaders);
         $this->config = new Config();
 
         $dirs = [];

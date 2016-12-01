@@ -97,5 +97,7 @@ class ConfigLoader extends Component
                 $this->loadFile($path, $extensionMap);
             }
         }
+
+        $this->config->resolve();
     }
 }

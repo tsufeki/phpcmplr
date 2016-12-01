@@ -38,6 +38,7 @@ class YamlLoader implements FileLoaderInterface
 
         if (array_key_exists(self::SERVICES, $data) && is_array($data[self::SERVICES])) {
             foreach ($data[self::SERVICES] as $id => $srv) {
+                $id = (string)$id;
                 $class = null;
                 $alias = null;
                 $public = true;

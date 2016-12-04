@@ -464,12 +464,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/tsufeki/http.git",
-                "reference": "b54ced91334d9b0994b82591ae5453c6387f972a"
+                "reference": "1ea9bfbfbd4d54d66bc9db9db176a9ebdc98ca35"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/tsufeki/http/zipball/b54ced91334d9b0994b82591ae5453c6387f972a",
-                "reference": "b54ced91334d9b0994b82591ae5453c6387f972a",
+                "url": "https://api.github.com/repos/tsufeki/http/zipball/1ea9bfbfbd4d54d66bc9db9db176a9ebdc98ca35",
+                "reference": "1ea9bfbfbd4d54d66bc9db9db176a9ebdc98ca35",
                 "shasum": ""
             },
             "require": {
@@ -496,7 +496,7 @@
             "support": {
                 "source": "https://github.com/tsufeki/http/tree/master"
             },
-            "time": "2016-10-11 17:08:53"
+            "time": "2016-12-04 16:23:30"
         },
         {
             "name": "react/promise",

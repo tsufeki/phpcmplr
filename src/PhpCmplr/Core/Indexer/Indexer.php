@@ -16,6 +16,7 @@ use PhpCmplr\Util\IOException;
 use PhpCmplr\Util\BasicFileFilter;
 use PhpCmplr\Util\FileFilterInterface;
 use React\EventLoop\Timer\TimerInterface;
+use PhpCmplr\Util\StopWatch;
 
 class Indexer extends Component implements IndexerInterface
 {
@@ -227,6 +228,8 @@ class Indexer extends Component implements IndexerInterface
 
     private function scan()
     {
+        $time = new StopWatch();
+
         $freshFiles = $this->io->listFileMTimesRecursive(
             $this->project->getRootPath(),
             $this->fileFilter
@@ -244,6 +247,8 @@ class Indexer extends Component implements IndexerInterface
                 $this->enqueue($path, false);
             }
         }
+
+        $this->logger->debug(sprintf("Indexer: scan done [%s]", $time));
     }
 
     private function setupFsEvents()

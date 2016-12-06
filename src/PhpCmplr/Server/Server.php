@@ -13,6 +13,7 @@ use React\Http\StreamingBodyParser\Factory as BodyParserFactory;
 use Psr\Log\LoggerInterface;
 
 use PhpCmplr\PhpCmplr;
+use PhpCmplr\Util\StopWatch;
 
 /**
  * HTTP server.
@@ -117,7 +118,7 @@ class Server
      */
     public function handle(Request $request, $requestBody, Response $response)
     {
-        $startTime = microtime(true);
+        $time = new StopWatch();
         $status = 200;
         $responseBody = '{}';
 
@@ -163,8 +164,7 @@ class Server
             'Content-Length' => strlen($responseBody),
         ]);
         $response->end($responseBody);
-        $endTime = microtime(true);
-        $this->logger->debug(sprintf("Server: request done [%.2fs]", $endTime - $startTime));
+        $this->logger->debug(sprintf("Server: request done [%s]", $time));
     }
 
     /**

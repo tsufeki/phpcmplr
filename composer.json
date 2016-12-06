@@ -17,8 +17,8 @@
     ],
     "require": {
         "react/http": "dev-master",
-        "tsufeki/react-line-stream": "^0.1.0",
-        "tsufeki/react-filesystem-monitor": "^0.1.0",
+        "tsufeki/react-line-stream": "^0.1.1",
+        "tsufeki/react-filesystem-monitor": "^0.2.0",
         "tsufeki/php-lenient-parser": "dev-master",
         "nikic/php-parser": "dev-master",
         "justinrainbow/json-schema": "^2.0",

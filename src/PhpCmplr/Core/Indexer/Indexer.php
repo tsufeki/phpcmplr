@@ -233,12 +233,12 @@ class Indexer extends Component implements IndexerInterface
         $this->loop->futureTick([$this, 'update']);
     }
 
-    private function scan()
+    private function scan($path)
     {
         $time = new StopWatch();
 
         $freshFiles = $this->io->listFileMTimesRecursive(
-            $this->project->getRootPath(),
+            $path,
             $this->fileFilter
         );
         $curFiles =& $this->data['files'];
@@ -261,27 +261,19 @@ class Indexer extends Component implements IndexerInterface
     private function setupFsEvents()
     {
         $this->monitor->on('start', function () {
-            $this->scan();
+            $this->scan($this->project->getRootPath());
             $this->startUpdates(true);
         });
         $this->monitor->on('error', function ($e) {
             $this->logger->error('Indexer: Filesystem monitor: ' . $e, ['exception' => $e]);
         });
-
-        $this->monitor->on('modify', function ($path) {
-            $this->enqueue($path, false);
-            $this->startUpdates();
-        });
-        $this->monitor->on('move_to', function ($path) {
-            $this->enqueue($path, false);
-            $this->startUpdates();
-        });
-        $this->monitor->on('move_from', function ($path) {
-            $this->enqueue($path, true);
-            $this->startUpdates();
-        });
-        $this->monitor->on('delete', function ($path) {
-            $this->enqueue($path, true);
+        $this->monitor->on('all', function ($path, $isDir, $event) {
+            if ($isDir) {
+                $this->scan($path);
+            } else {
+                $isDelete = in_array($event, ['delete', 'move_from']);
+                $this->enqueue($path, $isDelete);
+            }
             $this->startUpdates();
         });
     }

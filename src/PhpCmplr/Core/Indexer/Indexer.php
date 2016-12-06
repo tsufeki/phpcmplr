@@ -233,18 +233,21 @@ class Indexer extends Component implements IndexerInterface
         $this->loop->futureTick([$this, 'update']);
     }
 
-    private function scan($path)
+    private function scan($scanPath)
     {
         $time = new StopWatch();
 
         $freshFiles = $this->io->listFileMTimesRecursive(
-            $path,
+            $scanPath,
             $this->fileFilter
         );
         $curFiles =& $this->data['files'];
 
+        $scanPathSlash = rtrim($scanPath, '/') . '/';
+        $scanPathLen = strlen($scanPathSlash);
         foreach ($curFiles as $path => $mtime) {
-            if (!array_key_exists($path, $freshFiles)) {
+            if (substr_compare($path, $scanPathSlash, 0, $scanPathLen) === 0 &&
+                    !array_key_exists($path, $freshFiles)) {
                 $this->enqueue($path, true);
             }
         }
@@ -255,7 +258,7 @@ class Indexer extends Component implements IndexerInterface
             }
         }
 
-        $this->logger->debug(sprintf("Indexer: scan done [%s]", $time));
+        $this->logger->debug(sprintf("Indexer: scan done %s [%s]", $scanPath, $time));
     }
 
     private function setupFsEvents()

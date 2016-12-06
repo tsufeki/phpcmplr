@@ -4,8 +4,8 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
-    "hash": "5e12ee6dd25a296f3eedf071c03bc042",
-    "content-hash": "56822de2660281078929c080fd7ca2c2",
+    "hash": "a4ba5883047913fc3e931923508d3142",
+    "content-hash": "e7571ca7a02b5b4ea70b6d7d6b0e2c8e",
     "packages": [
         {
             "name": "evenement/evenement",
@@ -233,12 +233,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/nikic/PHP-Parser.git",
-                "reference": "aa6aec90e11a7a4e7d44129c7cb5422ffd15939e"
+                "reference": "adf44419c0fc014a0f191db6f89d3e55d4211744"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/nikic/PHP-Parser/zipball/aa6aec90e11a7a4e7d44129c7cb5422ffd15939e",
-                "reference": "aa6aec90e11a7a4e7d44129c7cb5422ffd15939e",
+                "url": "https://api.github.com/repos/nikic/PHP-Parser/zipball/adf44419c0fc014a0f191db6f89d3e55d4211744",
+                "reference": "adf44419c0fc014a0f191db6f89d3e55d4211744",
                 "shasum": ""
             },
             "require": {
@@ -276,7 +276,7 @@
                 "parser",
                 "php"
             ],
-            "time": "2016-12-01 12:37:30"
+            "time": "2016-12-06 11:30:35"
         },
         {
             "name": "psr/http-message",
@@ -735,16 +735,16 @@
         },
         {
             "name": "tsufeki/react-filesystem-monitor",
-            "version": "0.1.0",
+            "version": "0.2.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/tsufeki/react-filesystem-monitor.git",
-                "reference": "39f4c7779243b2b686a3cff8857c232de44168bf"
+                "reference": "582924815761cd3231056c89dd979622d006367a"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/tsufeki/react-filesystem-monitor/zipball/39f4c7779243b2b686a3cff8857c232de44168bf",
-                "reference": "39f4c7779243b2b686a3cff8857c232de44168bf",
+                "url": "https://api.github.com/repos/tsufeki/react-filesystem-monitor/zipball/582924815761cd3231056c89dd979622d006367a",
+                "reference": "582924815761cd3231056c89dd979622d006367a",
                 "shasum": ""
             },
             "require": {
@@ -752,7 +752,7 @@
                 "react/child-process": "^0.4.1",
                 "react/event-loop": "^0.4.2",
                 "react/stream": "^0.4.4",
-                "tsufeki/react-line-stream": "^0.1.0"
+                "tsufeki/react-line-stream": "^0.1.1"
             },
             "type": "library",
             "autoload": {
@@ -771,20 +771,20 @@
                 }
             ],
             "description": "Asynchronous filesystem monitor based on React PHP",
-            "time": "2016-10-30 11:58:00"
+            "time": "2016-12-06 20:55:01"
         },
         {
             "name": "tsufeki/react-line-stream",
-            "version": "0.1.0",
+            "version": "0.1.1",
             "source": {
                 "type": "git",
                 "url": "https://github.com/tsufeki/react-line-stream.git",
-                "reference": "4cd3a1f8ebf852ab3421b78ae32fdb82adeacb29"
+                "reference": "2c8081b7782946edad64ff9ac0365b6c78179e0a"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/tsufeki/react-line-stream/zipball/4cd3a1f8ebf852ab3421b78ae32fdb82adeacb29",
-                "reference": "4cd3a1f8ebf852ab3421b78ae32fdb82adeacb29",
+                "url": "https://api.github.com/repos/tsufeki/react-line-stream/zipball/2c8081b7782946edad64ff9ac0365b6c78179e0a",
+                "reference": "2c8081b7782946edad64ff9ac0365b6c78179e0a",
                 "shasum": ""
             },
             "require": {
@@ -808,7 +808,7 @@
                 }
             ],
             "description": "Line-by-line stream reading for React PHP",
-            "time": "2016-10-23 16:33:55"
+            "time": "2016-12-06 20:51:21"
         }
     ],
     "packages-dev": [],

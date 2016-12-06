@@ -81,7 +81,7 @@ class Json
     }
 
     /**
-     * @param object $object
+     * @param object|array $object
      *
      * @return string JSON.
      * @throws JsonDumpException

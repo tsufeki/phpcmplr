@@ -17,6 +17,9 @@ use PhpCmplr\Util\BasicFileFilter;
 use PhpCmplr\Util\FileFilterInterface;
 use React\EventLoop\Timer\TimerInterface;
 use PhpCmplr\Util\StopWatch;
+use PhpCmplr\Util\Json;
+use PhpCmplr\Util\JsonDumpException;
+use PhpCmplr\Util\JsonLoadException;
 
 class Indexer extends Component implements IndexerInterface
 {
@@ -104,12 +107,14 @@ class Indexer extends Component implements IndexerInterface
     {
         try {
             if (!empty($this->cachePath) && $this->io->exists($this->cachePath)) {
-                $data = json_decode($this->io->read($this->cachePath), true);
+                $data = Json::loadAsArray($this->io->read($this->cachePath));
                 if (!is_array($data) || !isset($data['files']) || !isset($data['data'])) {
-                    throw new IOException("Corrupted cache");
+                    throw new JsonLoadException("Bad format");
                 }
                 $this->data = $data;
             }
+        } catch (JsonLoadException $e) {
+            $this->logger->notice("Indexer: can't load indexed data, corrupted: " . $e->getMessage(), ['exception' => $e]);
         } catch (IOException $e) {
             $this->logger->notice("Indexer: can't load indexed data: " . $e->getMessage(), ['exception' => $e]);
         }
@@ -123,9 +128,11 @@ class Indexer extends Component implements IndexerInterface
         try {
             if (!empty($this->cachePath) && $this->updateCounter > $this->saveCounter) {
                 $this->logger->debug('Indexer: save');
-                $this->io->write($this->cachePath, json_encode($this->data));
+                $this->io->write($this->cachePath, Json::dump($this->data));
                 $this->saveCounter = $this->updateCounter;
             }
+        } catch (JsonDumpException $e) {
+            $this->logger->notice("Indexer: can't save indexed data: " . $e->getMessage(), ['exception' => $e]);
         } catch (IOException $e) {
             $this->logger->notice("Indexer: can't save indexed data: " . $e->getMessage(), ['exception' => $e]);
         }
